@@ -1,0 +1,7 @@
+charts:
+  - name: erpnext-edge
+    resetTag: edge
+    resetVersion: 13.0.0
+    repo:
+      git: frappe/helm
+      published: https://helm.erpnext.com/

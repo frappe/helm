@@ -1,0 +1,11 @@
+sudo: required
+
+language: python
+python:
+  - "3.6"
+
+install:
+  - curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+
+script:
+  - helm lint erpnext
