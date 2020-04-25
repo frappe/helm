@@ -1,0 +1,10 @@
+title: ERPNext Helm Chart
+description: Helm chart repository for ERPNext
+theme: minima
+url: "https://helm.erpnext.com"
+repo_name: helm
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - .gitignore
