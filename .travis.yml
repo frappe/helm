@@ -1,6 +1,7 @@
-sudo: required
-
 language: python
+os: linux
+dist: xenial
+
 python:
   - '3.6'
 env:
@@ -12,11 +13,11 @@ before_install:
 install:
   - curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 script:
-  - helm lint erpnext
+  - helm lint erpnext-edge
   - pip install chartpress
 deploy:
   - provider: script
-    skip_cleanup: true
+    cleanup: false
     script: chartpress --publish-chart
     on:
       branch: master
