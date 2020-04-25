@@ -38,9 +38,7 @@ $ helm install {{ site.repo_name }}/{{ latest_chart.name }} --name myrelease --v
 | Chart Version | App Version | Date |
 |---------------|-------------|------|
 {% for chart in all_charts -%}
-{% unless chart.version contains "-" -%}
 | [{{ chart.name }}-{{ chart.version }}]({{ chart.urls[0] }}) | {{ chart.appVersion }} | {{ chart.created | date_to_rfc822 }} |
-{% endunless -%}
 {% endfor -%}
 
 {% endfor %}
