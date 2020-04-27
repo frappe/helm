@@ -1,3 +1,4 @@
+{{- if eq .Values.redisQueueHost ""}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -32,3 +33,4 @@ spec:
             port: 6379
           initialDelaySeconds: 5
           periodSeconds: 10
+{{- end }}

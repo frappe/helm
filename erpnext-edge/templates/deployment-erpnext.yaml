@@ -63,11 +63,23 @@ spec:
             - name: "MARIADB_HOST"
               value: {{ required "A valid .Values.mariadbHost entry required!" .Values.mariadbHost }}
             - name: "REDIS_QUEUE"
+              {{- if eq .Values.redisQueueHost "" }}
               value: {{ include "erpnext.fullname" . }}-redis-queue:{{ .Values.redisQueueService.port }}
+              {{- else }}
+              value: {{ .Values.redisQueueHost }}
+              {{- end }}
             - name: "REDIS_CACHE"
+              {{- if eq .Values.redisCacheHost "" }}
               value: {{ include "erpnext.fullname" . }}-redis-cache:{{ .Values.redisCacheService.port }}
+              {{- else }}
+              value: {{ .Values.redisCacheHost }}
+              {{- end }}
             - name: "REDIS_SOCKETIO"
+              {{- if eq .Values.redisSocketIOHost "" }}
               value: {{ include "erpnext.fullname" . }}-redis-socketio:{{ .Values.redisSocketIOService.port }}
+              {{- else }}
+              value: {{ .Values.redisSocketIOHost }}
+              {{- end }}
             - name: "SOCKETIO_PORT"
               value: {{ .Values.socketIOPort | quote }}
           livenessProbe:

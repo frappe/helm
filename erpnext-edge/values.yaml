@@ -26,6 +26,10 @@ socketIOPort: "9000"
 # Python Image Env Variables
 # mariadbHost: "mariadb.mariadb.svc.cluster.local"
 
+redisQueueHost: ""
+redisCacheHost: ""
+redisSocketIOHost: ""
+
 # Set this to true to run migrate as part of helm install/upgrade
 migrateJob: false
 
