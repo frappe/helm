@@ -30,8 +30,10 @@ redisQueueHost: ""
 redisCacheHost: ""
 redisSocketIOHost: ""
 
-# Set this to true to run migrate as part of helm install/upgrade
-migrateJob: false
+migrateJob:
+  # Set this to true to run migrate as part of helm install/upgrade
+  enable: false
+  backup: true
 
 imagePullSecrets: []
 nameOverride: ""

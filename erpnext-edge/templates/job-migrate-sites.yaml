@@ -9,10 +9,23 @@ spec:
     spec:
       securityContext:
         supplementalGroups: [1000]
+      {{ if .Values.migrateJob.enable }}
+      initContainers:
+      - name: backup
+        image: "{{ .Values.pythonImage.repository }}:{{ .Values.pythonImage.tag }}"
+        args: ["backup"]
+        imagePullPolicy: {{ .Values.pythonImage.pullPolicy }}
+        volumeMounts:
+          - name: sites-dir
+            mountPath: /home/frappe/frappe-bench/sites
+      {{ end }}
       containers:
-      - name: erpnext
+      - name: migrate
         image: "{{ .Values.pythonImage.repository }}:{{ .Values.pythonImage.tag }}"
         args: ["migrate"]
+        env:
+          - name: "MAINTENANCE_MODE"
+            value: "1"
         imagePullPolicy: {{ .Values.pythonImage.pullPolicy }}
         volumeMounts:
           - name: sites-dir
