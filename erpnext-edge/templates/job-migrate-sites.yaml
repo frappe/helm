@@ -1,4 +1,4 @@
-{{ if .Values.migrateJob }}
+{{- if .Values.migrateJob.enable }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -9,7 +9,7 @@ spec:
     spec:
       securityContext:
         supplementalGroups: [1000]
-      {{ if .Values.migrateJob.enable }}
+      {{- if .Values.migrateJob.backup }}
       initContainers:
       - name: backup
         image: "{{ .Values.pythonImage.repository }}:{{ .Values.pythonImage.tag }}"
@@ -18,7 +18,7 @@ spec:
         volumeMounts:
           - name: sites-dir
             mountPath: /home/frappe/frappe-bench/sites
-      {{ end }}
+      {{- end }}
       containers:
       - name: migrate
         image: "{{ .Values.pythonImage.repository }}:{{ .Values.pythonImage.tag }}"
@@ -36,4 +36,4 @@ spec:
           persistentVolumeClaim:
             claimName: {{ template "erpnext.fullname" . }}
             readOnly: false
-{{ end }}
+{{- end }}
