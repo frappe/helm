@@ -6,17 +6,17 @@ replicaCount: 1
 
 nginxImage:
   repository: frappe/erpnext-nginx
-  tag: edge
+  tag: v12.7.1
   pullPolicy: IfNotPresent
 
 pythonImage:
   repository: frappe/erpnext-worker
-  tag: edge
+  tag: v12.7.1
   pullPolicy: IfNotPresent
 
 socketIOImage:
   repository: frappe/frappe-socketio
-  tag: edge
+  tag: v12.5.1
   pullPolicy: IfNotPresent
 
 # Asset Image Env Variables
@@ -81,7 +81,7 @@ redisCacheService:
 persistence:
   enabled: true
   # existingClaim: ""
-  size: 2Gi
+  size: 8Gi
   # storageClass: "nfs"
 
 resources: {}

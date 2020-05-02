@@ -34,6 +34,10 @@ spec:
       volumes:
         - name: sites-dir
           persistentVolumeClaim:
+            {{- if .Values.persistence.existingClaim }}
+            claimName: {{ .Values.persistence.existingClaim }}
+            {{- else }}
             claimName: {{ template "erpnext.fullname" . }}
+            {{- end }}
             readOnly: false
 {{- end }}
