@@ -1,15 +1,15 @@
 apiVersion: v1
 entries:
-  erpnext-edge:
+  erpnext:
   - apiVersion: v2
-    appVersion: edge
-    created: "2020-04-25T20:29:14.052291937+05:30"
+    appVersion: v12.7.1
+    created: "2020-05-03T15:25:47.874269685+05:30"
     description: Kubernetes Helm Chart for ERPNext Develop Branch (edge)
-    digest: 6367a6fcd6b2696590d457356d35148f837e7abb2e626ec34bfac7e0680ef245
+    digest: 62c8f44caa9e1dc7aa8fd1dadb97befa0bb398bd68d5e0b61a73fc3371b19730
     icon: https://raw.githubusercontent.com/frappe/design/master/logos/logo-2018/erpnext-logo-blue.svg
-    name: erpnext-edge
+    name: erpnext
     type: application
     urls:
-    - https://helm.erpnext.com/erpnext-edge-13.0.0-edge.tgz
-    version: 13.0.0-edge
-generated: "2020-04-25T20:29:14.051622077+05:30"
+    - https://helm.erpnext.com/erpnext-12.7.1.tgz
+    version: 12.7.1
+generated: "2020-05-03T15:25:47.870967611+05:30"
