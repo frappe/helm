@@ -1,8 +1,7 @@
-{{ if .Values.migrateJob }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: migrate-sites-{{ template "erpnext.fullname" . }}-{{ date "20060102150405" .Release.Now }}
+  name: migrate-sites-${TIMESTAMP}
 spec:
   backoffLimit: 1
   template:
@@ -11,9 +10,9 @@ spec:
         supplementalGroups: [1000]
       containers:
       - name: erpnext
-        image: "{{ .Values.pythonImage.repository }}:{{ .Values.pythonImage.tag }}"
+        image: frappe/erpnext-worker:${VERSION}
         args: ["migrate"]
-        imagePullPolicy: {{ .Values.pythonImage.pullPolicy }}
+        imagePullPolicy: IfNotPresent
         volumeMounts:
           - name: sites-dir
             mountPath: /home/frappe/frappe-bench/sites
@@ -21,6 +20,5 @@ spec:
       volumes:
         - name: sites-dir
           persistentVolumeClaim:
-            claimName: {{ template "erpnext.fullname" . }}
+            claimName: ${SITES_PVC}
             readOnly: false
-{{ end }}

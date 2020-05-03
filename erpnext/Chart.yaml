@@ -1,5 +1,5 @@
 apiVersion: v2
-name: erpnext-edge
+name: erpnext
 description: Kubernetes Helm Chart for ERPNext Develop Branch (edge)
 icon: https://raw.githubusercontent.com/frappe/design/master/logos/logo-2018/erpnext-logo-blue.svg
 
@@ -15,8 +15,8 @@ type: application
 
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
-version: 13.0.0-edge
+version: 1.0.0
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application.
-appVersion: edge
+appVersion: v12.7.1

@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "erpnext.fullname" . }}-scheduler
+  name: {{ include "erpnext.fullname" . }}-worker-d
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
 spec:
@@ -32,7 +32,10 @@ spec:
           - name: sites-dir
             mountPath: /home/frappe/frappe-bench/sites
           imagePullPolicy: {{ .Values.pythonImage.pullPolicy }}
-          args: ["schedule"]
+          args: ["worker"]
+          env:
+            - name: "WORKER_TYPE"
+              value: "default"
           livenessProbe:
             exec:
               command:
@@ -52,7 +55,11 @@ spec:
       volumes:
         - name: sites-dir
           persistentVolumeClaim:
+            {{- if .Values.persistence.existingClaim }}
+            claimName: {{ .Values.persistence.existingClaim }}
+            {{- else }}
             claimName: {{ template "erpnext.fullname" . }}
+            {{- end }}
             readOnly: false
       {{- with .Values.nodeSelector }}
       nodeSelector:

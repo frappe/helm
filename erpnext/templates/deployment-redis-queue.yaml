@@ -1,20 +1,21 @@
+{{- if eq .Values.redisQueueHost ""}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "erpnext.fullname" . }}-redis-socketio
+  name: {{ include "erpnext.fullname" . }}-redis-queue
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "erpnext.name" . }}-redis-socketio
-      app.kubernetes.io/instance: {{ .Release.Name }}-redis-socketio
+      app.kubernetes.io/name: {{ include "erpnext.name" . }}-redis-queue
+      app.kubernetes.io/instance: {{ .Release.Name }}-redis-queue
   replicas: 1
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "erpnext.name" . }}-redis-socketio
-        app.kubernetes.io/instance: {{ .Release.Name }}-redis-socketio
+        app.kubernetes.io/name: {{ include "erpnext.name" . }}-redis-queue
+        app.kubernetes.io/instance: {{ .Release.Name }}-redis-queue
     spec:
       containers:
       - name: master
@@ -32,3 +33,4 @@ spec:
             port: 6379
           initialDelaySeconds: 5
           periodSeconds: 10
+{{- end }}

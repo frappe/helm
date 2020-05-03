@@ -6,17 +6,17 @@ replicaCount: 1
 
 nginxImage:
   repository: frappe/erpnext-nginx
-  tag: edge
+  tag: v12.7.1
   pullPolicy: IfNotPresent
 
 pythonImage:
   repository: frappe/erpnext-worker
-  tag: edge
+  tag: v12.7.1
   pullPolicy: IfNotPresent
 
 socketIOImage:
   repository: frappe/frappe-socketio
-  tag: edge
+  tag: v12.5.1
   pullPolicy: IfNotPresent
 
 # Asset Image Env Variables
@@ -26,8 +26,14 @@ socketIOPort: "9000"
 # Python Image Env Variables
 # mariadbHost: "mariadb.mariadb.svc.cluster.local"
 
-# Set this to true to run migrate as part of helm install/upgrade
-migrateJob: false
+redisQueueHost: ""
+redisCacheHost: ""
+redisSocketIOHost: ""
+
+migrateJob:
+  # Set this to true to run migrate as part of helm install/upgrade
+  enable: false
+  backup: true
 
 imagePullSecrets: []
 nameOverride: ""
@@ -75,7 +81,7 @@ redisCacheService:
 persistence:
   enabled: true
   # existingClaim: ""
-  size: 2Gi
+  size: 8Gi
   # storageClass: "nfs"
 
 resources: {}
