@@ -4,7 +4,7 @@ entries:
   - apiVersion: v2
     appVersion: v12.7.1
     created: "2020-05-03T15:25:47.874269685+05:30"
-    description: Kubernetes Helm Chart for ERPNext Develop Branch (edge)
+    description: Kubernetes Helm Chart for the latest stable ERPNext branch
     digest: 62c8f44caa9e1dc7aa8fd1dadb97befa0bb398bd68d5e0b61a73fc3371b19730
     icon: https://raw.githubusercontent.com/frappe/design/master/logos/logo-2018/erpnext-logo-blue.svg
     name: erpnext
