@@ -7,9 +7,9 @@ ERPNext is a full-featured business management solution that helps SMEs to recor
 ## TL;DR;
 
 ```bash
-$ helm repo add erpnext https://helm.erpnext.com
+$ helm repo add frappe https://helm.erpnext.com
 
-$ helm install frappe-bench-0001 --namespace erpnext erpnext-v12 \
+$ helm install frappe-bench-0001 --namespace erpnext frappe/erpnext \
     --set mariadbHost=mariadb.mariadb.svc.cluster.local \
     --set persistence.storageClass=rook-cephfs
 ```
@@ -28,10 +28,10 @@ This chart bootstraps a [Frappe/ERPNext](https://github.com/frappe/frappe_docker
 
 ## Installing the Chart
 
-To install the chart with the release name `my-release`:
+To install the chart with the release name `frappe-bench-0001`:
 
 ```bash
-$ helm install frappe-bench-0001 --namespace erpnext erpnext-v12 \
+$ helm install frappe-bench-0001 --namespace erpnext frappe/erpnext \
     --set mariadbHost=mariadb.mariadb.svc.cluster.local \
     --set persistence.storageClass=rook-cephfs
 ```
@@ -83,13 +83,13 @@ The above parameters map to the env variables defined in [frappe_docker](http://
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
 ```bash
-$ helm install frappe-bench-0001 --namespace frappe-benches erpnext \
+$ helm install frappe-bench-0001 --namespace erpnext frappe/erpnext \
     --set mariadbHost=mariadb.mariadb.svc.cluster.local \
     --set persistence.storageClass=rook-cephfs \
-    --set migrateJob=true
+    --set migrateJob.enable=true
 ```
 
-The above command sets the MariaDB host to `mariadb.mariadb.svc.cluster.local`. Additionally it creates a PVC named with mentioned storageClass `rook-cephfs`.
+The above command sets the MariaDB host to `mariadb.mariadb.svc.cluster.local`. Additionally it creates a PVC named with mentioned storageClass `rook-cephfs` and creates a migration job.
 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 
