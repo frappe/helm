@@ -32,7 +32,9 @@ $ helm repo update
 {{ latest_chart.description }}
 
 ```console
-$ helm install {{ site.repo_name }}/{{ latest_chart.name }} --name "erpnext-edge" --version {{ latest_chart.version }}
+$ helm install frappe-bench-0001 --namespace erpnext {{ site.repo_name }}/{{ latest_chart.name }} --version {{ latest_chart.version }}\
+    --set mariadbHost=mariadb.mariadb.svc.cluster.local \
+    --set persistence.storageClass=rook-cephfs
 ```
 
 | Chart Version | App Version | Date |
