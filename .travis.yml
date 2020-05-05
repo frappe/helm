@@ -13,7 +13,7 @@ before_install:
 install:
   - curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 script:
-  - helm lint erpnext-edge
+  - helm lint erpnext
   - pip install chartpress
 deploy:
   - provider: script
