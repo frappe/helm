@@ -1,6 +1,6 @@
 apiVersion: v2
 name: erpnext
-description: Kubernetes Helm Chart for ERPNext Develop Branch (edge)
+description: Kubernetes Helm Chart for the lastest stable ERPNext branch
 icon: https://raw.githubusercontent.com/frappe/design/master/logos/logo-2018/erpnext-logo-blue.svg
 
 # A chart can be either an 'application' or a 'library' chart.
