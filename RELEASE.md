@@ -5,7 +5,7 @@
 2. Setup release_wizard:
 ```shell
 $ ./release_wizard/setup.sh
-$ ./venv/bin/activate
+$ . ./venv/bin/activate
 ```
 
 3. Run the release_wizard, which will fetch the latest version of Frappe/ERPNext, bump the chart version and the app version, and push to git and create a tag for the same.
