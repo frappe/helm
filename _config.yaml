@@ -3,6 +3,7 @@ description: Helm chart repository for ERPNext
 theme: minima
 url: "https://helm.erpnext.com"
 repo_name: frappe
+git_repo: https://github.com/frappe/helm
 
 exclude:
   - Gemfile
