@@ -16,10 +16,12 @@ def main():
     chart_dict = update_chart(erpnext_version, args.bump_type)
     chart_version = chart_dict['version']
     update_values(frappe_version, erpnext_version)
-    repo = git.repo(os.getcwd())
+    repo = git.Repo(os.getcwd())
     git_check_branch(repo)
-    git_commit_release_message(frappe_version, erpnext_version, chart_version)
+    git_commit_release_message(repo, frappe_version, erpnext_version, chart_version)
     git_tag_repo(repo, chart_version)
+    git_push_all(repo, args.remote)
+
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -29,22 +31,31 @@ def parse_args():
         'version',
         action='store',
         type=str,
-        help='Branch suffix after version-??-??: e.g. "12"')
+        help='Branch suffix after version-??: e.g. "12"')
     parser.add_argument(
         'bump_type',
         action='store',
         type=str,
         choices=['major', 'minor', 'patch'],
-        help='Bump Type for Helm Chart: e.g. "major", "minor", "patch"')
+        help='Bump Type for Helm Chart')
+    group = parser.add_argument_group('remote')
+    group.add_argument(
+        '--remote',
+        action='store',
+        type=str,
+        help='Git remote to tag and release helm chart')
     return parser.parse_args()
 
 
 def git_version(service, version, delete_dir=False):
     print(f'Pulling {service} v{version}')
-    git.Repo.clone_from(f'https://github.com/frappe/{service}', f'/tmp/{service}', branch=f'version-{version}')
+
+    if not os.path.isdir(f'/tmp/{service}'):
+        git.Repo.clone_from(f'https://github.com/frappe/{service}', f'/tmp/{service}', branch=f'version-{version}')
+
     cd = os.getcwd()
     os.chdir(f'/tmp/{service}')
-    repo = git.repo(path=f'/tmp/{service}')
+    repo = git.Repo(path=f'/tmp/{service}')
     repo.git.fetch('--tags')
 
     # XX-beta becomes XX for tags search
@@ -129,9 +140,22 @@ ERPNext {erpnext_version}""".format(
     repo.git.commit('-m', commit_message)
 
 
-def git_push_all(repo):
-    # hack always assumes remote is called origin
-    repo.git.push('origin', '--follow-tags')
+def git_push_all(repo, remote=None):
+    if not remote:
+        print('Available git remotes')
+        index = 1
+        for rem in repo.remotes:
+            print(f'{index} - {rem.name}')
+
+        remote = int(input('Select remote to push: '))
+
+        try:
+            remote = repo.remotes[remote - 1].name
+        except Exception as exc:
+            print('Invalid Remote, setting remote to "origin"')
+            remote = 'origin'
+
+    repo.git.push(remote, '--follow-tags')
 
 
 if __name__ == "__main__":
