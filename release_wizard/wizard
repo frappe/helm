@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
 import argparse
-import subprocess
 import os
+import shutil
 import sys
 import ruamel.yaml
 import semantic_version
-
+import git
 
 def main():
     args = parse_args()
@@ -16,9 +16,10 @@ def main():
     chart_dict = update_chart(erpnext_version, args.bump_type)
     chart_version = chart_dict['version']
     update_values(frappe_version, erpnext_version)
-    git_check_branch()
+    repo = git.repo(os.getcwd())
+    git_check_branch(repo)
     git_commit_release_message(frappe_version, erpnext_version, chart_version)
-    git_tag_repo(chart_version)
+    git_tag_repo(repo, chart_version)
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -39,25 +40,23 @@ def parse_args():
 
 
 def git_version(service, version, delete_dir=False):
-  print(f'Pulling {service} v{version}')
-  subprocess.run(
-      f'git clone https://github.com/frappe/{service} --branch version-{version} /tmp/{service}',
-      shell=True,
-      stdout=subprocess.DEVNULL)
-  cd = os.getcwd()
-  os.chdir(f'/tmp/{service}')
-  subprocess.run('git fetch --tags', shell=True)
+    print(f'Pulling {service} v{version}')
+    git.Repo.clone_from(f'https://github.com/frappe/{service}', f'/tmp/{service}', branch=f'version-{version}')
+    cd = os.getcwd()
+    os.chdir(f'/tmp/{service}')
+    repo = git.repo(path=f'/tmp/{service}')
+    repo.git.fetch('--tags')
 
-  # XX-beta becomes XX for tags search
-  version = version.split('-')[0]
+    # XX-beta becomes XX for tags search
+    version = version.split('-')[0]
 
-  version_tag = subprocess.check_output(f'git tag --list --sort=-version:refname "v{version}*" | sed -n 1p | sed -e \'s#.*@\(\)#\\1#\'', shell=True).strip().decode('ascii')
-  os.chdir(cd)
+    version_tag = sorted(list(filter(lambda t: f'v{version}' in t.name, repo.tags)), key=lambda t: t.commit.committed_date)[-1].name
+    os.chdir(cd)
 
-  if delete_dir:
-      subprocess.run(f'rm -rf /tmp/{service}', shell=True, stdout=subprocess.DEVNULL)
+    if delete_dir:
+        shutil.rmtree(f'/tmp/{service}')
 
-  return version_tag
+    return version_tag
 
 
 def get_yaml_file(file_name):
@@ -106,35 +105,33 @@ def update_values(frappe_version, erpnext_version):
     save_yaml_file(values_dict, values_file)
 
 
-def git_check_branch():
-    branch = subprocess.check_output(f'git branch', shell=True).decode('utf-8').replace('* ', '')
-    if branch != 'master':
+def git_check_branch(repo):
+    if repo.active_branch.name != 'master':
         print('Checkout to master branch to release chart')
         exit(1)
 
 
-def git_tag_repo(version):
-    subprocess.run(f'git tag -a {version} -m "Helm Chart v{version}"', shell=True)
+def git_tag_repo(repo, version):
+    repo.create_tag(version, message=f"Helm Chart v{version}")
 
 
-def git_commit_release_message(frappe_version, erpnext_version, chart_version):
+def git_commit_release_message(repo, frappe_version, erpnext_version, chart_version):
     commit_message = """Publish
 
-    Helm Chart {chart_version}
-    Frappe {frappe_version}
-    ERPNext {erpnext_version}""".format(
-        chart_version=chart_version,
-        frappe_version=frappe_version,
-        erpnext_version=erpnext_version)
+Helm Chart {chart_version}
+Frappe {frappe_version}
+ERPNext {erpnext_version}""".format(
+    chart_version=chart_version,
+    frappe_version=frappe_version,
+    erpnext_version=erpnext_version)
 
-    subprocess.run(f"git add .", check=True, shell=True)
-    subprocess.run(f"git commit -m \"{commit_message}\"", check=True, shell=True)
+    repo.git.add(all=True)
+    repo.git.commit('-m', commit_message)
 
 
-def git_push_all():
-    print('Error: "git push --follow-tags" not working')
-    exit(1)
-    # subprocess.run('git push --follow-tags', shell=True)
+def git_push_all(repo):
+    # hack always assumes remote is called origin
+    repo.git.push('origin', '--follow-tags')
 
 
 if __name__ == "__main__":
