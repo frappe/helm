@@ -27,13 +27,13 @@ $ helm repo update
   {{ title }}
 </h3>
 
-[Home]({{ latest_chart.home }}) \| [Source]({{ latest_chart.sources[0] }})
+[Home]({{ latest_chart.home }}) \| [Source]({{ site.git_repo }})
 
 {{ latest_chart.description }}
 
 ```console
-$ helm install frappe-bench-0001 --namespace erpnext {{ site.repo_name }}/{{ latest_chart.name }}\
-    --version {{ latest_chart.version }}\
+$ helm install frappe-bench-0001 --namespace erpnext {{ site.repo_name }}/{{ latest_chart.name }} \
+    --version {{ latest_chart.version }} \
     --set mariadbHost=mariadb.mariadb.svc.cluster.local \
     --set persistence.storageClass=rook-cephfs
 ```
