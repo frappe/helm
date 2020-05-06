@@ -13,8 +13,12 @@ def main():
 
     frappe_version = git_version('frappe', args.version)
     erpnext_version = git_version('erpnext', args.version)
-    update_chart(erpnext_version, args.bump_type)
+    chart_dict = update_chart(erpnext_version, args.bump_type)
+    chart_version = chart_dict['version']
     update_values(frappe_version, erpnext_version)
+    git_check_branch()
+    git_commit_release_message(frappe_version, erpnext_version, chart_version)
+    git_tag_repo(chart_version)
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -89,6 +93,7 @@ def update_chart(erpnext_version, bump_type):
     chart_dict['version'] = str(chart_version)
 
     save_yaml_file(chart_dict, chart_file)
+    return chart_dict
 
 def update_values(frappe_version, erpnext_version):
     # Update values.yaml
@@ -99,6 +104,37 @@ def update_values(frappe_version, erpnext_version):
     values_dict['pythonImage']['tag'] = erpnext_version
     values_dict['socketIOImage']['tag'] = frappe_version
     save_yaml_file(values_dict, values_file)
+
+
+def git_check_branch():
+    branch = subprocess.check_output(f'git branch', shell=True).decode('utf-8').replace('* ', '')
+    if branch != 'master':
+        print('Checkout to master branch to release chart')
+        exit(1)
+
+
+def git_tag_repo(version):
+    subprocess.run(f'git tag -a {version} -m "Helm Chart v{version}"', shell=True)
+
+
+def git_commit_release_message(frappe_version, erpnext_version, chart_version):
+    commit_message = """Publish
+
+    Helm Chart {chart_version}
+    Frappe {frappe_version}
+    ERPNext {erpnext_version}""".format(
+        chart_version=chart_version,
+        frappe_version=frappe_version,
+        erpnext_version=erpnext_version)
+
+    subprocess.run(f"git add .", check=True, shell=True)
+    subprocess.run(f"git commit -m \"{commit_message}\"", check=True, shell=True)
+
+
+def git_push_all():
+    print('Error: "git push --follow-tags" not working')
+    exit(1)
+    # subprocess.run('git push --follow-tags', shell=True)
 
 
 if __name__ == "__main__":
