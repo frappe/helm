@@ -43,6 +43,8 @@ $ helm install frappe-bench-0001 --namespace erpnext {{ site.repo_name }}/{{ lat
 
 [Read]({{ site.git_repo }}/tree/master/README.md) more about helm chart configuration values
 
+Create needed [Kubernetes Resources](kubernetes-resources) after Helm Chart installation is complete.
+
 | Chart Version | App Version | Date |
 |---------------|-------------|------|
 {% for chart in all_charts -%}

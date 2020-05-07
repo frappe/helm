@@ -15,14 +15,10 @@ layout: default
 ### Requirements
 
 1. **LoadBalancer Service** is required to allow and redirect access to services on kubernetes cluster. Install any ingress controller of choice. Note this will create a load balancer resource with cloud provider.
-
-    - [kubernetes/nginx-ingress](https://kubernetes.github.io/ingress-nginx/deploy):
-The [k8-resources]({{ site.git_repo }}/tree/master/k8-resources) directory has scripts to create ingress yamls that are based on [kubernetes/ingress-nginx](https://kubernetes.github.io/ingress-nginx)
+    - [kubernetes/nginx-ingress](https://kubernetes.github.io/ingress-nginx/deploy): Documentation examples are based on this ingress controller
 
 2. **Certificate Management** is required to manage TLS/SSL Certificates, ACME and Letsencrypt related management. Install any certificate management tool of choice.
-
-    - [cert-manager.io](https://cert-manager.io/docs/installation/kubernetes/):
-The [k8-resources]({{ site.git_repo }}/tree/master/k8-resources) directory has scripts to create ingress yamls that are based on [cert-manager](https://cert-manager.io)
+    - [cert-manager.io](https://cert-manager.io/docs/installation/kubernetes/): Documentation to create ingress yamls is based on [cert-manager](https://cert-manager.io)
 
 3. **MariaDB** for HA installations use Managed DB. MariaDB can be installed on kubernetes cluster and can be shared across multiple erpnext deployments. Refer [MariaDB Installation](mariadb) to install MariaDB Helm Chart on kubernetes cluster. After completion of this step note down the `mariadbHost`. It is hostname on cluster or hostname provided by managed database provider.
 
