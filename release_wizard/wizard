@@ -11,8 +11,19 @@ import git
 def main():
     args = parse_args()
 
+    values_file = f'{os.getcwd()}/erpnext/values.yaml'
+    values_dict = get_yaml_dict(values_file)
+
     frappe_version = git_version('frappe', args.version)
+    validate_local_and_remote_version(
+        current_version=values_dict['socketIOImage']['tag'][1:],
+        remote_version=frappe_version[1:])
+
     erpnext_version = git_version('erpnext', args.version)
+    validate_local_and_remote_version(
+        current_version=values_dict['pythonImage']['tag'][1:],
+        remote_version=erpnext_version[1:])
+
     chart_dict = update_chart(erpnext_version, args.bump_type)
     chart_version = chart_dict['version']
     update_values(frappe_version, erpnext_version)
@@ -89,8 +100,7 @@ def save_yaml_file(data, file_name):
 def update_chart(erpnext_version, bump_type):
     # Update Chart.yaml
     chart_file = f'{os.getcwd()}/erpnext/Chart.yaml'
-    chart_string = get_yaml_file(chart_file)
-    chart_dict = ruamel.yaml.round_trip_load(chart_string, preserve_quotes=True)
+    chart_dict = get_yaml_dict(chart_file)
 
     chart_dict['appVersion'] = erpnext_version
     chart_version = semantic_version.Version(chart_dict['version'])
@@ -108,8 +118,7 @@ def update_chart(erpnext_version, bump_type):
 def update_values(frappe_version, erpnext_version):
     # Update values.yaml
     values_file = f'{os.getcwd()}/erpnext/values.yaml'
-    values_string = get_yaml_file(values_file)
-    values_dict = ruamel.yaml.round_trip_load(values_string, preserve_quotes=True)
+    values_dict = get_yaml_dict(values_file)
     values_dict['nginxImage']['tag'] = erpnext_version
     values_dict['pythonImage']['tag'] = erpnext_version
     values_dict['socketIOImage']['tag'] = frappe_version
@@ -156,6 +165,21 @@ def git_push_all(repo, remote=None):
             remote = 'origin'
 
     repo.git.push(remote, '--follow-tags')
+
+
+def get_yaml_dict(file_name):
+    yaml_string = get_yaml_file(file_name)
+    yaml_dict = ruamel.yaml.round_trip_load(yaml_string, preserve_quotes=True)
+    return yaml_dict
+
+
+def validate_local_and_remote_version(current_version, remote_version):
+    current_version = semantic_version.Version(current_version)
+    remote_version = semantic_version.Version(remote_version)
+    if(current_version > remote_version):
+        print("Version in values.yaml is greater than the remote version")
+        print("Release only possible for latest stable version")
+        exit(1)
 
 
 if __name__ == "__main__":
