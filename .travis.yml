@@ -8,15 +8,18 @@ env:
   - GIT_SSH_COMMAND="ssh -i ${PWD}/deploy_key"
 
 before_install:
-  - openssl aes-256-cbc -K $encrypted_189e52c2c347_key -iv $encrypted_189e52c2c347_iv -in deploy_key.enc -out deploy_key -d
-  - chmod 400 deploy_key
+  - if [[ "${TRAVIS_PULL_REQUEST}" = "false" ]]; then
+      openssl aes-256-cbc -K $encrypted_189e52c2c347_key -iv $encrypted_189e52c2c347_iv -in deploy_key.enc -out deploy_key -d
+      chmod 400 deploy_key
+    fi
 install:
   - curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 script:
   - helm lint erpnext
   - pip install chartpress
 deploy:
-  - provider: script
+  - if: branch = master AND type != pull_request
+    provider: script
     cleanup: false
     script: chartpress --publish-chart
     on:
