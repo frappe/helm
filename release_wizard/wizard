@@ -1,20 +1,38 @@
 #!/usr/bin/env python3
 
 import argparse
-import subprocess
 import os
+import shutil
 import sys
 import ruamel.yaml
 import semantic_version
-
+import git
 
 def main():
     args = parse_args()
 
+    values_file = f'{os.getcwd()}/erpnext/values.yaml'
+    values_dict = get_yaml_dict(values_file)
+
     frappe_version = git_version('frappe', args.version)
+    validate_local_and_remote_version(
+        current_version=values_dict['socketIOImage']['tag'][1:],
+        remote_version=frappe_version[1:])
+
     erpnext_version = git_version('erpnext', args.version)
-    update_chart(erpnext_version, args.bump_type)
+    validate_local_and_remote_version(
+        current_version=values_dict['pythonImage']['tag'][1:],
+        remote_version=erpnext_version[1:])
+
+    chart_dict = update_chart(erpnext_version, args.bump_type)
+    chart_version = chart_dict['version']
     update_values(frappe_version, erpnext_version)
+    repo = git.Repo(os.getcwd())
+    git_check_branch(repo)
+    git_commit_release_message(repo, frappe_version, erpnext_version, chart_version)
+    git_tag_repo(repo, chart_version)
+    git_push_all(repo, args.remote)
+
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -24,36 +42,43 @@ def parse_args():
         'version',
         action='store',
         type=str,
-        help='Branch suffix after version-??-??: e.g. "12"')
+        help='Branch suffix after version-??: e.g. "12"')
     parser.add_argument(
         'bump_type',
         action='store',
         type=str,
         choices=['major', 'minor', 'patch'],
-        help='Bump Type for Helm Chart: e.g. "major", "minor", "patch"')
+        help='Bump Type for Helm Chart')
+    group = parser.add_argument_group('remote')
+    group.add_argument(
+        '--remote',
+        action='store',
+        type=str,
+        help='Git remote to tag and release helm chart')
     return parser.parse_args()
 
 
 def git_version(service, version, delete_dir=False):
-  print(f'Pulling {service} v{version}')
-  subprocess.run(
-      f'git clone https://github.com/frappe/{service} --branch version-{version} /tmp/{service}',
-      shell=True,
-      stdout=subprocess.DEVNULL)
-  cd = os.getcwd()
-  os.chdir(f'/tmp/{service}')
-  subprocess.run('git fetch --tags', shell=True)
+    print(f'Pulling {service} v{version}')
 
-  # XX-beta becomes XX for tags search
-  version = version.split('-')[0]
+    if not os.path.isdir(f'/tmp/{service}'):
+        git.Repo.clone_from(f'https://github.com/frappe/{service}', f'/tmp/{service}', branch=f'version-{version}')
 
-  version_tag = subprocess.check_output(f'git tag --list --sort=-version:refname "v{version}*" | sed -n 1p | sed -e \'s#.*@\(\)#\\1#\'', shell=True).strip().decode('ascii')
-  os.chdir(cd)
+    cd = os.getcwd()
+    os.chdir(f'/tmp/{service}')
+    repo = git.Repo(path=f'/tmp/{service}')
+    repo.git.fetch('--tags')
 
-  if delete_dir:
-      subprocess.run(f'rm -rf /tmp/{service}', shell=True, stdout=subprocess.DEVNULL)
+    # XX-beta becomes XX for tags search
+    version = version.split('-')[0]
 
-  return version_tag
+    version_tag = sorted(list(filter(lambda t: f'v{version}' in t.name, repo.tags)), key=lambda t: t.commit.committed_date)[-1].name
+    os.chdir(cd)
+
+    if delete_dir:
+        shutil.rmtree(f'/tmp/{service}')
+
+    return version_tag
 
 
 def get_yaml_file(file_name):
@@ -75,8 +100,7 @@ def save_yaml_file(data, file_name):
 def update_chart(erpnext_version, bump_type):
     # Update Chart.yaml
     chart_file = f'{os.getcwd()}/erpnext/Chart.yaml'
-    chart_string = get_yaml_file(chart_file)
-    chart_dict = ruamel.yaml.round_trip_load(chart_string, preserve_quotes=True)
+    chart_dict = get_yaml_dict(chart_file)
 
     chart_dict['appVersion'] = erpnext_version
     chart_version = semantic_version.Version(chart_dict['version'])
@@ -89,16 +113,73 @@ def update_chart(erpnext_version, bump_type):
     chart_dict['version'] = str(chart_version)
 
     save_yaml_file(chart_dict, chart_file)
+    return chart_dict
 
 def update_values(frappe_version, erpnext_version):
     # Update values.yaml
     values_file = f'{os.getcwd()}/erpnext/values.yaml'
-    values_string = get_yaml_file(values_file)
-    values_dict = ruamel.yaml.round_trip_load(values_string, preserve_quotes=True)
+    values_dict = get_yaml_dict(values_file)
     values_dict['nginxImage']['tag'] = erpnext_version
     values_dict['pythonImage']['tag'] = erpnext_version
     values_dict['socketIOImage']['tag'] = frappe_version
     save_yaml_file(values_dict, values_file)
+
+
+def git_check_branch(repo):
+    if repo.active_branch.name != 'master':
+        print('Checkout to master branch to release chart')
+        exit(1)
+
+
+def git_tag_repo(repo, version):
+    repo.create_tag(version, message=f"Helm Chart v{version}")
+
+
+def git_commit_release_message(repo, frappe_version, erpnext_version, chart_version):
+    commit_message = """Publish
+
+Helm Chart {chart_version}
+Frappe {frappe_version}
+ERPNext {erpnext_version}""".format(
+    chart_version=chart_version,
+    frappe_version=frappe_version,
+    erpnext_version=erpnext_version)
+
+    repo.git.add(all=True)
+    repo.git.commit('-m', commit_message)
+
+
+def git_push_all(repo, remote=None):
+    if not remote:
+        print('Available git remotes')
+        index = 1
+        for rem in repo.remotes:
+            print(f'{index} - {rem.name}')
+
+        remote = int(input('Select remote to push: '))
+
+        try:
+            remote = repo.remotes[remote - 1].name
+        except Exception as exc:
+            print('Invalid Remote, setting remote to "origin"')
+            remote = 'origin'
+
+    repo.git.push(remote, '--follow-tags')
+
+
+def get_yaml_dict(file_name):
+    yaml_string = get_yaml_file(file_name)
+    yaml_dict = ruamel.yaml.round_trip_load(yaml_string, preserve_quotes=True)
+    return yaml_dict
+
+
+def validate_local_and_remote_version(current_version, remote_version):
+    current_version = semantic_version.Version(current_version)
+    remote_version = semantic_version.Version(remote_version)
+    if(current_version > remote_version):
+        print("Version in values.yaml is greater than the remote version")
+        print("Release only possible for latest stable version")
+        exit(1)
 
 
 if __name__ == "__main__":
