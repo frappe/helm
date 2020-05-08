@@ -1,9 +1,7 @@
 ---
-title: Kubernetes Resources
-layout: default
+title: K8 Resources
+layout: page
 ---
-
-## Kubernetes Resources
 
 1. Add Secrets
     1. [Create MariaDB Root Password Secret](create-mariadb-root-password-secret)
@@ -15,3 +13,4 @@ layout: default
 4. [Push Backups to Cloud Job](create-push-backups-to-cloud-job)
 5. [Migrate Sites Job](create-migrate-sites-job)
 6. [Restore Backups Job](create-restore-backups-job)
+7. [Backup and Push to Cloud CronJob](create-backup-and-push-to-cloud-cronjob)

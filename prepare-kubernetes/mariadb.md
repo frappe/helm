@@ -1,6 +1,8 @@
 ---
-layout: default
+layout: page
 ---
+
+{% include breadcrumbs.html %}
 
 ## Install MariaDB Helm Chart
 

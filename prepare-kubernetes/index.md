@@ -1,9 +1,7 @@
 ---
-title: Prepare Kubernetes
-layout: default
+title: Prepare K8
+layout: page
 ---
-
-## Prepare Kubernetes
 
 ### Before we begin
 

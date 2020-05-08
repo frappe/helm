@@ -61,10 +61,10 @@ Change the following properties:
 ```console
 $ kubectl get deployments.apps -n <namespace> <helm-release-name>-erpnext-erpnext -o jsonpath="{.spec.template.spec.containers[0].image}"
 ```
-- `spec.template.spec.containers[?(@.name==create-site)].env[?(@.name==BUCKET_NAME)].value`: Name of S3 compatible storage bucket.
-- `spec.template.spec.containers[?(@.name==create-site)].env[?(@.name==REGION)].value`: Name of region for S3 compatible object storage.
-- `spec.template.spec.containers[?(@.name==create-site)].env[?(@.name==ENDPOINT_URL)].value`: Endpoint URL of S3 compatible object storage.
-- `spec.template.spec.containers[?(@.name==create-site)].env[?(@.name==BUCKET_DIR)].value`: Directory inside bucket where backups are located.
+- `spec.template.spec.containers[?(@.name==push-backups)].env[?(@.name==BUCKET_NAME)].value`: Name of S3 compatible storage bucket.
+- `spec.template.spec.containers[?(@.name==push-backups)].env[?(@.name==REGION)].value`: Name of region for S3 compatible object storage.
+- `spec.template.spec.containers[?(@.name==push-backups)].env[?(@.name==ENDPOINT_URL)].value`: Endpoint URL of S3 compatible object storage.
+- `spec.template.spec.containers[?(@.name==push-backups)].env[?(@.name==BUCKET_DIR)].value`: Directory inside bucket where backups are located.
 - `spec.template.spec.volumes[0].persistentVolumeClaim.claimName`: PVC where sites are located
 
 
