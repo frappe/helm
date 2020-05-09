@@ -1,3 +1,10 @@
-1. Get the application URL by running these commands:
+Frappe/ERPNext Release deployed
 
-ERPNext Bench deployed
+Release Name: {{ include "erpnext.fullname" . }}
+
+Wait for the pods to start.
+To create sites and other resources, refer:
+https://helm.erpnext.com/kubernetes-resources
+
+Frequently Asked Questions:
+https://helm.erpnext.com/faq
