@@ -6,17 +6,17 @@ replicaCount: 1
 
 nginxImage:
   repository: frappe/erpnext-nginx
-  tag: v12.7.1
+  tag: v12.8.0
   pullPolicy: IfNotPresent
 
 pythonImage:
   repository: frappe/erpnext-worker
-  tag: v12.7.1
+  tag: v12.8.0
   pullPolicy: IfNotPresent
 
 socketIOImage:
   repository: frappe/frappe-socketio
-  tag: v12.5.1
+  tag: v12.5.2
   pullPolicy: IfNotPresent
 
 # Asset Image Env Variables
