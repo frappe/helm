@@ -155,6 +155,7 @@ def git_push_all(repo, remote=None):
         index = 1
         for rem in repo.remotes:
             print(f'{index} - {rem.name}')
+            index = index + 1
 
         remote = int(input('Select remote to push: '))
 
