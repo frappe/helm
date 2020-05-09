@@ -9,7 +9,7 @@ layout: default
 Create a file named `push-backups.yaml` with following content.
 
 ```yaml
-apiVersion: batch/v1
+apiVersion: batch/v1beta1
 kind: Job
 metadata:
   name: push-backups-${TIMESTAMP}
