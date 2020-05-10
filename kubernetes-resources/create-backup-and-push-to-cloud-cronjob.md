@@ -9,7 +9,7 @@ layout: default
 Create a file named `backup-and-push-cronjob.yaml` with following content.
 
 ```yaml
-apiVersion: batch/v1
+apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: backup-and-push
