@@ -63,12 +63,14 @@ faq:
       Execute following command:
 
       ```console
+      $ helm repo update
       $ helm upgrade <release-name> -n <namespace> frappe/erpnext \
-          --reuse-values \
+          --set mariadbHost=mariadb.mariadb.svc.cluster.local \
+          --set persistence.storageClass=<storageClass> \
           --set migrateJob.enable=true
       ```
 
-      Set `migrateJob.enable` to true if you know image tag / appVersion has changed. It will backup sites and run migration.
+      Set `migrateJob.enable` to true if you know image tag / appVersion has changed. It will backup sites and run migration. Replace `<release-name>` with helm release name, `<namespace>` with kubernetes namespace and `<storageClass>` with RWX storage class, e.g. `rook-cephfs`
   - question: How do I customize values for ERPNext helm chart?
     answer: |
       Download the values.yaml file locally and modify the content as per need. e.g. change `socketIOImage.tag` to `edge` and use the file to set values during helm install.
