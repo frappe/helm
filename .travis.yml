@@ -18,8 +18,7 @@ script:
   - helm lint erpnext
   - pip install chartpress
 deploy:
-  - if: branch = master AND type != pull_request
-    provider: script
+  - provider: script
     cleanup: false
     script: chartpress --publish-chart
     on:
