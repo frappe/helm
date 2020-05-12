@@ -9,8 +9,20 @@ spec:
     spec:
       securityContext:
         supplementalGroups: [1000]
-      {{- if .Values.migrateJob.backup }}
       initContainers:
+      - name: set-maintenance-mode
+        image: stedolan/jq
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/bash", "-c"]
+        args:
+          - cp /data/common_site_config.json /data/temp.json;
+            jq -r '.maintenance_mode=1 | .pause_scheduler=1' /data/temp.json > /data/common_site_config.json;
+            chown 1000:1000 /data/common_site_config.json;
+            rm /data/temp.json;
+        volumeMounts:
+          - name: sites-dir
+            mountPath: "/data"
+      {{- if .Values.migrateJob.backup }}
       - name: backup
         image: "{{ .Values.pythonImage.repository }}:{{ .Values.pythonImage.tag }}"
         args: ["backup"]
