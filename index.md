@@ -41,7 +41,7 @@ $ helm install frappe-bench-0001 --namespace erpnext {{ site.repo_name }}/{{ lat
     --set persistence.storageClass=rook-cephfs
 ```
 
-[Read]({{ site.git_repo }}/tree/master/README.md) more about helm chart configuration values
+[Read]({{ site.git_repo }}/tree/master/README.md) more about helm chart configuration values.
 
 Create needed [Kubernetes Resources](kubernetes-resources) after Helm Chart installation is complete.
 

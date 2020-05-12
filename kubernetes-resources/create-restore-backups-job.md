@@ -62,7 +62,7 @@ spec:
 Change the following properties:
 
 - `metadata.name`: unique name for the job e.g. restore-backups-202004201620
-- `spec.template.spec.containers[?(@.name==restore-backups)].image`: Image to restore backups. Find it using following command
+- `spec.template.spec.containers[?(@.name==restore-backups)].image`: Image to restore backups to. Find the image name using following command:
 ```console
 $ kubectl get deployments.apps -n <namespace> <helm-release-name>-erpnext-erpnext -o jsonpath="{.spec.template.spec.containers[0].image}"
 ```
@@ -73,8 +73,8 @@ $ kubectl get deployments.apps -n <namespace> <helm-release-name>-erpnext-erpnex
 - `spec.template.spec.volumes[0].persistentVolumeClaim.claimName`: PVC where sites are located
 
 
-Create the resource:
+Create the resource using:
 
 ```console
-$ kubectl -n <namespace> -f restore-backups.yaml
+$ kubectl create -n <namespace> -f restore-backups.yaml
 ```

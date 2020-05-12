@@ -63,5 +63,5 @@ $ kubectl get deployments.apps -n <namespace> <helm-release-name>-erpnext-erpnex
 Create the resource:
 
 ```console
-$ kubectl -n <namespace> -f add-example-site-job.yaml
+$ kubectl create -n <namespace> -f add-example-site-job.yaml
 ```
