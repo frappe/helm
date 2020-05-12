@@ -20,12 +20,14 @@ type: Opaque
 
 Change the following properties:
 
-- `data.password`: base64 encoded mariadb root password
+- `data.password`: mariadb root password encoded as base64
 
 Note down the `metadata.name`. It is required create Jobs to add new sites or to restore backups.
 
-Create the resource:
+Create the resource using:
 
 ```console
-$ kubectl -n <namespace> -f mariadb-secret.yaml
+$ kubectl create -n <namespace> -f mariadb-secret.yaml
 ```
+
+Note that the `<namespace>` in here should be the ERPNext deployment namespace and not the MariaDB namespace.

@@ -83,8 +83,8 @@ $ kubectl get deployments.apps -n <namespace> <helm-release-name>-erpnext-erpnex
 - `spec.jobTemplate.spec.template.spec.containers[?(@.name==push-backup)].env[?(@.name==BUCKET_DIR)].value`: Directory inside bucket where backups are located.
 - `spec.jobTemplate.spec.template.spec.volumes[0].persistentVolumeClaim.claimName`: PVC where sites are located
 
-Create the resource:
+Create the resource using:
 
 ```console
-$ kubectl -n <namespace> -f backup-and-push-cronjob.yaml
+$ kubectl create -n <namespace> -f backup-and-push-cronjob.yaml
 ```

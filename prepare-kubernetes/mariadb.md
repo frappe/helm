@@ -94,7 +94,7 @@ Change `slave.config` as follows:
 ```
 
 
-Create namespace and Install Helm Chart
+Create a namespace for mariadb and Install Helm Chart on it:
 
 ```console
 $ kubectl create namespace mariadb

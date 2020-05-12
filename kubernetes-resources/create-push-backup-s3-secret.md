@@ -21,13 +21,13 @@ type: Opaque
 
 Change the following properties:
 
-- `data.accessKey`: base64 encoded Access Key ID
-- `data.secretKey`: base64 encoded Secret Access Key
+- `data.accessKey`: S3 Access Key ID encoded as base64
+- `data.secretKey`: S3 Secret Access Key encoded as base64
 
 Note down the `metadata.name`. It is required create Jobs to push backups to cloud or to restore backups from cloud.
 
-Create the resource:
+Create the resource using:
 
 ```console
-$ kubectl -n <namespace> -f s3-secret.yaml
+$ kubectl create -n <namespace> -f s3-secret.yaml
 ```

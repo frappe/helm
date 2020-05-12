@@ -46,8 +46,8 @@ Change the following properties:
 - `spec.tls[0].hosts[0]`: name of site e.g. erp.example.com
 - `spec.tls[0].secretName`: name of the secret to save letsencrypt certificate.
 
-Create the resource:
+Create the resource using:
 
 ```console
-$ kubectl -n <namespace> -f ingress.yaml
+$ kubectl create -n <namespace> -f ingress.yaml
 ```

@@ -2,9 +2,9 @@
 title: FAQ
 layout: page
 faq:
-  - question: What can be scaled out?
+  - question: What can be scaled?
     answer: |
-      Frappe SocketIO, Background Workers (default, short, long) and Gunicorn/Nginx Deployments can be scaled independently without any complexities involved.
+      Frappe SocketIO, Background Workers (default, short, long), and Gunicorn/Nginx Deployments can be scaled independently without any complexities involved.
 
       Use following command to scale deployments.
 
@@ -12,9 +12,9 @@ faq:
       $ kubectl scale -n <namespace> deployment <deployment-name> --replicas <number>
       ```
 
-      Redis Databases can be scaled out independently by installing separate Redis cluster Helm Chart(s). Use the hostname(s) provided by these helm chart(s) as `redisCacheHost`, `redisQueueHost` and `redisSocketIOHost`.
+      Redis Databases can be scaled independently by installing separate Redis cluster Helm Chart(s). Use the hostname(s) provided by these helm chart(s) as `redisCacheHost`, `redisQueueHost`, and `redisSocketIOHost`.
 
-      It is unsure whether scheduler can be scaled out. It is set to 1 replica by default.
+      It is unsure whether scheduler can be scaled out. It is set to `replica: 1` by default.
   - question: How do I edit files and directories on sites volume?
     answer: |
       Create file named `volume-editor.yaml`
@@ -58,7 +58,7 @@ faq:
       ```console
       $ kubectl -n <namespace> delete -f volume-editor.yaml
       ```
-  - question: How do I upgrade and migrate helm release?
+  - question: How do I upgrade and migrate to the latest helm release?
     answer: |
       Execute following command:
 
@@ -70,12 +70,13 @@ faq:
           --set migrateJob.enable=true
       ```
 
-      Set `migrateJob.enable` to true if you know image tag / appVersion has changed. It will backup sites and run migration. Replace `<release-name>` with helm release name, `<namespace>` with kubernetes namespace and `<storageClass>` with RWX storage class, e.g. `rook-cephfs`
-  - question: How do I customize values for ERPNext helm chart?
+      Set `migrateJob.enable` to true if you know whether the image tag or the appVersion has changed. It will backup sites and migrate. Replace `<release-name>` with the installed helm release name, `<namespace>` with kubernetes namespace and `<storageClass>` with RWX storage class, e.g. `rook-cephfs`
+
+  - question: How do I customize values for the ERPNext helm chart?
     answer: |
       Download the values.yaml file locally and modify the content as per need. e.g. change `socketIOImage.tag` to `edge` and use the file to set values during helm install.
 
-      You can use custom image for custom app through the `-f values.yaml` or use of `--set <key>=<value>`
+      You may also use a custom image for your custom apps through the `-f values.yaml` or by using the `--set <key>=<value>` param.
 
       ```console
       $ wget -c https://raw.githubusercontent.com/frappe/helm/master/erpnext/values.yaml
