@@ -16,7 +16,7 @@ layout: page
     - [kubernetes/nginx-ingress](https://kubernetes.github.io/ingress-nginx/deploy): Documentation examples are based on this ingress controller.
 
 2. **Certificate Management** is required to manage TLS/SSL Certificates, ACME, and Letsencrypt related management. Install any certificate management tool of your choice.
-    - [cert-manager.io](https://cert-manager.io/docs/installation/kubernetes/): Documentation to create ingress yamls is based on [cert-manager](https://cert-manager.io)
+    - [cert-manager.io](https://cert-manager.io/docs/installation/kubernetes/): Documentation to create ingress yamls is based on [cert-manager](https://cert-manager.io). You need to create [`ClusterIssuer`](https://cert-manager.io/docs/configuration/acme/#creating-a-basic-acme-issuer) named `letsencrypt-prod` after installation to start using cert-manager. Remember to use correct letsencrypt production server. e.g. `https://acme-v02.api.letsencrypt.org/directory`
 
 3. **MariaDB** can be installed on the Kubernetes cluster and shared across multiple ERPNext deployments. Refer to the [MariaDB Installation](mariadb) to install MariaDB Helm Chart on your Kubernetes cluster. After the completion of this step, note down the `mariadbHost`. It is the cluster hostname or the hostname provided by managed database provider. For HA installations, use Managed DB.
 
