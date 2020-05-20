@@ -2,6 +2,27 @@
 title: FAQ
 layout: page
 faq:
+  - question: What are steps for beginners to install ERPNext on Kubernetes?
+    answer: |
+      Steps in brief.
+
+      [Prepare Kubernetes](/prepare-kubernetes)
+
+      1. Install LoadBalancer.
+      2. Install Cert Manager and create ClusterIssuer.
+      3. Install MariaDB with frappe specific configuration.
+      4. Install NFS Server Provisioner Helm Chart with persistence enabled.
+
+      [Install ERPNext](/)
+
+      1. Install ERPNext Helm Chart.
+      2. Create `push-backup-s3` and `mariadb-root-password` secret in `erpnext` namespace.
+
+      [Create Resources](/kubernetes-resources)
+
+      1. Create New Site Job.
+      2. Create New Site Ingress.
+      3. Create `CronJob` to take backups and push them to cloud regularly.
   - question: What can be scaled?
     answer: |
       Frappe SocketIO, Background Workers (default, short, long), and Gunicorn/Nginx Deployments can be scaled independently without any complexities involved.
@@ -92,8 +113,9 @@ faq:
 		{% endfor %}
 	</ul>
 
-	{% for item in page.faq %}
-		<h2 id="{{ item.question | slugify}}">{{ item.question }}<a class="header-link" href="#top">#</a></h2>
-		{{ item.answer | markdownify }}
-	{% endfor %}
+    {% for item in page.faq %}
+    	<h2 id="{{ item.question | slugify}}">{{ item.question }}<a class="header-link" href="#top">#</a></h2>
+    	{{ item.answer | markdownify }}
+    {% endfor %}
+
 </section>
