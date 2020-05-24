@@ -93,6 +93,13 @@ faq:
 
       Set `migrateJob.enable` to true if you know whether the image tag or the appVersion has changed. It will backup sites and migrate. Replace `<release-name>` with the installed helm release name, `<namespace>` with kubernetes namespace and `<storageClass>` with RWX storage class, e.g. `rook-cephfs`
 
+      Do not forget to edit the cronjob for backup and push to update image. Set image to latest stable tag. e.g. v12.9.2
+
+      ```sh
+      kubectl patch cronjobs.batch -n erpnext backup-and-push \
+        -p '{"spec":{"jobTemplate":{"spec":{"template":{"spec":{"containers":[{"name":"push-backup","image":"frappe/erpnext-worker:v12"}]}}}}}}'
+      ```
+
   - question: How do I customize values for the ERPNext helm chart?
     answer: |
       Download the values.yaml file locally and modify the content as per need. e.g. change `socketIOImage.tag` to `edge` and use the file to set values during helm install.
