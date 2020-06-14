@@ -10,27 +10,45 @@ import git
 
 def main():
     args = parse_args()
-
     values_file = f'{os.getcwd()}/erpnext/values.yaml'
     values_dict = get_yaml_dict(values_file)
+    values_frappe_version = values_dict['socketIOImage']['tag'][1:]
+    values_erpnext_version = values_dict['pythonImage']['tag'][1:]
 
     frappe_version = git_version('frappe', args.version)
     validate_local_and_remote_version(
-        current_version=values_dict['socketIOImage']['tag'][1:],
+        current_version=values_frappe_version,
         remote_version=frappe_version[1:])
 
     erpnext_version = git_version('erpnext', args.version)
     validate_local_and_remote_version(
-        current_version=values_dict['pythonImage']['tag'][1:],
+        current_version=values_erpnext_version,
         remote_version=erpnext_version[1:])
 
+    if args.ci:
+        check_change_in_versions(
+            frappe_version,
+            erpnext_version,
+            values_frappe_version,
+            values_erpnext_version
+        )
+
+    print('Updating Chart.yaml')
     chart_dict = update_chart(erpnext_version, args.bump_type)
     chart_version = chart_dict['version']
+
+    print('Updating values.yaml')
     update_values(frappe_version, erpnext_version)
     repo = git.Repo(os.getcwd())
     git_check_branch(repo)
+
+    print('Commit release to git')
     git_commit_release_message(repo, frappe_version, erpnext_version, chart_version)
+
+    print('Tag release to git')
     git_tag_repo(repo, chart_version)
+
+    print('Push release and tags to git remote')
     git_push_all(repo, args.remote)
 
 
@@ -49,12 +67,17 @@ def parse_args():
         type=str,
         choices=['major', 'minor', 'patch'],
         help='Bump Type for Helm Chart')
-    group = parser.add_argument_group('remote')
+    group = parser.add_argument_group('options')
     group.add_argument(
         '--remote',
         action='store',
         type=str,
         help='Git remote to tag and release helm chart')
+    group.add_argument(
+        '--ci',
+        action='store_true',
+        help='Part of ci run'
+    )
     return parser.parse_args()
 
 
@@ -182,6 +205,17 @@ def validate_local_and_remote_version(current_version, remote_version):
         print("Release only possible for latest stable version")
         exit(1)
 
+
+def check_change_in_versions(
+    frappe_version,
+    erpnext_version,
+    values_frappe_version,
+    values_erpnext_version):
+
+    if frappe_version == values_frappe_version and \
+        erpnext_version == values_erpnext_version:
+        print('No chanage in version detected during CI run, skip helm chart release')
+        exit(0)
 
 if __name__ == "__main__":
     main()
