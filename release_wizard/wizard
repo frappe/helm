@@ -27,8 +27,8 @@ def main():
 
     if args.ci:
         check_change_in_versions(
-            frappe_version,
-            erpnext_version,
+            frappe_version[1:],
+            erpnext_version[1:],
             values_frappe_version,
             values_erpnext_version
         )
@@ -212,10 +212,16 @@ def check_change_in_versions(
     values_frappe_version,
     values_erpnext_version):
 
+    frappe_version = semantic_version.Version(frappe_version)
+    erpnext_version = semantic_version.Version(erpnext_version)
+    values_frappe_version = semantic_version.Version(values_frappe_version)
+    values_erpnext_version = semantic_version.Version(values_erpnext_version)
+
     if frappe_version == values_frappe_version and \
         erpnext_version == values_erpnext_version:
         print('No chanage in version detected during CI run, skip helm chart release')
         exit(0)
+
 
 if __name__ == "__main__":
     main()
