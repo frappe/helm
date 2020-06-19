@@ -188,6 +188,10 @@ def git_push_all(repo, remote=None):
             print('Invalid Remote, setting remote to "origin"')
             remote = 'origin'
 
+    git_ssh_command = os.environ.get('GIT_SSH_COMMAND')
+    if git_ssh_command:
+        repo.git.update_environment(GIT_SSH_COMMAND=git_ssh_command)
+
     repo.git.push(remote, '--follow-tags')
 
 
