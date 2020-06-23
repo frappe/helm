@@ -126,7 +126,6 @@ faq:
       kubectl patch cronjobs.batch -n erpnext backup-and-push \
         -p '{"spec":{"jobTemplate":{"spec":{"template":{"spec":{"containers":[{"name":"push-backup","image":"frappe/erpnext-worker:v12"}]}}}}}}'
       ```
-
   - question: How do I customize values for the ERPNext helm chart?
     answer: |
       Download the values.yaml file locally and modify the content as per need. e.g. change `socketIOImage.tag` to `edge` and use the file to set values during helm install.
@@ -137,6 +136,21 @@ faq:
       $ wget -c https://raw.githubusercontent.com/frappe/helm/master/erpnext/values.yaml
       $ code values.yaml
       $ helm install <release-name> -n <namespace> frappe/erpnext -f values.yaml
+      ```
+  - question: How do I add custom domain to existing site?
+    answer: |
+      Example is using Kubernetes Nginx ingress [annotations](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/).
+
+      Create ingress resource with desired domain name with following annotation:
+
+      ```yaml
+      ...
+      annotations:
+        nginx.ingress.kubernetes.io/upstream-vhost: main-site.example.com
+      ...
+      spec:
+        rules:
+        - host: custom-site.example.com
       ```
 ---
 
