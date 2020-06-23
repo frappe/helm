@@ -36,6 +36,33 @@ faq:
       Redis Databases can be scaled independently by installing separate Redis cluster Helm Chart(s). Use the hostname(s) provided by these helm chart(s) as `redisCacheHost`, `redisQueueHost`, and `redisSocketIOHost`.
 
       It is unsure whether scheduler can be scaled out. It is set to `replica: 1` by default.
+  - question: How to auto scale deployments?
+    answer: |
+      Use [Horizontal Pod Autoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale) to auto scale required deployments.
+
+      Example to auto scale `Deployment/frappe-bench-stable-erpnext-erpnext`, apply following `hpa.yaml`.
+
+      ```yaml
+      # hpa.yaml
+      apiVersion: autoscaling/v1
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: frappe-bench-stable-erpnext-erpnext
+      spec:
+        maxReplicas: 5
+        minReplicas: 1
+        scaleTargetRef:
+          apiVersion: apps/v1
+          kind: Deployment
+          name: frappe-bench-stable-erpnext-erpnext
+        targetCPUUtilizationPercentage: 60
+      ```
+
+      Create the resource.
+
+      ```console
+      $ kubectl apply -n erpnext -f hpa.yml
+      ```
   - question: How do I edit files and directories on sites volume?
     answer: |
       Create file named `volume-editor.yaml`
