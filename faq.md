@@ -61,7 +61,7 @@ faq:
       Create the resource.
 
       ```console
-      $ kubectl apply -n erpnext -f hpa.yml
+      $ kubectl apply -n <namespace> -f hpa.yml
       ```
   - question: How do I edit files and directories on sites volume?
     answer: |
@@ -123,7 +123,7 @@ faq:
       Do not forget to edit the cronjob for backup and push to update image. Set image to latest stable tag. e.g. v12.9.2
 
       ```sh
-      kubectl patch cronjobs.batch -n erpnext backup-and-push \
+      kubectl patch cronjobs.batch -n <namespace> backup-and-push \
         -p '{"spec":{"jobTemplate":{"spec":{"template":{"spec":{"containers":[{"name":"push-backup","image":"frappe/erpnext-worker:v12"}]}}}}}}'
       ```
   - question: How do I customize values for the ERPNext helm chart?
