@@ -101,5 +101,5 @@ $ kubectl create namespace mariadb
 
 $ helm repo add bitnami https://charts.bitnami.com/bitnami
 $ helm repo update
-$ helm install -n mariadb bitnami/mariadb -f values-production.yaml
+$ helm install mariadb -n mariadb bitnami/mariadb -f values-production.yaml
 ```
