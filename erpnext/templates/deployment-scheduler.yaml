@@ -38,6 +38,10 @@ spec:
               command:
               - "docker-entrypoint.sh"
               - "doctor"
+              {{- if and .Values.postgresHost .Values.postgresPort }}
+              - "-p"
+              - "{{ .Values.postgresHost }}:{{ .Values.postgresPort }}"
+              {{- end }}
             initialDelaySeconds: 15
             periodSeconds: 5
           readinessProbe:
@@ -45,6 +49,10 @@ spec:
               command:
               - "docker-entrypoint.sh"
               - "doctor"
+              {{- if and .Values.postgresHost .Values.postgresPort }}
+              - "-p"
+              - "{{ .Values.postgresHost }}:{{ .Values.postgresPort }}"
+              {{- end }}
             initialDelaySeconds: 15
             periodSeconds: 5
           resources:
