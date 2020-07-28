@@ -16,7 +16,7 @@ pythonImage:
 
 socketIOImage:
   repository: frappe/frappe-socketio
-  tag: v12.8.3
+  tag: v12.8.4
   pullPolicy: IfNotPresent
 
 # Asset Image Env Variables
