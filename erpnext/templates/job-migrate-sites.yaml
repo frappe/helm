@@ -22,6 +22,14 @@ spec:
         volumeMounts:
           - name: sites-dir
             mountPath: "/data"
+      - name: populate-assets
+        image: "{{ .Values.nginxImage.repository }}:{{ .Values.nginxImage.tag }}"
+        command: ["/bin/bash", "-c"]
+        args:
+          - "rsync -a --delete /var/www/html/assets/frappe /assets"
+        volumeMounts:
+          - name: assets-cache
+            mountPath: /assets
       {{- if .Values.migrateJob.backup }}
       - name: backup
         image: "{{ .Values.pythonImage.repository }}:{{ .Values.pythonImage.tag }}"
@@ -42,8 +50,12 @@ spec:
         volumeMounts:
           - name: sites-dir
             mountPath: /home/frappe/frappe-bench/sites
+          - name: assets-cache
+            mountPath: /home/frappe/frappe-bench/sites/assets
       restartPolicy: Never
       volumes:
+        - name: assets-cache
+          emptyDir: {}
         - name: sites-dir
           persistentVolumeClaim:
             {{- if .Values.persistence.existingClaim }}
