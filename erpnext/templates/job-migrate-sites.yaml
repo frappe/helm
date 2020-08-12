@@ -42,8 +42,12 @@ spec:
         volumeMounts:
           - name: sites-dir
             mountPath: /home/frappe/frappe-bench/sites
+          - name: assets-cache
+            mountPath: /home/frappe/frappe-bench/sites/assets
       restartPolicy: Never
       volumes:
+        - name: assets-cache
+          emptyDir: {}
         - name: sites-dir
           persistentVolumeClaim:
             {{- if .Values.persistence.existingClaim }}
