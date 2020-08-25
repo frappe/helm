@@ -6,12 +6,12 @@ replicaCount: 1
 
 nginxImage:
   repository: frappe/erpnext-nginx
-  tag: v12.11.0
+  tag: v12.11.1
   pullPolicy: IfNotPresent
 
 pythonImage:
   repository: frappe/erpnext-worker
-  tag: v12.11.0
+  tag: v12.11.1
   pullPolicy: IfNotPresent
 
 socketIOImage:
