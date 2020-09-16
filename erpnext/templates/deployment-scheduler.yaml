@@ -36,8 +36,7 @@ spec:
           livenessProbe:
             exec:
               command:
-              - "docker-entrypoint.sh"
-              - "doctor"
+              - "healthcheck.sh"
               {{- if and .Values.postgresHost .Values.postgresPort }}
               - "-p"
               - "{{ .Values.postgresHost }}:{{ .Values.postgresPort }}"
@@ -47,8 +46,7 @@ spec:
           readinessProbe:
             exec:
               command:
-              - "docker-entrypoint.sh"
-              - "doctor"
+              - "healthcheck.sh"
               {{- if and .Values.postgresHost .Values.postgresPort }}
               - "-p"
               - "{{ .Values.postgresHost }}:{{ .Values.postgresPort }}"
