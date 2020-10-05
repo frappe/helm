@@ -15,3 +15,4 @@ layout: page
 5. [Migrate Sites Job](create-migrate-sites-job)
 6. [Restore Backups Job](create-restore-backups-job)
 7. [Backup and Push to Cloud CronJob](create-backup-and-push-to-cloud-cronjob)
+8. [Drop Site Job](drop-site-job)
