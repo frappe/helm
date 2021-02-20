@@ -43,6 +43,12 @@ spec:
               value: {{ template "erpnext.fullname" . }}-socketio
             - name: "SOCKETIO_PORT"
               value: {{ .Values.socketIOPort | quote }}
+            - name: "UPSTREAM_REAL_IP_ADDRESS"
+              value: {{ .Values.upstreamRealIPAddress | quote }}
+            - name: "UPSTREAM_REAL_IP_RECURSIVE"
+              value: {{ .Values.upstreamRealIPRecursive }}
+            - name: "UPSTREAM_REAL_IP_HEADER"
+              value: {{ .Values.upstreamRealIPHeader }}
           ports:
             - name: http
               containerPort: 80
