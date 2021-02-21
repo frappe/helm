@@ -22,6 +22,9 @@ socketIOImage:
 # Asset Image Env Variables
 frappePyPort: "8000"
 socketIOPort: "9000"
+upstreamRealIPAddress: "127.0.0.1"
+upstreamRealIPRecursive: "off"
+upstreamRealIPHeader: "X-Forwarded-For"
 
 # Python Image Env Variables
 # mariadbHost: "mariadb.mariadb.svc.cluster.local"

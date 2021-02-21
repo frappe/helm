@@ -54,29 +54,32 @@ The command removes all the Kubernetes components associated with the chart and 
 
 The following table lists the configurable parameters of the ERPNext chart and their default values.
 
-| Parameter                        | Description                                         | Default                         |
-|----------------------------------|-----------------------------------------------------|---------------------------------|
-| `replicaCount`                   | Replica Count for App Deployments                   | `1`                             |
-| `nginxImage.repository`          | Frappe/ERPNext Nginx Docker image registry          | `frappe/erpnext-nginx`          |
-| `nginxImage.tag`                 | Frappe/ERPNext Nginx Docker image tag               | Latest Stable Release           |
-| `nginxImage.pullPolicy`          | Frappe/ERPNext Nginx Docker image pullPolicy        | `IfNotPresent`                  |
-| `pythonImage.repository`         | Frappe/ERPNext Python Docker image registry         | `frappe/erpnext-worker`         |
-| `pythonImage.tag`                | Frappe/ERPNext Python Docker image tag              | Latest Stable Release           |
-| `pythonImage.pullPolicy`         | Frappe/ERPNext Python Docker image pullPolicy       | `IfNotPresent`                  |
-| `socketIOImage.repository`       | Frappe/ERPNext SocketIO Docker image registry       | `frappe/frappe-socketio`        |
-| `socketIOImage.tag`              | Frappe/ERPNext SocketIO Docker image tag            | Latest Stable Release           |
-| `socketIOImage.pullPolicy`       | Frappe/ERPNext SocketIO Docker image pullPolicy     | `IfNotPresent`                  |
-| `frappePyPort`                   | Frappe/ERPNext Python Gunicorn Worker Port          | `8000`                          |
-| `socketIOPort`                   | Frappe/ERPNext SocketIO Port                        | `9000`                          |
-| `mariadbHost`                    | MariaDB Host to connect (Required)                  | `nil`                           |
-| `redisQueueHost`                 | Queue Redis Host to connect (Optional)              | `nil`                           |
-| `redisCacheHost`                 | Cache Redis Host to connect (Optional)              | `nil`                           |
-| `redisSocketIOHost`              | Socket IO Redis Host to connect (Optional)          | `nil`                           |
-| `migrateJob.enable`              | Run migrate sites Job after helm install / upgrade  | `false`                         |
-| `migrateJob.backup`              | Backup before migrate sites Job                     | `true`                          |
-| `persistence.enable`             | Creates PVC with helm release name                  | `true`                          |
-| `persistence.size`               | Creates PVC with size                               | `8Gi`                           |
-| `persistence.storageClass`       | StorageClass with RWX, Required if PVC is created   | `nil`                           |
+| Parameter                        | Description                                                  | Default                         |
+|----------------------------------|--------------------------------------------------------------|---------------------------------|
+| `replicaCount`                   | Replica Count for App Deployments                            | `1`                             |
+| `nginxImage.repository`          | Frappe/ERPNext Nginx Docker image registry                   | `frappe/erpnext-nginx`          |
+| `nginxImage.tag`                 | Frappe/ERPNext Nginx Docker image tag                        | Latest Stable Release           |
+| `nginxImage.pullPolicy`          | Frappe/ERPNext Nginx Docker image pullPolicy                 | `IfNotPresent`                  |
+| `pythonImage.repository`         | Frappe/ERPNext Python Docker image registry                  | `frappe/erpnext-worker`         |
+| `pythonImage.tag`                | Frappe/ERPNext Python Docker image tag                       | Latest Stable Release           |
+| `pythonImage.pullPolicy`         | Frappe/ERPNext Python Docker image pullPolicy                | `IfNotPresent`                  |
+| `socketIOImage.repository`       | Frappe/ERPNext SocketIO Docker image registry                | `frappe/frappe-socketio`        |
+| `socketIOImage.tag`              | Frappe/ERPNext SocketIO Docker image tag                     | Latest Stable Release           |
+| `socketIOImage.pullPolicy`       | Frappe/ERPNext SocketIO Docker image pullPolicy              | `IfNotPresent`                  |
+| `frappePyPort`                   | Frappe/ERPNext Python Gunicorn Worker Port                   | `8000`                          |
+| `socketIOPort`                   | Frappe/ERPNext SocketIO Port                                 | `9000`                          |
+| `upstreamRealIPAddress`          | Trusted address (or ip range) of upstream proxy servers      | `127.0.0.1`                     |
+| `upstreamRealIPRecursive`        | Recursive look for upstream proxy server for real IP if `on` | `off`                           |
+| `upstreamRealIPHeader`           | Header name sent by your upstream proxy server               | `X-Forwarded-For`               |
+| `mariadbHost`                    | MariaDB Host to connect (Required)                           | `nil`                           |
+| `redisQueueHost`                 | Queue Redis Host to connect (Optional)                       | `nil`                           |
+| `redisCacheHost`                 | Cache Redis Host to connect (Optional)                       | `nil`                           |
+| `redisSocketIOHost`              | Socket IO Redis Host to connect (Optional)                   | `nil`                           |
+| `migrateJob.enable`              | Run migrate sites Job after helm install / upgrade           | `false`                         |
+| `migrateJob.backup`              | Backup before migrate sites Job                              | `true`                          |
+| `persistence.enable`             | Creates PVC with helm release name                           | `true`                          |
+| `persistence.size`               | Creates PVC with size                                        | `8Gi`                           |
+| `persistence.storageClass`       | StorageClass with RWX, Required if PVC is created            | `nil`                           |
 
 The above parameters map to the env variables defined in [frappe_docker](http://github.com/frappe/frappe_docker). For more information please refer to the [frappe_docker](http://github.com/frappe/frappe_docker) images documentation.
 
