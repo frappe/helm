@@ -69,6 +69,30 @@ Create redis host name
 {{- printf "%s-%s" .Release.Name "redis" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
+{{/*
+Gets the mariadb host name
+*/}}
 {{- define "erpnext.mariadbHost" -}}
 {{ .Values.mariadbHost }}
+{{- end -}}
+
+{{/*
+Gets the redis socketio host name
+*/}}
+{{- define "erpnext.redisSocketIOHost" -}}
+{{ .Values.redisSocketIOHost }}
+{{- end -}}
+
+{{/*
+Gets the redis queue host name
+*/}}
+{{- define "erpnext.redisQueueHost" -}}
+{{ .Values.redisQueueHost }}
+{{- end -}}
+
+{{/*
+Gets the redis cache host name
+*/}}
+{{- define "erpnext.redisCacheHost" -}}
+{{ .Values.redisCacheHost }}
 {{- end -}}
