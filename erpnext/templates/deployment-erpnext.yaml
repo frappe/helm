@@ -73,7 +73,7 @@ spec:
           imagePullPolicy: {{ .Values.pythonImage.pullPolicy }}
           env:
             - name: "MARIADB_HOST"
-              value: {{ required "A valid .Values.mariadbHost entry required!" .Values.mariadbHost }}
+              value: {{ required "A valid .Values.mariadbHost entry required!" (include "erpnext.mariadbHost" .) }}
             - name: "REDIS_QUEUE"
               {{- if eq .Values.redisQueueHost "" }}
               value: {{ include "erpnext.fullname" . }}-redis-queue:{{ .Values.redisQueueService.port }}
