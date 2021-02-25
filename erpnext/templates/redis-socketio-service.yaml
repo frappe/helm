@@ -1,4 +1,4 @@
-{{- if eq .Values.redisSocketIOHost ""}}
+{{- if eq (include "erpnext.redisSocketIOHost" .) ""}}
 apiVersion: v1
 kind: Service
 metadata:
