@@ -6,6 +6,8 @@ layout: default
 
 ## Create Backup and Push CronJob
 
+This is required for periodic automatic backups to work.
+
 Create a file named `backup-and-push-cronjob.yaml` with following content.
 
 ```yaml
