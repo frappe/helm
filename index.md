@@ -45,6 +45,8 @@ $ helm install frappe-bench-0001 --namespace erpnext {{ site.repo_name }}/{{ lat
 
 Create needed [Kubernetes Resources](kubernetes-resources) after Helm Chart installation is complete.
 
+Create `CronJob` resource to enable automatic backups. Add relevant containers to `CronJob` to optionally push backups to object storage or off-site.
+
 | Chart Version | App Version | Date |
 |---------------|-------------|------|
 {% for chart in all_charts -%}
