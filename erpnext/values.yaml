@@ -6,22 +6,26 @@ replicaCount: 1
 
 nginxImage:
   repository: frappe/erpnext-nginx
-  tag: v12.17.0
+  tag: v12.18.0
   pullPolicy: IfNotPresent
 
 pythonImage:
   repository: frappe/erpnext-worker
-  tag: v12.17.0
+  tag: v12.18.0
   pullPolicy: IfNotPresent
 
 socketIOImage:
   repository: frappe/frappe-socketio
-  tag: v12.14.0
+  tag: v12.15.0
   pullPolicy: IfNotPresent
 
 # Asset Image Env Variables
 frappePyPort: "8000"
 socketIOPort: "9000"
+
+# upstreamRealIPAddress: "127.0.0.1"
+# upstreamRealIPRecursive: "off"
+# upstreamRealIPHeader: "X-Forwarded-For"
 
 # Python Image Env Variables
 # mariadbHost: "mariadb.mariadb.svc.cluster.local"
