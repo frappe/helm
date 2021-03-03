@@ -1,0 +1,18 @@
+{{- if and .Values.persistence.logs.enabled (not .Values.persistence.logs.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  labels:
+    app: {{ template "erpnext.name" . }}
+    chart: {{ template "erpnext.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "erpnext.fullname" . }}-logs
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.persistence.logs.size | quote }}
+  storageClassName: {{ required "A valid .Values.persistence.logs.storageClass entry required!" .Values.persistence.logs.storageClass }}
+{{- end }}

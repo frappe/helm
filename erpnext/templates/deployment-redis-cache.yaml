@@ -17,9 +17,11 @@ spec:
         app.kubernetes.io/name: {{ include "erpnext.name" . }}-redis-cache
         app.kubernetes.io/instance: {{ .Release.Name }}-redis-cache
     spec:
+      serviceAccountName: {{ include "erpnext.serviceAccountName" . }}-redis
       containers:
-      - name: master
-        image: redis:5-alpine
+      - name: master        
+        image: "{{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}"
+        imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
         command: ["redis-server"]
         args:
           - "--maxmemory 292mb"
@@ -27,6 +29,12 @@ spec:
           - "--appendonly no"
           - "--save \"\""
         resources: {}
+        {{- if .Values.redis.extraEnv }}
+        env:
+          {{- if .Values.redis.extraEnv }}
+          {{- toYaml .Values.redis.extraEnv | nindent 12 }}
+          {{- end }}
+        {{- end }}
         ports:
         - containerPort: 6379
         livenessProbe:
