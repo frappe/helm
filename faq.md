@@ -114,7 +114,8 @@ faq:
       $ helm repo update
       $ helm upgrade <release-name> -n <namespace> frappe/erpnext \
           --set mariadbHost=mariadb.mariadb.svc.cluster.local \
-          --set persistence.storageClass=<storageClass> \
+          --set persistence.worker.storageClass=<storageClass> \
+          --set persistence.logs.storageClass=<storageClass> \
           --set migrateJob.enable=true
       ```
 

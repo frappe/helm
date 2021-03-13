@@ -38,7 +38,8 @@ $ helm repo update
 $ helm install frappe-bench-0001 --namespace erpnext {{ site.repo_name }}/{{ latest_chart.name }} \
     --version {{ latest_chart.version }} \
     --set mariadbHost=mariadb.mariadb.svc.cluster.local \
-    --set persistence.storageClass=rook-cephfs
+    --set persistence.worker.storageClass=rook-cephfs \
+    --set persistence.logs.storageClass=rook-cephfs
 ```
 
 [Read]({{ site.git_repo }}/blob/master/erpnext/README.md) more about helm chart configuration values.
