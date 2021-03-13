@@ -7,18 +7,20 @@ spec:
   backoffLimit: 1
   template:
     spec:
+      serviceAccountName: {{ template "erpnext.serviceAccountName" $ }}
       securityContext:
-        supplementalGroups: [1000]
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
       initContainers:
       - name: set-maintenance-mode
         image: stedolan/jq
         imagePullPolicy: IfNotPresent
         command: ["/bin/bash", "-c"]
+        securityContext:
+          runAsUser: 1000 # same as erpnext user
+          runAsGroup: 1000
         args:
           - cp /data/common_site_config.json /data/temp.json;
             jq -r '.maintenance_mode=1 | .pause_scheduler=1' /data/temp.json > /data/common_site_config.json;
-            chown 1000:1000 /data/common_site_config.json;
-            rm /data/temp.json;
         volumeMounts:
           - name: sites-dir
             mountPath: "/data"
@@ -35,6 +37,8 @@ spec:
         image: "{{ .Values.pythonImage.repository }}:{{ .Values.pythonImage.tag }}"
         args: ["backup"]
         imagePullPolicy: {{ .Values.pythonImage.pullPolicy }}
+        securityContext:
+          {{- toYaml $.Values.securityContext | nindent 12 }}
         volumeMounts:
           - name: sites-dir
             mountPath: /home/frappe/frappe-bench/sites
@@ -46,22 +50,42 @@ spec:
         env:
           - name: "MAINTENANCE_MODE"
             value: "1"
+        securityContext:
+          {{- toYaml $.Values.securityContext | nindent 12 }}
         imagePullPolicy: {{ .Values.pythonImage.pullPolicy }}
         volumeMounts:
           - name: sites-dir
             mountPath: /home/frappe/frappe-bench/sites
           - name: assets-cache
             mountPath: /home/frappe/frappe-bench/sites/assets
+          - name: logs
+            mountPath: /home/frappe/frappe-bench/logs
       restartPolicy: Never
       volumes:
         - name: assets-cache
           emptyDir: {}
         - name: sites-dir
+          {{- if .Values.persistence.worker.enabled }}
           persistentVolumeClaim:
-            {{- if .Values.persistence.existingClaim }}
-            claimName: {{ .Values.persistence.existingClaim }}
+            {{- if .Values.persistence.worker.existingClaim }}
+            claimName: {{ .Values.persistence.worker.existingClaim }}
             {{- else }}
             claimName: {{ template "erpnext.fullname" . }}
             {{- end }}
             readOnly: false
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: logs
+          {{- if .Values.persistence.logs.enabled }}
+          persistentVolumeClaim:
+            {{- if .Values.persistence.logs.existingClaim }}
+            claimName: {{ .Values.persistence.logs.existingClaim }}
+            {{- else }}
+            claimName: {{ template "erpnext.fullname" . }}-logs
+            {{- end }}
+            readOnly: false
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
 {{- end }}

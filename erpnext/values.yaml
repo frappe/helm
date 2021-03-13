@@ -19,6 +19,15 @@ socketIOImage:
   tag: v12.15.0
   pullPolicy: IfNotPresent
 
+redis:
+  image:
+    repository: bitnami/redis
+    tag: 5.0.10-debian-10-r105
+    pullPolicy: IfNotPresent
+    extraEnv:
+    - name: ALLOW_EMPTY_PASSWORD
+      value: "yes"
+
 # Asset Image Env Variables
 frappePyPort: "8000"
 socketIOPort: "9000"
@@ -84,10 +93,19 @@ redisCacheService:
   port: 13000
 
 persistence:
-  enabled: true
-  # existingClaim: ""
-  size: 8Gi
-  # storageClass: "nfs"
+  worker:
+    enabled: true
+    # existingClaim: ""
+    size: 8Gi
+    # storageClass: "nfs"
+  logs:
+    enabled: true
+    # existingClaim: ""
+    size: 8Gi
+    # storageClass: "nfs"
+
+volumePermissions:
+  enabled: no
 
 resources: {}
   # If you do want to specify resources, uncomment the following
