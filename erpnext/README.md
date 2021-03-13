@@ -11,7 +11,8 @@ $ helm repo add frappe https://helm.erpnext.com
 
 $ helm install frappe-bench-0001 --namespace erpnext frappe/erpnext \
     --set mariadbHost=mariadb.mariadb.svc.cluster.local \
-    --set persistence.storageClass=rook-cephfs
+    --set persistence.worker.storageClass=rook-cephfs \
+    --set persistence.logs.storageClass=rook-cephfs
 ```
 
 ## Introduction
@@ -33,7 +34,8 @@ To install the chart with the release name `frappe-bench-0001`:
 ```bash
 $ helm install frappe-bench-0001 --namespace erpnext frappe/erpnext \
     --set mariadbHost=mariadb.mariadb.svc.cluster.local \
-    --set persistence.storageClass=rook-cephfs
+    --set persistence.worker.storageClass=rook-cephfs \
+    --set persistence.logs.storageClass=rook-cephfs
 ```
 
 The command deploys ERPNext on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
@@ -96,7 +98,8 @@ Specify each parameter using the `--set key=value[,key=value]` argument to `helm
 ```bash
 $ helm install frappe-bench-0001 --namespace erpnext frappe/erpnext \
     --set mariadbHost=mariadb.mariadb.svc.cluster.local \
-    --set persistence.storageClass=rook-cephfs \
+    --set persistence.worker.storageClass=rook-cephfs \
+    --set persistence.logs.storageClass=rook-cephfs
     --set migrateJob.enable=true
 ```
 
