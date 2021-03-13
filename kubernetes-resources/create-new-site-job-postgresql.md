@@ -83,7 +83,8 @@ Example:
 ```console
 $ helm install <release-name> --namespace <namespace> frappe/erpnext \
     --set mariadbHost=mariadb.mariadb.svc.cluster.local \
-    --set persistence.storageClass=rook-cephfs \
+    --set persistence.worker.storageClass=<storageClass> \
+    --set persistence.logs.storageClass=<storageClass> \
     --set postgresHost=postgresql.postgresql.svc.cluster.local \
     --set postgresPort=5432
 ```
