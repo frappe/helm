@@ -6,18 +6,27 @@ replicaCount: 1
 
 nginxImage:
   repository: frappe/erpnext-nginx
-  tag: v12.18.0
+  tag: v12.19.0
   pullPolicy: IfNotPresent
 
 pythonImage:
   repository: frappe/erpnext-worker
-  tag: v12.18.0
+  tag: v12.19.0
   pullPolicy: IfNotPresent
 
 socketIOImage:
   repository: frappe/frappe-socketio
-  tag: v12.15.0
+  tag: v12.16.0
   pullPolicy: IfNotPresent
+
+redis:
+  image:
+    repository: bitnami/redis
+    tag: 5.0.10-debian-10-r105
+    pullPolicy: IfNotPresent
+    extraEnv:
+    - name: ALLOW_EMPTY_PASSWORD
+      value: "yes"
 
 # Asset Image Env Variables
 frappePyPort: "8000"
@@ -84,10 +93,19 @@ redisCacheService:
   port: 13000
 
 persistence:
-  enabled: true
-  # existingClaim: ""
-  size: 8Gi
-  # storageClass: "nfs"
+  worker:
+    enabled: true
+    # existingClaim: ""
+    size: 8Gi
+    # storageClass: "nfs"
+  logs:
+    enabled: true
+    # existingClaim: ""
+    size: 8Gi
+    # storageClass: "nfs"
+
+volumePermissions:
+  enabled: no
 
 resources: {}
   # If you do want to specify resources, uncomment the following
