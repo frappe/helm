@@ -78,7 +78,7 @@ kubectl -n erpnext wait --timeout=1800s --for=condition=complete job/create-new-
 echo -e "\n"
 
 echo -e "\e[1m\e[4mPing mysite.localhost\e[0m"
-curl -s http://mysite.localhost/api/method/ping
+curl -sS http://mysite.localhost/api/method/ping
 echo -e "\n"
 
 echo -e "\e[1m\e[4mUpgrade to chart from PR\e[0m"
@@ -90,7 +90,7 @@ kubectl -n erpnext wait --timeout=1800s --for=condition=complete jobs --all
 echo -e "\n"
 
 echo -e "\e[1m\e[4mPing mysite.localhost\e[0m"
-curl -s http://mysite.localhost/api/method/ping
+curl -sS http://mysite.localhost/api/method/ping
 echo -e "\n"
 
 echo -e "\e[1m\e[4mDelete erpnext-upstream\e[0m"
@@ -119,5 +119,5 @@ sleep 3
 echo -e "\n"
 
 echo -e "\e[1m\e[4mPing prsite.localhost\e[0m"
-curl -s http://prsite.localhost/api/method/ping
+curl -sS http://prsite.localhost/api/method/ping
 echo -e "\n"
