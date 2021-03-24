@@ -2,6 +2,9 @@ language: python
 os: linux
 dist: xenial
 
+services:
+  - docker
+
 python:
   - '3.6'
 env:
@@ -24,3 +27,15 @@ deploy:
     on:
       branch: master
       tags: true
+jobs:
+  include:
+    - stage: "Test Install and Upgrade of Frappe/ERPNext Helm Chart"
+      if: type = pull_request
+      before_install:
+        - sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl
+        - sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        - echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+        - sudo apt-get update && sudo apt-get install -y kubectl
+        - curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
+      script:
+        - ./tests/script.sh
