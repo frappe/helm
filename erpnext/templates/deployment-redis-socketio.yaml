@@ -22,6 +22,8 @@ spec:
       - name: master
         image: "{{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}"
         imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
+        command: ["redis-server"]
+        args: ["--bind 0.0.0.0"]
         resources:
         {{- if .Values.redis.extraEnv }}
         env:
