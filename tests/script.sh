@@ -14,7 +14,7 @@ function waitForERPNextDeployment() {
 }
 
 echo -e "\e[1m\e[4mCreate testcluster with k3d\e[0m"
-# k3d cluster create testcluster --api-port 127.0.0.1:6443 -p 80:80@loadbalancer -p 443:443@loadbalancer --k3s-server-arg "--no-deploy=traefik"
+k3d cluster create testcluster --api-port 127.0.0.1:6443 -p 80:80@loadbalancer -p 443:443@loadbalancer --k3s-server-arg "--no-deploy=traefik"
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.44.0/deploy/static/provider/cloud/deploy.yaml
 echo -e "\n"
 
