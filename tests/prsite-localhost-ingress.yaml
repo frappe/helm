@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: prsite.localhost
+  namespace: erpnext
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: erpnext-pr
+            port:
+              number: 80
+    host: prsite.localhost
+
