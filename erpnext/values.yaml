@@ -24,7 +24,7 @@ redis:
     repository: bitnami/redis
     tag: 5.0.10-debian-10-r105
     pullPolicy: IfNotPresent
-    extraEnv:
+  extraEnv:
     - name: ALLOW_EMPTY_PASSWORD
       value: "yes"
 

@@ -23,7 +23,7 @@ spec:
       serviceAccountName: {{ include "erpnext.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{- if and .Values.volumePermissions.enabled .Values.persistence.enabled }}
+      {{- if and .Values.volumePermissions.enabled .Values.persistence.worker.enabled }}
       initContainers:
         - name: frappe-bench-ownership
           image: quay.io/libpod/alpine:3.2
