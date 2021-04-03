@@ -25,8 +25,8 @@ redis:
     tag: 5.0.10-debian-10-r105
     pullPolicy: IfNotPresent
   extraEnv:
-    - name: ALLOW_EMPTY_PASSWORD
-      value: "yes"
+  - name: ALLOW_EMPTY_PASSWORD
+    value: "yes"
 
 # Asset Image Env Variables
 frappePyPort: "8000"
