@@ -105,7 +105,7 @@ persistence:
     # storageClass: "nfs"
 
 volumePermissions:
-  enabled: no
+  enabled: false
 
 resources: {}
   # If you do want to specify resources, uncomment the following
