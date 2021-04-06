@@ -17,16 +17,7 @@ before_install:
     fi
 install:
   - curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-script:
-  - helm lint erpnext
-  - pip install chartpress
-deploy:
-  - provider: script
-    skip_cleanup: true
-    script: chartpress --publish-chart
-    on:
-      branch: master
-      tags: true
+
 jobs:
   include:
     - stage: "Test Install and Upgrade of Frappe/ERPNext Helm Chart"
@@ -39,3 +30,9 @@ jobs:
         - curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
       script:
         - ./tests/script.sh
+    - stage: "Publish Helm Chart"
+      if: branch = master AND tag IS present
+      script:
+        - helm lint erpnext
+        - pip install chartpress
+        - chartpress --publish-chart
