@@ -22,7 +22,7 @@ layout: page
 
 4. **Shared Filesystem**, i.e. Persistent Volume with Access Mode `ReadWriteMany` is required to store sites. There are many choices out there. After completion of this step note down the `storageClass`. It is required during the ERPNext installation as a value for `persistence.storageClass`.
 
-    - [NFS](https://github.com/helm/charts/tree/master/stable/nfs-server-provisioner):
+    - [NFS](https://github.com/kubernetes-sigs/nfs-ganesha-server-and-external-provisioner):
 Simple and easy setup for small clusters with less number of sites deployed. Note: Remember to enable `persistence` for PVC to be created. If not, the data will not persist on any volume.
     - [Rook/Ceph](https://rook.io/docs/rook/master/ceph-quickstart.html):
 Complex and distributed storage for huge clusters with multiple site deployments.
