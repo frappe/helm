@@ -62,6 +62,7 @@ The following table lists the configurable parameters of the ERPNext chart and t
 | `nginxImage.repository`          | Frappe/ERPNext Nginx Docker image registry                   | `frappe/erpnext-nginx`          |
 | `nginxImage.tag`                 | Frappe/ERPNext Nginx Docker image tag                        | Latest Stable Release           |
 | `nginxImage.pullPolicy`          | Frappe/ERPNext Nginx Docker image pullPolicy                 | `IfNotPresent`                  |
+| `nginxImage.nginxConfig`         | Frappe/ERPNext Nginx Docker image custom default.conf        | `nil`                           |
 | `pythonImage.repository`         | Frappe/ERPNext Python Docker image registry                  | `frappe/erpnext-worker`         |
 | `pythonImage.tag`                | Frappe/ERPNext Python Docker image tag                       | Latest Stable Release           |
 | `pythonImage.pullPolicy`         | Frappe/ERPNext Python Docker image pullPolicy                | `IfNotPresent`                  |
@@ -71,7 +72,7 @@ The following table lists the configurable parameters of the ERPNext chart and t
 | `redis.image.repository`         | Redis Docker image registry                                  | `bitnami/redis`                 |
 | `redis.image.tag`                | Redis Docker image tag                                       | Latest Stable Release           |
 | `redis.image.pullPolicy`         | Redis Docker image pullPolicy                                | `IfNotPresent`                  |
-| `redis.extraEnv`                 | Redis Extra Environment Variables                            | `ALLOW_EMPTY_PASSWORD=true`                            |
+| `redis.extraEnv`                 | Redis Extra Environment Variables                            | `ALLOW_EMPTY_PASSWORD=true`     |
 | `frappePyPort`                   | Frappe/ERPNext Python Gunicorn Worker Port                   | `8000`                          |
 | `socketIOPort`                   | Frappe/ERPNext SocketIO Port                                 | `9000`                          |
 | `upstreamRealIPAddress`          | Trusted address (or ip range) of upstream proxy servers      | `127.0.0.1`                     |
@@ -89,7 +90,7 @@ The following table lists the configurable parameters of the ERPNext chart and t
 | `persistence.logs.enable`        | Creates PVC for logs volume with helm release name           | `true`                          |
 | `persistence.logs.size`          | Creates PVC for logs volume with size                        | `8Gi`                           |
 | `persistence.logs.storageClass`  | StorageClass with RWX, Required if PVC is created            | `nil`                           |
-| `volumePermissions.enabled`      | Enable init container that changes volume permissions in the data directory (for cases where the default k8s `runAsUser` and `fsUser` values do not work) | `false`
+| `volumePermissions.enabled`      | Enable init container that changes volume permissions in the data directory (for cases where the default k8s `runAsUser` and `fsUser` values do not work) | `false`    |
 
 The above parameters map to the env variables defined in [frappe_docker](http://github.com/frappe/frappe_docker). For more information please refer to the [frappe_docker](http://github.com/frappe/frappe_docker) images documentation.
 

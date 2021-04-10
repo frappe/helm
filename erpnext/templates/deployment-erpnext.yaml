@@ -50,6 +50,10 @@ spec:
             mountPath: /assets
           - name: sites-dir
             mountPath: /var/www/html/sites
+          {{- if .Values.nginxImage.nginxConfig }}
+          - name: nginx-config
+            mountPath: /etc/nginx/conf.d
+          {{- end }}
           imagePullPolicy: {{ .Values.nginxImage.pullPolicy }}
           env:
             - name: "FRAPPE_PY"
@@ -72,6 +76,10 @@ spec:
             - name: "UPSTREAM_REAL_IP_HEADER"
               value: {{ .Values.upstreamRealIPHeader }}
               {{- end }}
+            {{- if .Values.nginxImage.nginxConfig }}
+            - name: "SKIP_NGINX_TEMPLATE_GENERATION"
+              value: "1"
+            {{- end }}
           ports:
             - name: http
               containerPort: 80
@@ -152,6 +160,11 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+        {{- if .Values.nginxImage.nginxConfig }}
+        - name: nginx-config
+          configMap:
+            name: {{ include "erpnext.fullname" . }}-nginx-config
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
