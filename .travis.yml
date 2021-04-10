@@ -24,8 +24,8 @@ install:
   - curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
   - pip install chartpress
 script:
-  - helm lint erpnext
-  - ./tests/script.sh
+  - if [[ $TRAVIS_EVENT_TYPE == "pull_request" ]] ; then helm lint erpnext ; else echo "Skipping lint check, not a PR" ; fi
+  - if [[ $TRAVIS_EVENT_TYPE == "pull_request" ]] ; then ./tests/script.sh ; else echo "Skipping tests, not a PR" ; fi
 deploy:
   - provider: script
     skip_cleanup: true
