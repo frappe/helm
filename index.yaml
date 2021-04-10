@@ -3,6 +3,17 @@ entries:
   erpnext:
   - apiVersion: v2
     appVersion: v13.0.1
+    created: "2021-04-10T08:51:15.637906436Z"
+    description: Kubernetes Helm Chart for the lastest stable ERPNext branch
+    digest: 12d89d762b6f70e5101727cbc76b43be46f15694f00968ee9e82d73cc5202828
+    icon: https://raw.githubusercontent.com/frappe/design/master/logos/logo-2018/erpnext-logo-blue.svg
+    name: erpnext
+    type: application
+    urls:
+    - https://helm.erpnext.com/erpnext-3.1.0.tgz
+    version: 3.1.0
+  - apiVersion: v2
+    appVersion: v13.0.1
     created: "2021-04-07T12:36:08.174855874+05:30"
     description: Kubernetes Helm Chart for the lastest stable ERPNext branch
     digest: 47711fa23de58fd42332676a7096a16fb0e75071812a2910a1ab1173bbfd5df3
@@ -496,4 +507,4 @@ entries:
     urls:
     - https://helm.erpnext.com/erpnext-1.0.0.tgz
     version: 1.0.0
-generated: "2021-04-07T12:36:08.169442668+05:30"
+generated: "2021-04-10T08:51:15.633534198Z"
