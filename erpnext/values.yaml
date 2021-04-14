@@ -6,19 +6,19 @@ replicaCount: 1
 
 nginxImage:
   repository: frappe/erpnext-nginx
-  tag: v13.0.1
+  tag: v13.0.2
   pullPolicy: IfNotPresent
   # nginxConfig: |
   #   # custom /etc/nginx/conf.d/default.conf
 
 pythonImage:
   repository: frappe/erpnext-worker
-  tag: v13.0.1
+  tag: v13.0.2
   pullPolicy: IfNotPresent
 
 socketIOImage:
   repository: frappe/frappe-socketio
-  tag: v13.0.2
+  tag: v13.0.3
   pullPolicy: IfNotPresent
 
 redis:
