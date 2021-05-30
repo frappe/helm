@@ -71,8 +71,8 @@ ingress:
   hosts:
   - host: erp.cluster.local
     paths:
-      - path: /
-        pathType: ImplementationSpecific
+    - path: /
+      pathType: ImplementationSpecific
   tls: []
   #  - secretName: auth-server-tls
   #    hosts:
