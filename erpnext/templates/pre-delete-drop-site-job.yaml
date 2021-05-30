@@ -1,0 +1,65 @@
+{{- if and (.Values.createSite.dropSiteOnUninstall) (.Values.dbRootPassword) }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: drop-site-{{ template "erpnext.fullname" . }}-{{ .Values.createSite.siteName }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      serviceAccountName: {{ template "erpnext.serviceAccountName" $ }}
+      securityContext:
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
+      containers:
+      - name: drop-site
+        image: "{{ .Values.pythonImage.repository }}:{{ .Values.pythonImage.tag }}"
+        args: ["drop"]
+        env:
+          - name: "SITE_NAME"
+            value: "{{ .Values.createSite.siteName }}"
+          - name: "DB_ROOT_USER"
+            value: "{{ .Values.createSite.dbRootUser }}"
+          - name: "MYSQL_ROOT_PASSWORD"
+            valueFrom:
+              secretKeyRef:
+                key:  dbRootPassword
+                name: {{ .Release.Name }}-secrets
+        securityContext:
+          {{- toYaml $.Values.securityContext | nindent 12 }}
+        imagePullPolicy: {{ .Values.pythonImage.pullPolicy }}
+        volumeMounts:
+          - name: sites-dir
+            mountPath: /home/frappe/frappe-bench/sites
+          - name: logs
+            mountPath: /home/frappe/frappe-bench/logs
+      restartPolicy: Never
+      volumes:
+        - name: sites-dir
+          {{- if .Values.persistence.worker.enabled }}
+          persistentVolumeClaim:
+            {{- if .Values.persistence.worker.existingClaim }}
+            claimName: {{ .Values.persistence.worker.existingClaim }}
+            {{- else }}
+            claimName: {{ template "erpnext.fullname" . }}
+            {{- end }}
+            readOnly: false
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: logs
+          {{- if .Values.persistence.logs.enabled }}
+          persistentVolumeClaim:
+            {{- if .Values.persistence.logs.existingClaim }}
+            claimName: {{ .Values.persistence.logs.existingClaim }}
+            {{- else }}
+            claimName: {{ template "erpnext.fullname" . }}-logs
+            {{- end }}
+            readOnly: false
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+{{- end }}
