@@ -1,0 +1,78 @@
+{{- if and (.Values.createSite.enabled) (.Values.dbRootPassword) }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: create-site-{{ template "erpnext.fullname" . }}-{{ .Values.createSite.siteName }}
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      serviceAccountName: {{ template "erpnext.serviceAccountName" $ }}
+      securityContext:
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
+      initContainers:
+      - name: populate-assets
+        image: "{{ .Values.nginxImage.repository }}:{{ .Values.nginxImage.tag }}"
+        command: ["/bin/bash", "-c"]
+        args:
+          - "rsync -a --delete /var/www/html/assets/frappe /assets"
+        volumeMounts:
+          - name: assets-cache
+            mountPath: /assets
+      containers:
+      - name: create-site
+        image: "{{ .Values.pythonImage.repository }}:{{ .Values.pythonImage.tag }}"
+        args: ["new"]
+        env:
+          - name: "SITE_NAME"
+            value: "{{ .Values.createSite.siteName }}"
+          - name: "DB_ROOT_USER"
+            value: "{{ .Values.createSite.dbRootUser }}"
+          - name: "MYSQL_ROOT_PASSWORD"
+            valueFrom:
+              secretKeyRef:
+                key:  dbRootPassword
+                name: {{ .Release.Name }}-secrets
+          - name: "ADMIN_PASSWORD"
+            value: "{{ .Values.createSite.adminPassword }}"
+          - name: "INSTALL_APPS"
+            value: "{{ .Values.createSite.installApps }}"
+        securityContext:
+          {{- toYaml $.Values.securityContext | nindent 12 }}
+        imagePullPolicy: {{ .Values.pythonImage.pullPolicy }}
+        volumeMounts:
+          - name: sites-dir
+            mountPath: /home/frappe/frappe-bench/sites
+          - name: assets-cache
+            mountPath: /home/frappe/frappe-bench/sites/assets
+          - name: logs
+            mountPath: /home/frappe/frappe-bench/logs
+      restartPolicy: Never
+      volumes:
+        - name: assets-cache
+          emptyDir: {}
+        - name: sites-dir
+          {{- if .Values.persistence.worker.enabled }}
+          persistentVolumeClaim:
+            {{- if .Values.persistence.worker.existingClaim }}
+            claimName: {{ .Values.persistence.worker.existingClaim }}
+            {{- else }}
+            claimName: {{ template "erpnext.fullname" . }}
+            {{- end }}
+            readOnly: false
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: logs
+          {{- if .Values.persistence.logs.enabled }}
+          persistentVolumeClaim:
+            {{- if .Values.persistence.logs.existingClaim }}
+            claimName: {{ .Values.persistence.logs.existingClaim }}
+            {{- else }}
+            claimName: {{ template "erpnext.fullname" . }}-logs
+            {{- end }}
+            readOnly: false
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+{{- end }}
