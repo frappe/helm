@@ -3,10 +3,16 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ template "erpnext.fullname" . }}-create-site
+  labels:
+    {{- include "erpnext.labels" . | nindent 4 }}
 spec:
   backoffLimit: 1
   template:
     spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
       serviceAccountName: {{ template "erpnext.serviceAccountName" $ }}
       securityContext:
         {{- toYaml $.Values.podSecurityContext | nindent 8 }}
