@@ -32,8 +32,11 @@ $ helm repo update
 
 {{ latest_chart.description }}
 
+##Usage
+####Step : 1 - [Prepare Kubernetes](prepare-kubernetes)
 [Prepare Kubernetes](prepare-kubernetes) before installing ERPNext helm chart. The `mariadbHost` and `persistence.storageClass` values are generated as part of kubernetes preparation process.
 
+####Step : 2 - Install Chart
 ```console
 $ helm install frappe-bench-0001 --namespace erpnext {{ site.repo_name }}/{{ latest_chart.name }} \
     --version {{ latest_chart.version }} \
@@ -44,10 +47,12 @@ $ helm install frappe-bench-0001 --namespace erpnext {{ site.repo_name }}/{{ lat
 
 [Read]({{ site.git_repo }}/blob/master/erpnext/README.md) more about helm chart configuration values.
 
+####Step : 3 - Create Kubernetes Resources
 Create needed [Kubernetes Resources](kubernetes-resources) after Helm Chart installation is complete.
 
 Create `CronJob` resource to enable automatic backups. Add relevant containers to `CronJob` to optionally push backups to object storage or off-site.
 
+##Charts
 | Chart Version | App Version | Date |
 |---------------|-------------|------|
 {% for chart in all_charts -%}
