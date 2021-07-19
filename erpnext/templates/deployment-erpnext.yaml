@@ -101,6 +101,8 @@ spec:
           env:
             - name: "MARIADB_HOST"
               value: {{ required "A valid .Values.mariadbHost entry required!" (include "erpnext.mariadbHost" .) }}
+            - name: "DB_PORT"
+              value: {{ .Values.mariadbPort | quote }}
             - name: "REDIS_QUEUE"
               {{- if eq (include "erpnext.redisQueueHost" .) "" }}
               value: {{ include "erpnext.fullname" . }}-redis-queue:{{ .Values.redisQueueService.port }}
