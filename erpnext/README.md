@@ -79,6 +79,7 @@ The following table lists the configurable parameters of the ERPNext chart and t
 | `upstreamRealIPRecursive`             | Recursive look for upstream proxy server for real IP if `on` | `off`                           |
 | `upstreamRealIPHeader`                | Header name sent by your upstream proxy server               | `X-Forwarded-For`               |
 | `mariadbHost`                         | MariaDB Host to connect (Required)                           | `nil`                           |
+| `mariadbPort`                         | MariaDB Port to connect (Optional)                           | `3306`                          |
 | `redisQueueHost`                      | Queue Redis Host to connect (Optional)                       | `nil`                           |
 | `redisCacheHost`                      | Cache Redis Host to connect (Optional)                       | `nil`                           |
 | `redisSocketIOHost`                   | Socket IO Redis Host to connect (Optional)                   | `nil`                           |

@@ -40,6 +40,7 @@ socketIOPort: "9000"
 
 # Python Image Env Variables
 # mariadbHost: "mariadb.mariadb.svc.cluster.local"
+mariadbPort: "3306"
 
 redisQueueHost: ""
 redisCacheHost: ""
