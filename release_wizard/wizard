@@ -2,11 +2,10 @@
 
 import argparse
 import os
-import shutil
-import sys
 import ruamel.yaml
 import semantic_version
 import git
+
 
 def main():
     args = parse_args()
@@ -81,27 +80,23 @@ def parse_args():
     return parser.parse_args()
 
 
-def git_version(service, version, delete_dir=False):
-    print(f'Pulling {service} v{version}')
-
-    if not os.path.isdir(f'/tmp/{service}'):
-        git.Repo.clone_from(f'https://github.com/frappe/{service}', f'/tmp/{service}', branch=f'version-{version}')
-
-    cd = os.getcwd()
-    os.chdir(f'/tmp/{service}')
-    repo = git.Repo(path=f'/tmp/{service}')
-    repo.git.fetch('--tags')
-
-    # XX-beta becomes XX for tags search
-    version = version.split('-')[0]
-
-    version_tag = sorted(list(filter(lambda t: f'v{version}' in t.name, repo.tags)), key=lambda t: t.commit.committed_date)[-1].name
-    os.chdir(cd)
-
-    if delete_dir:
-        shutil.rmtree(f'/tmp/{service}')
-
-    return version_tag
+def git_version(service, version):
+    tags = []
+    g = git.cmd.Git()
+    for ref in g.ls_remote(
+        "--tags",
+        f'https://github.com/frappe/{service}',
+        sort='-v:refname',
+        tags=True,
+    ).split('\n'):
+        hash_ref_list = ref.split('\t')
+        tag = hash_ref_list[1].replace("refs/tags/", "")
+        # XX-beta becomes XX for tags search
+        version = version.split('-')[0]
+        if f'v{version}' in tag and """^{}""" not in tag:
+            tags.append(semantic_version.Version(tag.replace("v", "")))
+    version_tag = str(sorted(tags)[-1])
+    return f'v{version_tag}'
 
 
 def get_yaml_file(file_name):
