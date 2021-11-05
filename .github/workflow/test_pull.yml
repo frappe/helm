@@ -11,14 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Install Dependencies
-        run: |
-          sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl
-          curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-          sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
-          echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-          sudo apt-get update && sudo apt-get install -y kubectl
-          curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
+      - name: Install k3d
+        run: curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
       - name: Run Tests
         run: |
           helm lint erpnext
