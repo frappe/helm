@@ -1,0 +1,22 @@
+name: Release Helm Chart
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  build_bench:
+    name: Release Helm Chart
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Helm deploy key
+        if: github.repository == 'frappe/helm'
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.HELM_DEPLOY_KEY }}
+      - name: Install Chartpress
+        run: pip3 install chartpress
+      - name: Publish Chart
+        run: chartpress --publish-chart
