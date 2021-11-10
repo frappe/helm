@@ -144,8 +144,8 @@ def update_values(frappe_version, erpnext_version):
 
 
 def git_check_branch(repo):
-    if repo.active_branch.name != 'master':
-        print('Checkout to master branch to release chart')
+    if repo.active_branch.name != 'main':
+        print('Checkout to main branch to release chart')
         exit(1)
 
 
