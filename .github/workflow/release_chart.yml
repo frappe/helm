@@ -16,6 +16,8 @@ jobs:
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.HELM_DEPLOY_KEY }}
+      - name: Setup Git Credentials
+        uses: fregante/setup-git-user@v1
       - name: Install Chartpress
         run: pip3 install chartpress
       - name: Publish Chart
