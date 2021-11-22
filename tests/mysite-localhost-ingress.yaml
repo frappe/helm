@@ -13,5 +13,5 @@ spec:
           service:
             name: erpnext-upstream
             port:
-              number: 80
+              number: 8080
     host: mysite.localhost
