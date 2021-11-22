@@ -95,10 +95,10 @@ serviceAccount:
 podSecurityContext:
   supplementalGroups: [1000]
 
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
+securityContext:
+  capabilities:
+    add:
+    - CAP_CHOWN
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000

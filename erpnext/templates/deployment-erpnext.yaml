@@ -32,8 +32,6 @@ spec:
           args: ['chown -R 1000:1000 /home/frappe/frappe-bench']
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-            capabilities:
-              add: ["CAP_CHOWN"]
           volumeMounts:
             - name: sites-dir
               mountPath: /home/frappe/frappe-bench/sites
