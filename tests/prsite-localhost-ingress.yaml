@@ -13,6 +13,6 @@ spec:
           service:
             name: erpnext-pr
             port:
-              number: 80
+              number: 8080
     host: prsite.localhost
 
