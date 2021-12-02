@@ -100,10 +100,10 @@ The following table lists the configurable parameters of the ERPNext chart and t
 | `ingress.tls`                         | Ingress TLS array                                            | `[]`                            |
 | `migrateJob.enable`                   | Run migrate sites Job after helm install / upgrade           | `false`                         |
 | `migrateJob.backup`                   | Backup before migrate sites Job                              | `true`                          |
-| `persistence.worker.enable`           | Creates PVC with helm release name                           | `true`                          |
+| `persistence.worker.enabled`          | Creates PVC with helm release name                           | `true`                          |
 | `persistence.worker.size`             | Creates PVC with size                                        | `8Gi`                           |
 | `persistence.worker.storageClass`     | StorageClass with RWX, Required if PVC is created            | `nil`                           |
-| `persistence.logs.enable`             | Creates PVC for logs volume with helm release name           | `true`                          |
+| `persistence.logs.enabled`            | Creates PVC for logs volume with helm release name           | `true`                          |
 | `persistence.logs.size`               | Creates PVC for logs volume with size                        | `8Gi`                           |
 | `persistence.logs.storageClass`       | StorageClass with RWX, Required if PVC is created            | `nil`                           |
 | `volumePermissions.enabled`           | Enable init container that changes volume permissions in the data directory (for cases where the default k8s `runAsUser` and `fsUser` values do not work) | `false`    |
