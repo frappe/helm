@@ -1,5 +1,5 @@
 ---
-title: Prepare K8
+title: Prepare K8s
 layout: page
 ---
 
