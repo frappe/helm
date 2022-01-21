@@ -1,5 +1,5 @@
 ---
-title: K8 Resources
+title: K8s Resources
 layout: page
 ---
 
