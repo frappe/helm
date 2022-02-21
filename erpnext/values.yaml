@@ -18,7 +18,7 @@ pythonImage:
 
 socketIOImage:
   repository: frappe/frappe-socketio
-  tag: v13.20.1
+  tag: v13.20.2
   pullPolicy: IfNotPresent
 
 redis:
