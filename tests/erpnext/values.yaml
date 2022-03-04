@@ -1,0 +1,14 @@
+mariadb:
+  enabled: false
+
+dbHost: mariadb.mariadb.svc.cluster.local
+dbRootUser: root
+dbRootPassword: admin
+# For backward compatibility only, use dbHost
+mariadbHost: mariadb.mariadb.svc.cluster.local
+
+persistence:
+  worker:
+    storageClass: nfs
+  logs:
+    enabled: false
