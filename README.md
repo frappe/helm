@@ -10,10 +10,10 @@ ConfigMaps:
 
 Deployments:
 
-- `gunicorn` deployment contains frappe/erpnext nginx reverse proxy and gunicorn containers.
-- `nginx` deployment contains frappe/erpnext nginx reverse proxy and gunicorn containers.
+- `gunicorn` deployment contains frappe/erpnext gunicorn.
+- `nginx` deployment contains frappe/erpnext static assets and nginx reverse proxy.
 - `scheduler` deployment contains frappe/erpnext scheduler.
-- `socketio` deployment contains frappe-socketio container.
+- `socketio` deployment contains frappe-socketio.
 - `worker-d` deployment contains frappe/erpnext default worker.
 - `worker-l` deployment contains frappe/erpnext long worker.
 - `worker-s` deployment contains frappe/erpnext short worker.
@@ -24,12 +24,12 @@ Ingresses:
 
 Jobs:
 
-- `vol-fix`
-- `bench-conf`
-- `create-site`
-- `drop-site`
-- `backup-push`
-- `migrate`
+- `vol-fix` job to fix volume permissions, changes the `uid` and `gid` to `1000:1000`.
+- `bench-conf` job to configure db host, redis hosts and socketio port.
+- `create-site` job to create new site.
+- `drop-site` job to drop existing site.
+- `backup-push` job to backup and optionally push backup to S3 for existing site.
+- `migrate` job to migrate existing site.
 
 PVC:
 

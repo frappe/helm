@@ -277,11 +277,11 @@ Frappe framework sites are stored in shared volume that needs to be accessed by 
 - [AzureFile](https://docs.microsoft.com/en-us/azure/aks/azure-files-dynamic-pv): Managed shared filesystem by Microsoft.
 - [External NFS Server](https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner): Provisioner based on NFS server setup outside cluster. Separately hosted NFS server is needed in this case.
 - [In-cluster NFS Server](https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner): Provisioner based on in-cluster NFS server.
-- [Rook/Ceph](https://rook.io)
+- [More Cloud Native Storage alternatives](https://landscape.cncf.io/card-mode?category=cloud-native-storage&grouping=category): Make sure the `storageclass` has `ReadWriteMany` access mode to use it as storage for sites.
 
 ### Database
 
-By default it install pre configured MariaDB that works with Frappe/ERPNext sites.
+By default it installs pre configured MariaDB that works with Frappe/ERPNext sites.
 
 PostgreSQL works with custom frappe apps only. ERPNext needs MariaDB.
 
