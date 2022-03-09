@@ -34,25 +34,21 @@ spec:
           - name: logs
             mountPath: /home/frappe/frappe-bench/logs
           imagePullPolicy: {{ .Values.pythonImage.pullPolicy }}
-          args: ["schedule"]
+          args: ["bench", "schedule"]
           livenessProbe:
             exec:
               command:
-              - "healthcheck.sh"
-              {{- if and .Values.postgresHost .Values.postgresPort }}
-              - "-p"
-              - "{{ .Values.postgresHost }}:{{ .Values.postgresPort }}"
-              {{- end }}
+              - "wait-for-it"
+              - "--host={{ .Values.mariadbHost }}"
+              - "--port={{ .Values.mariadbPort }}"
             initialDelaySeconds: 15
             periodSeconds: 5
           readinessProbe:
             exec:
               command:
-              - "healthcheck.sh"
-              {{- if and .Values.postgresHost .Values.postgresPort }}
-              - "-p"
-              - "{{ .Values.postgresHost }}:{{ .Values.postgresPort }}"
-              {{- end }}
+              - "wait-for-it"
+              - "--host={{ .Values.mariadbHost }}"
+              - "--port={{ .Values.mariadbPort }}"
             initialDelaySeconds: 15
             periodSeconds: 5
           resources:

@@ -78,6 +78,19 @@ spec:
             - name: "SKIP_NGINX_TEMPLATE_GENERATION"
               value: "1"
             {{- end }}
+            # For refactored images
+            - name: BACKEND
+              value: 0.0.0.0:8000
+            - name: SOCKETIO
+              value: {{ template "erpnext.fullname" . }}-socketio:{{ .Values.socketIOPort }}
+            - name: FRAPPE_SITE_NAME_HEADER
+              value: $host
+            - name: UPSTREAM_REAL_IP_ADDRESS
+              value: "127.0.0.1"
+            - name: UPSTREAM_REAL_IP_HEADER
+              value: "X-Forwarded-For"
+            - name: UPSTREAM_REAL_IP_RECURSIVE
+              value: "off"
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
