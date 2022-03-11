@@ -1,0 +1,117 @@
+{{- if .Values.jobs.dropSite.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "erpnext.fullname" . }}-drop-site-{{ now | date "20060102150405" }}
+  labels:
+    {{- include "erpnext.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  backoffLimit: {{ .Values.jobs.dropSite.backoffLimit }}
+  template:
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ template "erpnext.serviceAccountName" $ }}
+      securityContext:
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
+      containers:
+      - name: drop-site
+        image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
+        imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
+        command: ["bash", "-c"]
+        args:
+          - bench drop-site
+            --root-login=$DB_ROOT_USER
+            --root-password=$DB_ROOT_PASSWORD
+            --archived-sites-path=archived_sites
+            --no-backup
+          {{- if .Values.jobs.dropSite.forced }}
+            --force
+          {{- end }}
+            $(SITE_NAME)
+        env:
+          - name: "SITE_NAME"
+            value: "{{ .Values.jobs.dropSite.siteName }}"
+          - name: "DB_ROOT_USER"
+            {{- if .Values.mariadb.enabled }}
+            value: "root"
+            {{- else if .Values.postgresql.enabled }}
+            value: "postgres"
+            {{- else }}
+            value: "{{ .Values.dbRootUser }}"
+            {{- end }}
+          - name: "DB_ROOT_PASSWORD"
+            {{- if .Values.mariadb.enabled }}
+            valueFrom:
+              secretKeyRef:
+                key: mariadb-root-password
+                name: {{ .Release.Name }}-mariadb
+            {{- else if .Values.postgresql.enabled }}
+            valueFrom:
+              secretKeyRef:
+                key: postgres-password
+                name: {{ .Release.Name }}-postgresql
+            {{- else }}
+            valueFrom:
+              secretKeyRef:
+                key:  db-root-password
+                name: {{ .Release.Name }}
+            {{- end }}
+        resources:
+          {{- toYaml .Values.jobs.dropSite.resources | nindent 12 }}
+        securityContext:
+          {{- toYaml $.Values.securityContext | nindent 12 }}
+        volumeMounts:
+          - name: sites-dir
+            mountPath: /home/frappe/frappe-bench/sites
+          - name: assets-cache
+            mountPath: /home/frappe/frappe-bench/sites/assets
+          - name: logs
+            mountPath: /home/frappe/frappe-bench/logs
+      restartPolicy: Never
+      volumes:
+        - name: assets-cache
+          emptyDir: {}
+        - name: sites-dir
+          {{- if .Values.persistence.worker.enabled }}
+          persistentVolumeClaim:
+            {{- if .Values.persistence.worker.existingClaim }}
+            claimName: {{ .Values.persistence.worker.existingClaim }}
+            {{- else }}
+            claimName: {{ template "erpnext.fullname" . }}
+            {{- end }}
+            readOnly: false
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: logs
+          {{- if .Values.persistence.logs.enabled }}
+          persistentVolumeClaim:
+            {{- if .Values.persistence.logs.existingClaim }}
+            claimName: {{ .Values.persistence.logs.existingClaim }}
+            {{- else }}
+            claimName: {{ template "erpnext.fullname" . }}-logs
+            {{- end }}
+            readOnly: false
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+      {{- with .Values.jobs.dropSite.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.jobs.dropSite.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.jobs.dropSite.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

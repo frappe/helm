@@ -1,12 +1,12 @@
-{{- if and (.Values.createSite.enabled) (.Values.dbRootPassword) }}
+{{- if .Values.jobs.createSite.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ template "erpnext.fullname" . }}-create-site
+  name: {{ template "erpnext.fullname" . }}-new-site-{{ now | date "20060102150405" }}
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
 spec:
-  backoffLimit: 1
+  backoffLimit: {{ .Values.jobs.createSite.backoffLimit }}
   template:
     spec:
     {{- with .Values.imagePullSecrets }}
@@ -17,35 +17,125 @@ spec:
       securityContext:
         {{- toYaml $.Values.podSecurityContext | nindent 8 }}
       initContainers:
-      - name: populate-assets
-        image: "{{ .Values.nginxImage.repository }}:{{ .Values.nginxImage.tag }}"
-        command: ["/bin/bash", "-c"]
-        args:
-          - "rsync -a --delete /var/www/html/assets/frappe /assets"
-        volumeMounts:
-          - name: assets-cache
-            mountPath: /assets
+        - name: populate-assets
+          image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
+          imagePullPolicy: {{ .Values.nginx.image.pullPolicy }}
+          command:
+            - cp
+            - -fR
+          args:
+            - /usr/share/nginx/html/assets
+            - /home/frappe/frappe-bench/sites
+          resources:
+            {{- toYaml .Values.jobs.createSite.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          volumeMounts:
+            - name: assets-cache
+              mountPath: /home/frappe/frappe-bench/sites/assets
+        - name: validate-config
+          image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
+          imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
+          command: ["bash", "-c"]
+          args:
+            - >
+              export start=`date +%s`;
+              until [[ -n `grep -hs ^ common_site_config.json | jq -r ".db_host // empty"` ]] && \
+                [[ -n `grep -hs ^ common_site_config.json | jq -r ".redis_cache // empty"` ]] && \
+                [[ -n `grep -hs ^ common_site_config.json | jq -r ".redis_queue // empty"` ]];
+              do
+                echo "Waiting for common_site_config.json to be created";
+                sleep 5;
+                if (( `date +%s`-start > 120 )); then
+                  echo "could not find common_site_config.json with required keys";
+                  exit 1
+                fi
+              done;
+              echo "common_site_config.json found";
+          resources:
+            {{- toYaml .Values.jobs.createSite.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml $.Values.securityContext | nindent 12 }}
+          volumeMounts:
+            - name: sites-dir
+              mountPath: /home/frappe/frappe-bench/sites
       containers:
       - name: create-site
-        image: "{{ .Values.pythonImage.repository }}:{{ .Values.pythonImage.tag }}"
-        args: ["new"]
+        image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
+        imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
+        command: ["bash", "-c"]
+        args:
+          - >
+            bench new-site $(SITE_NAME)
+            --db-type=$(DB_TYPE)
+            --db-host=$(DB_HOST)
+            --db-port=$(DB_PORT)
+            --admin-password=$(ADMIN_PASSWORD)
+            --mariadb-root-username=$(DB_ROOT_USER)
+            --mariadb-root-password=$(DB_ROOT_PASSWORD)
+        {{- if .Values.jobs.createSite.installApps }}
+          {{- range .Values.jobs.createSite.installApps }}
+            --install-app={{ . }}
+          {{- end }}
+        {{- end }}
+          {{- if .Values.jobs.createSite.forceCreate }}
+            --force
+          {{- end }}
+            ;rm -f currentsite.txt
         env:
           - name: "SITE_NAME"
-            value: "{{ .Values.createSite.siteName }}"
+            value: "{{ .Values.jobs.createSite.siteName }}"
+          - name: "DB_TYPE"
+            value: {{ .Values.jobs.createSite.dbType }}
+          - name: "DB_HOST"
+            {{- if .Values.postgresql.host }}
+            value: {{ .Values.postgresql.host }}
+            {{- else if .Values.postgresql.enabled }}
+            value: {{ .Release.Name }}-postgresql
+            {{- else if .Values.mariadb.enabled }}
+            value: {{ .Release.Name }}-mariadb
+            {{- else }}
+            value: "{{ .Values.dbHost }}"
+            {{- end }}
+          - name: "DB_PORT"
+            {{- if .Values.dbPort }}
+            value: {{ .Values.dbPort | quote }}
+            {{- else if .Values.postgresql.enabled }}
+            value: {{ .Values.postgresql.primary.service.ports.postgresql | quote }}
+            {{- else }}
+            value: {{ .Values.mariadb.primary.service.ports.mysql | quote }}
+            {{- end }}
           - name: "DB_ROOT_USER"
-            value: "{{ .Values.createSite.dbRootUser }}"
-          - name: "MYSQL_ROOT_PASSWORD"
+            {{- if .Values.dbRootUser }}
+            value: "{{ .Values.dbRootUser }}"
+            {{- else if .Values.postgresql.enabled }}
+            value: "postgres"
+            {{- else if .Values.mariadb.enabled }}
+            value: "root"
+            {{- end }}
+          - name: "DB_ROOT_PASSWORD"
+            {{- if .Values.dbRootPassword }}
             valueFrom:
               secretKeyRef:
-                key:  dbRootPassword
-                name: {{ .Release.Name }}-secrets
+                key:  db-root-password
+                name: {{ .Release.Name }}
+            {{- else if .Values.postgresql.enabled }}
+            valueFrom:
+              secretKeyRef:
+                key: postgres-password
+                name: {{ .Release.Name }}-postgresql
+            {{- else if .Values.mariadb.enabled }}
+            valueFrom:
+              secretKeyRef:
+                key: mariadb-root-password
+                name: {{ .Release.Name }}-mariadb
+            {{- end }}
           - name: "ADMIN_PASSWORD"
-            value: "{{ .Values.createSite.adminPassword }}"
-          - name: "INSTALL_APPS"
-            value: "{{ .Values.createSite.installApps }}"
+            value: "{{ .Values.jobs.createSite.adminPassword }}"
+        resources:
+          {{- toYaml .Values.jobs.createSite.resources | nindent 10 }}
         securityContext:
-          {{- toYaml $.Values.securityContext | nindent 12 }}
-        imagePullPolicy: {{ .Values.pythonImage.pullPolicy }}
+          {{- toYaml $.Values.securityContext | nindent 10 }}
         volumeMounts:
           - name: sites-dir
             mountPath: /home/frappe/frappe-bench/sites
@@ -81,4 +171,16 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+      {{- with .Values.jobs.createSite.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.jobs.createSite.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.jobs.createSite.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 {{- end }}

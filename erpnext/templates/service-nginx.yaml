@@ -5,12 +5,12 @@ metadata:
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.nginx.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ .Values.nginx.service.port }}
       targetPort: http
       protocol: TCP
       name: http
   selector:
-    app.kubernetes.io/name: {{ include "erpnext.name" . }}-backend
-    app.kubernetes.io/instance: {{ .Release.Name }}-backend
+    app.kubernetes.io/name: {{ include "erpnext.name" . }}-nginx
+    app.kubernetes.io/instance: {{ .Release.Name }}-nginx

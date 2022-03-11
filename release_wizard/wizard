@@ -11,8 +11,8 @@ def main():
     args = parse_args()
     values_file = f'{os.getcwd()}/erpnext/values.yaml'
     values_dict = get_yaml_dict(values_file)
-    values_frappe_version = values_dict['socketIOImage']['tag'][1:]
-    values_erpnext_version = values_dict['pythonImage']['tag'][1:]
+    values_frappe_version = values_dict['socketio']['image']['tag'][1:]
+    values_erpnext_version = values_dict['worker']['image']['tag'][1:]
 
     frappe_version = git_version('frappe', args.version)
     validate_local_and_remote_version(
@@ -137,9 +137,9 @@ def update_values(frappe_version, erpnext_version):
     # Update values.yaml
     values_file = f'{os.getcwd()}/erpnext/values.yaml'
     values_dict = get_yaml_dict(values_file)
-    values_dict['nginxImage']['tag'] = erpnext_version
-    values_dict['pythonImage']['tag'] = erpnext_version
-    values_dict['socketIOImage']['tag'] = frappe_version
+    values_dict['nginx']['image']['tag'] = erpnext_version
+    values_dict['worker']['image']['tag'] = erpnext_version
+    values_dict['socketio']['image']['tag'] = frappe_version
     save_yaml_file(values_dict, values_file)
 
 
