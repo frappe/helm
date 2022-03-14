@@ -1,4 +1,4 @@
-{{- if .Values.nginxImage.nginxConfig }}
+{{- if .Values.nginx.config }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,5 +6,5 @@ metadata:
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
 data:
-  default.conf: {{ .Values.nginxImage.nginxConfig | quote }}
+  default.conf.template: {{ .Values.nginx.config | quote }}
 {{- end }}

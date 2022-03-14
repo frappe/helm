@@ -14,5 +14,5 @@ spec:
   resources:
     requests:
       storage: {{ .Values.persistence.worker.size | quote }}
-  storageClassName: {{ required "A valid .Values.persistence.worker.storageClass entry required!" .Values.persistence.worker.storageClass }}
+  storageClassName: {{ required "A valid persistence.worker.storageClass entry required!" .Values.persistence.worker.storageClass }}
 {{- end }}

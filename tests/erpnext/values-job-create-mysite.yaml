@@ -1,0 +1,7 @@
+jobs:
+  createSite:
+    enabled: true
+    forceCreate: true
+    siteName: "mysite.localhost"
+    installApps: []
+    adminPassword: "admin"

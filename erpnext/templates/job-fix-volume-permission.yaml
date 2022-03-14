@@ -1,16 +1,12 @@
-{{- if and (.Values.createSite.dropSiteOnUninstall) (.Values.dbRootPassword) }}
+{{- if .Values.jobs.volumePermissions.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "erpnext.fullname" . }}-drop-site
+  name: {{ template "erpnext.fullname" . }}-vol-fix-{{ now | date "20060102150405" }}
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
-  annotations:
-    "helm.sh/hook": pre-delete
-    "helm.sh/hook-weight": "-5"
-    "helm.sh/hook-delete-policy": hook-succeeded
 spec:
-  backoffLimit: 1
+  backoffLimit: {{ .Values.jobs.volumePermissions.backoffLimit }}
   template:
     spec:
     {{- with .Values.imagePullSecrets }}
@@ -21,22 +17,20 @@ spec:
       securityContext:
         {{- toYaml $.Values.podSecurityContext | nindent 8 }}
       containers:
-      - name: drop-site
-        image: "{{ .Values.pythonImage.repository }}:{{ .Values.pythonImage.tag }}"
-        args: ["drop"]
-        env:
-          - name: "SITE_NAME"
-            value: "{{ .Values.createSite.siteName }}"
-          - name: "DB_ROOT_USER"
-            value: "{{ .Values.createSite.dbRootUser }}"
-          - name: "MYSQL_ROOT_PASSWORD"
-            valueFrom:
-              secretKeyRef:
-                key:  dbRootPassword
-                name: {{ .Release.Name }}-secrets
+      - name: frappe-bench-ownership
+        image: {{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}
+        imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
+        command: ['sh', '-c']
+        args:
+          - >
+            chown -R \
+              "{{ default 1000 .Values.securityContext.runAsUser }}:{{ default 1000 .Values.securityContext.runAsUser }}" \
+              /home/frappe/frappe-bench
+        resources:
+          {{- toYaml .Values.jobs.volumePermissions.resources | nindent 10 }}
         securityContext:
-          {{- toYaml $.Values.securityContext | nindent 12 }}
-        imagePullPolicy: {{ .Values.pythonImage.pullPolicy }}
+          # run as root to set ownership
+          runAsUser: 0
         volumeMounts:
           - name: sites-dir
             mountPath: /home/frappe/frappe-bench/sites
@@ -68,4 +62,16 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+      {{- with .Values.jobs.volumePermissions.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.jobs.volumePermissions.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.jobs.volumePermissions.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 {{- end }}

@@ -1,12 +1,12 @@
-{{- if .Values.migrateJob.enable }}
+{{- if .Values.jobs.migrate.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: migrate-sites-{{ template "erpnext.fullname" . }}-{{ date "20060102150405" .Release.Now }}
+  name: {{ template "erpnext.fullname" . }}-migrate-{{ now | date "20060102150405" }}
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
 spec:
-  backoffLimit: 1
+  backoffLimit: {{ .Values.jobs.migrate.backoffLimit }}
   template:
     spec:
     {{- with .Values.imagePullSecrets }}
@@ -17,48 +17,39 @@ spec:
       securityContext:
         {{- toYaml $.Values.podSecurityContext | nindent 8 }}
       initContainers:
-      - name: set-maintenance-mode
-        image: stedolan/jq
-        imagePullPolicy: IfNotPresent
-        command: ["/bin/bash", "-c"]
-        securityContext:
-          runAsUser: 1000 # same as erpnext user
-          runAsGroup: 1000
-        args:
-          - cp /data/common_site_config.json /data/temp.json;
-            jq -r '.maintenance_mode=1 | .pause_scheduler=1' /data/temp.json > /data/common_site_config.json;
-        volumeMounts:
-          - name: sites-dir
-            mountPath: "/data"
       - name: populate-assets
-        image: "{{ .Values.nginxImage.repository }}:{{ .Values.nginxImage.tag }}"
-        command: ["/bin/bash", "-c"]
+        image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
+        imagePullPolicy: {{ .Values.nginx.image.pullPolicy }}
+        command:
+          - cp
+          - -fR
         args:
-          - "rsync -a --delete /var/www/html/assets/frappe /assets"
+          - /usr/share/nginx/html/assets
+          - /home/frappe/frappe-bench/sites
+        resources:
+          {{- toYaml .Values.jobs.migrate.resources | nindent 10 }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 10 }}
         volumeMounts:
           - name: assets-cache
-            mountPath: /assets
-      {{- if .Values.migrateJob.backup }}
-      - name: backup
-        image: "{{ .Values.pythonImage.repository }}:{{ .Values.pythonImage.tag }}"
-        args: ["backup"]
-        imagePullPolicy: {{ .Values.pythonImage.pullPolicy }}
-        securityContext:
-          {{- toYaml $.Values.securityContext | nindent 12 }}
-        volumeMounts:
-          - name: sites-dir
-            mountPath: /home/frappe/frappe-bench/sites
-      {{- end }}
+            mountPath: /home/frappe/frappe-bench/sites/assets
       containers:
       - name: migrate
-        image: "{{ .Values.pythonImage.repository }}:{{ .Values.pythonImage.tag }}"
-        args: ["migrate"]
+        image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
+        imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
+        command: ["bash", "-c"]
+        args:
+          - >
+            bench --site=$(SITE_NAME) set-maintenance-mode on;
+            bench --site=$(SITE_NAME) migrate;
+            bench --site=$(SITE_NAME) set-maintenance-mode off;
         env:
-          - name: "MAINTENANCE_MODE"
-            value: "1"
+          - name: "SITE_NAME"
+            value: "{{ .Values.jobs.migrate.siteName }}"
+        resources:
+          {{- toYaml .Values.jobs.migrate.resources | nindent 10 }}
         securityContext:
-          {{- toYaml $.Values.securityContext | nindent 12 }}
-        imagePullPolicy: {{ .Values.pythonImage.pullPolicy }}
+          {{- toYaml $.Values.securityContext | nindent 10 }}
         volumeMounts:
           - name: sites-dir
             mountPath: /home/frappe/frappe-bench/sites
@@ -94,4 +85,16 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+      {{- with .Values.jobs.migrate.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.jobs.migrate.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.jobs.migrate.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 {{- end }}

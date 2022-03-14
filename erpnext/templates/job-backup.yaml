@@ -1,0 +1,107 @@
+{{- if .Values.jobs.backup.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "erpnext.fullname" . }}-backup-{{ now | date "20060102150405" }}
+  labels:
+    {{- include "erpnext.labels" . | nindent 4 }}
+spec:
+  backoffLimit: {{ .Values.jobs.backup.backoffLimit }}
+  template:
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ template "erpnext.serviceAccountName" $ }}
+      securityContext:
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
+      containers:
+      - name: backup
+        image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
+        imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
+        command: ["bash", "-c"]
+        args:
+          - >
+            bench --site=$(SITE_NAME)
+          {{- if .Values.jobs.backup.withFiles }}
+            backup --with-files;
+          {{- else }}
+            backup;
+          {{- end }}
+          {{- if .Values.jobs.backup.push.enabled }}
+            push-backup
+            --site=$(SITE_NAME)
+            --bucket=$(BUCKET)
+            --region-name=$(REGION)
+            --endpoint-url=$(ENDPOINT_URL)
+            --aws-access-key-id=$(ACCESS_KEY)
+            --aws-secret-access-key=$(SECRET_KEY);
+          {{- end }}
+        env:
+          - name: "SITE_NAME"
+            value: "{{ .Values.jobs.backup.siteName }}"
+          {{- if .Values.jobs.backup.push.enabled }}
+          - name: "BUCKET"
+            value: "{{ .Values.jobs.backup.push.bucket }}"
+          - name: "REGION"
+            value: "{{ .Values.jobs.backup.push.region }}"
+          - name: "ENDPOINT_URL"
+            value: "{{ .Values.jobs.backup.push.endpoint }}"
+          - name: "ACCESS_KEY"
+            value: "{{ .Values.jobs.backup.push.accessKey }}"
+          - name: "SECRET_KEY"
+            value: "{{ .Values.jobs.backup.push.secretKey }}"
+          {{- end }}
+        resources:
+          {{- toYaml .Values.jobs.backup.resources | nindent 10 }}
+        securityContext:
+          {{- toYaml $.Values.securityContext | nindent 10 }}
+        volumeMounts:
+          - name: sites-dir
+            mountPath: /home/frappe/frappe-bench/sites
+          - name: assets-cache
+            mountPath: /home/frappe/frappe-bench/sites/assets
+          - name: logs
+            mountPath: /home/frappe/frappe-bench/logs
+      restartPolicy: Never
+      volumes:
+        - name: assets-cache
+          emptyDir: {}
+        - name: sites-dir
+          {{- if .Values.persistence.worker.enabled }}
+          persistentVolumeClaim:
+            {{- if .Values.persistence.worker.existingClaim }}
+            claimName: {{ .Values.persistence.worker.existingClaim }}
+            {{- else }}
+            claimName: {{ template "erpnext.fullname" . }}
+            {{- end }}
+            readOnly: false
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: logs
+          {{- if .Values.persistence.logs.enabled }}
+          persistentVolumeClaim:
+            {{- if .Values.persistence.logs.existingClaim }}
+            claimName: {{ .Values.persistence.logs.existingClaim }}
+            {{- else }}
+            claimName: {{ template "erpnext.fullname" . }}-logs
+            {{- end }}
+            readOnly: false
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+      {{- with .Values.jobs.backup.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.jobs.backup.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.jobs.backup.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "erpnext.fullname" . }}-gunicorn
+  labels:
+    {{- include "erpnext.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.worker.gunicorn.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "erpnext.name" . }}-gunicorn
+      app.kubernetes.io/instance: {{ .Release.Name }}-gunicorn
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "erpnext.name" . }}-gunicorn
+        app.kubernetes.io/instance: {{ .Release.Name }}-gunicorn
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "erpnext.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: populate-assets
+          {{- if .Values.worker.gunicorn.envVars }}
+          env:
+            {{- toYaml .Values.worker.gunicorn.envVars | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
+          imagePullPolicy: {{ .Values.nginx.image.pullPolicy }}
+          command:
+            - cp
+            - -fR
+          args:
+            - /usr/share/nginx/html/assets
+            - /home/frappe/frappe-bench/sites
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          volumeMounts:
+            - name: assets-cache
+              mountPath: /home/frappe/frappe-bench/sites/assets
+      {{- if .Values.worker.gunicorn.initContainers }}
+        {{- toYaml .Values.worker.gunicorn.initContainers | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: gunicorn
+          {{- if .Values.worker.gunicorn.envVars }}
+          env:
+            {{- toYaml .Values.worker.gunicorn.envVars | nindent 12 }}
+          {{- end }}
+          args:
+            {{- toYaml .Values.worker.gunicorn.args | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
+          volumeMounts:
+          - name: assets-cache
+            mountPath: /home/frappe/frappe-bench/sites/assets
+          - name: sites-dir
+            mountPath: /home/frappe/frappe-bench/sites
+          - name: logs
+            mountPath: /home/frappe/frappe-bench/logs
+          ports:
+            - name: http
+              containerPort: {{ .Values.worker.gunicorn.service.port }}
+              protocol: TCP
+          imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
+          livenessProbe:
+            {{- toYaml .Values.worker.gunicorn.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.worker.gunicorn.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.worker.gunicorn.resources | nindent 12 }}
+      {{- if .Values.worker.gunicorn.sidecars }}
+        {{- toYaml .Values.worker.gunicorn.sidecars | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: assets-cache
+          emptyDir: {}
+        - name: sites-dir
+          {{- if .Values.persistence.worker.enabled }}
+          persistentVolumeClaim:
+            {{- if .Values.persistence.worker.existingClaim }}
+            claimName: {{ .Values.persistence.worker.existingClaim }}
+            {{- else }}
+            claimName: {{ template "erpnext.fullname" . }}
+            {{- end }}
+            readOnly: false
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: logs
+          {{- if .Values.persistence.logs.enabled }}
+          persistentVolumeClaim:
+            {{- if .Values.persistence.logs.existingClaim }}
+            claimName: {{ .Values.persistence.logs.existingClaim }}
+            {{- else }}
+            claimName: {{ template "erpnext.fullname" . }}-logs
+            {{- end }}
+            readOnly: false
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+      {{- with .Values.worker.gunicorn.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.worker.gunicorn.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.worker.gunicorn.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

@@ -1,0 +1,10 @@
+ingress:
+  enabled: true
+  ingressName: "mysite-localhost-ingress"
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  hosts:
+  - host: mysite.localhost
+    paths:
+    - path: /
+      pathType: ImplementationSpecific

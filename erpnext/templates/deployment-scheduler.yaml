@@ -5,16 +5,16 @@ metadata:
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.worker.scheduler.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "erpnext.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/name: {{ include "erpnext.name" . }}-scheduler
+      app.kubernetes.io/instance: {{ .Release.Name }}-scheduler
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "erpnext.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/name: {{ include "erpnext.name" . }}-scheduler
+        app.kubernetes.io/instance: {{ .Release.Name }}-scheduler
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -23,36 +23,45 @@ spec:
       serviceAccountName: {{ template "erpnext.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+    {{- if .Values.worker.scheduler.initContainers }}
+      initContainers:
+        {{- toYaml .Values.worker.scheduler.initContainers | nindent 8 }}
+    {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: scheduler
+          {{- if .Values.worker.scheduler.envVars }}
+          env:
+            {{- toYaml .Values.worker.scheduler.envVars | nindent 12 }}
+          {{- end }}
+          args:
+          - bench
+          - schedule
+          image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
+          imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
+          livenessProbe:
+            {{- if .Values.worker.scheduler.livenessProbe.override }}
+            {{- toYaml .Values.worker.scheduler.livenessProbe.probe | nindent 12 }}
+            {{- else }}
+            {{ tpl .Values.worker.healthProbe . | nindent 12 }}
+            {{- end }}
+          readinessProbe:
+            {{- if .Values.worker.scheduler.readinessProbe.override }}
+            {{- toYaml .Values.worker.scheduler.readinessProbe.probe | nindent 12 }}
+            {{- else }}
+            {{ tpl .Values.worker.healthProbe . | nindent 12 }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.worker.scheduler.resources | nindent 12 }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.pythonImage.repository }}:{{ .Values.pythonImage.tag }}"
           volumeMounts:
           - name: sites-dir
             mountPath: /home/frappe/frappe-bench/sites
           - name: logs
             mountPath: /home/frappe/frappe-bench/logs
-          imagePullPolicy: {{ .Values.pythonImage.pullPolicy }}
-          args: ["bench", "schedule"]
-          livenessProbe:
-            exec:
-              command:
-              - "wait-for-it"
-              - "--host={{ .Values.mariadbHost }}"
-              - "--port={{ .Values.mariadbPort }}"
-            initialDelaySeconds: 15
-            periodSeconds: 5
-          readinessProbe:
-            exec:
-              command:
-              - "wait-for-it"
-              - "--host={{ .Values.mariadbHost }}"
-              - "--port={{ .Values.mariadbPort }}"
-            initialDelaySeconds: 15
-            periodSeconds: 5
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+      {{- if .Values.worker.scheduler.sidecars }}
+        {{- toYaml .Values.worker.scheduler.sidecars | nindent 8 }}
+      {{- end }}
       volumes:
         - name: sites-dir
           {{- if .Values.persistence.worker.enabled }}
@@ -78,15 +87,15 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
-      {{- with .Values.nodeSelector }}
+      {{- with .Values.worker.scheduler.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-    {{- with .Values.affinity }}
+    {{- with .Values.worker.scheduler.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-    {{- with .Values.tolerations }}
+    {{- with .Values.worker.scheduler.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}

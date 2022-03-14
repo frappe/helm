@@ -5,16 +5,16 @@ metadata:
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.worker.short.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "erpnext.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/name: {{ include "erpnext.name" . }}-worker-s
+      app.kubernetes.io/instance: {{ .Release.Name }}-worker-s
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "erpnext.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/name: {{ include "erpnext.name" . }}-worker-s
+        app.kubernetes.io/instance: {{ .Release.Name }}-worker-s
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -23,36 +23,47 @@ spec:
       serviceAccountName: {{ template "erpnext.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+    {{- if .Values.worker.short.initContainers }}
+      initContainers:
+        {{- toYaml .Values.worker.short.initContainers | nindent 8 }}
+    {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: short
+          {{- if .Values.worker.short.envVars }}
+          env:
+            {{- toYaml .Values.worker.short.envVars | nindent 12 }}
+          {{- end }}
+          args:
+          - bench
+          - worker
+          - --queue
+          - short
+          image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
+          imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
+          livenessProbe:
+            {{- if .Values.worker.short.livenessProbe.override }}
+            {{- toYaml .Values.worker.short.livenessProbe.probe | nindent 12 }}
+            {{- else }}
+            {{ tpl .Values.worker.healthProbe . | nindent 12 }}
+            {{- end }}
+          readinessProbe:
+            {{- if .Values.worker.short.readinessProbe.override }}
+            {{- toYaml .Values.worker.short.readinessProbe.probe | nindent 12 }}
+            {{- else }}
+            {{ tpl .Values.worker.healthProbe . | nindent 12 }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.worker.short.resources | nindent 12 }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.pythonImage.repository }}:{{ .Values.pythonImage.tag }}"
           volumeMounts:
           - name: sites-dir
             mountPath: /home/frappe/frappe-bench/sites
           - name: logs
             mountPath: /home/frappe/frappe-bench/logs
-          imagePullPolicy: {{ .Values.pythonImage.pullPolicy }}
-          args: ["bench", "worker", "--queue", "short"]
-          livenessProbe:
-            exec:
-              command:
-              - "wait-for-it"
-              - "--host={{ .Values.mariadbHost }}"
-              - "--port={{ .Values.mariadbPort }}"
-            initialDelaySeconds: 15
-            periodSeconds: 5
-          readinessProbe:
-            exec:
-              command:
-              - "wait-for-it"
-              - "--host={{ .Values.mariadbHost }}"
-              - "--port={{ .Values.mariadbPort }}"
-            initialDelaySeconds: 15
-            periodSeconds: 5
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+      {{- if .Values.worker.short.sidecars }}
+        {{- toYaml .Values.worker.short.sidecars | nindent 8 }}
+      {{- end }}
       volumes:
         - name: sites-dir
           {{- if .Values.persistence.worker.enabled }}
@@ -78,15 +89,15 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
-      {{- with .Values.nodeSelector }}
+      {{- with .Values.worker.short.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-    {{- with .Values.affinity }}
+    {{- with .Values.worker.short.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-    {{- with .Values.tolerations }}
+    {{- with .Values.worker.short.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
