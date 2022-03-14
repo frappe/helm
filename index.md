@@ -32,21 +32,23 @@ $ helm repo update
 
 {{ latest_chart.description }}
 
-[Prepare Kubernetes](prepare-kubernetes) before installing ERPNext helm chart. The `mariadbHost` and `persistence.storageClass` values are generated as part of kubernetes preparation process.
+Use valid storage class with access mode ReadWriteMany instead of `nfs`
 
 ```console
-$ helm install frappe-bench-0001 --namespace erpnext {{ site.repo_name }}/{{ latest_chart.name }} \
-    --version {{ latest_chart.version }} \
-    --set mariadbHost=mariadb.mariadb.svc.cluster.local \
-    --set persistence.worker.storageClass=rook-cephfs \
-    --set persistence.logs.storageClass=rook-cephfs
+$ kubectl create namespace erpnext
+$ helm repo add frappe https://helm.erpnext.com
+$ helm upgrade --install frappe-bench --namespace erpnext frappe/erpnext --set persistence.worker.storageClass=nfs
 ```
 
-[Read]({{ site.git_repo }}/blob/master/erpnext/README.md) more about helm chart configuration values.
+For evaluation, setup simple in-cluster NFS server to make the `nfs` storage class with RWX capabilities available for use.
 
-Create needed [Kubernetes Resources](kubernetes-resources) after Helm Chart installation is complete.
+```console
+$ kubectl create namespace nfs
+$ helm repo add nfs-ganesha-server-and-external-provisioner https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner
+$ helm upgrade --install -n nfs in-cluster nfs-ganesha-server-and-external-provisioner/nfs-server-provisioner --set 'storageClass.mountOptions={vers=4.1}' --set persistence.enabled=true --set persistence.size=8Gi
+```
 
-Create `CronJob` resource to enable automatic backups. Add relevant containers to `CronJob` to optionally push backups to object storage or off-site.
+[Read]({{ site.git_repo }}/blob/main/erpnext/README.md) more about helm chart configuration values.
 
 | Chart Version | App Version | Date |
 |---------------|-------------|------|

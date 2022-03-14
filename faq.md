@@ -4,28 +4,22 @@ layout: page
 faq:
   - question: What are steps for beginners to install ERPNext on Kubernetes?
     answer: |
-      Steps in brief.
+      Install ingress controller. Cloud provider specific commands differ. Read more about [kubernetes/ingress-nginx](https://kubernetes.github.io/ingress-nginx/deploy) before installing.
 
-      [Prepare Kubernetes](/prepare-kubernetes)
+      ```console
+      kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.1/deploy/static/provider/cloud/deploy.yaml
+      ```
 
-      1. Install LoadBalancer.
-      2. Install Cert Manager and create ClusterIssuer.
-      3. Install MariaDB with frappe specific configuration.
-      4. Install NFS Server Provisioner Helm Chart with persistence enabled.
+      Install [Cert Manager](https://cert-manager.io/docs/installation) and create [Issuer or ClusterIssuer](https://cert-manager.io/docs/tutorials/acme/http-validation).
+
 
       [Install ERPNext](/)
 
-      1. Install ERPNext Helm Chart.
-      2. Create `push-backup-s3` and `mariadb-root-password` secret in `erpnext` namespace.
+      [Generate Additional Resources](https://github.com/frappe/helm/blob/main/erpnext/README.md#generate-additional-resources) to create site, ingress, backup jobs, etc.
 
-      [Create Resources](/kubernetes-resources)
-
-      1. Create New Site Job.
-      2. Create New Site Ingress.
-      3. Create `CronJob` to take backups and push them to cloud regularly.
   - question: What can be scaled?
     answer: |
-      Frappe SocketIO, Background Workers (default, short, long), and Gunicorn/Nginx Deployments can be scaled independently without any complexities involved.
+      Frappe SocketIO, Background Workers (default, short, long), Gunicorn and Nginx Deployments can be scaled independently without any complexities involved.
 
       Use following command to scale deployments.
 
@@ -33,28 +27,26 @@ faq:
       $ kubectl scale -n <namespace> deployment <deployment-name> --replicas <number>
       ```
 
-      Redis Databases can be scaled independently by installing separate Redis cluster Helm Chart(s). Use the hostname(s) provided by these helm chart(s) as `redisCacheHost`, `redisQueueHost`, and `redisSocketIOHost`.
-
       It is unsure whether scheduler can be scaled out. It is set to `replica: 1` by default.
   - question: How to auto scale deployments?
     answer: |
       Use [Horizontal Pod Autoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale) to auto scale required deployments.
 
-      Example to auto scale `Deployment/frappe-bench-stable-erpnext-erpnext`, apply following `hpa.yaml`.
+      Example to auto scale `Deployment/frappe-bench-worker-d`, apply following `hpa.yaml`.
 
       ```yaml
       # hpa.yaml
       apiVersion: autoscaling/v1
       kind: HorizontalPodAutoscaler
       metadata:
-        name: frappe-bench-stable-erpnext-erpnext
+        name: frappe-bench-worker-d
       spec:
         maxReplicas: 5
         minReplicas: 1
         scaleTargetRef:
           apiVersion: apps/v1
           kind: Deployment
-          name: frappe-bench-stable-erpnext-erpnext
+          name: frappe-bench-worker-d
         targetCPUUtilizationPercentage: 60
       ```
 
@@ -112,21 +104,11 @@ faq:
 
       ```console
       $ helm repo update
-      $ helm upgrade <release-name> -n <namespace> frappe/erpnext \
-          --set mariadbHost=mariadb.mariadb.svc.cluster.local \
-          --set persistence.worker.storageClass=<storageClass> \
-          --set persistence.logs.storageClass=<storageClass> \
-          --set migrateJob.enable=true
+      $ helm upgrade frappe-bench --namespace erpnext frappe/erpnext --set persistence.worker.storageClass=nfs
       ```
 
-      Set `migrateJob.enable` to true if you know whether the image tag or the appVersion has changed. It will backup sites and migrate. Replace `<release-name>` with the installed helm release name, `<namespace>` with kubernetes namespace and `<storageClass>` with RWX storage class, e.g. `rook-cephfs`
+      Generate resource to [create site migration job](https://github.com/frappe/helm/blob/main/erpnext/README.md#migrate-site)
 
-      Do not forget to edit the cronjob for backup and push to update image. Set image to latest stable tag. e.g. v12.9.2
-
-      ```sh
-      kubectl patch cronjobs.batch -n <namespace> backup-and-push \
-        -p '{"spec":{"jobTemplate":{"spec":{"template":{"spec":{"containers":[{"name":"push-backup","image":"frappe/erpnext-worker:v12"}]}}}}}}'
-      ```
   - question: How do I customize values for the ERPNext helm chart?
     answer: |
       Download the values.yaml file locally and modify the content as per need. e.g. change `socketIOImage.tag` to `edge` and use the file to set values during helm install.
