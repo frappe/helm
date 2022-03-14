@@ -72,17 +72,17 @@ worker:
       # https://pythonspeed.com/articles/gunicorn-in-docker/
       # allowed workerClass options are "gevent", "gthread", "sync", default "gevent"
       # set --config=/opt/patches/gevent_patch.py to use gevent.monkey.patch_all()
-      - /home/frappe/frappe-bench/env/bin/gunicorn
-      - --bind=0.0.0.0:8000
-      - --config=/opt/patches/gevent_patch.py
-      - --log-file=-
-      - --preload
-      - --threads=4
-      - --timeout=120
-      - --worker-class=gevent
-      - --worker-tmp-dir=/dev/shm
-      - --workers=2
-      - frappe.app:application
+    - /home/frappe/frappe-bench/env/bin/gunicorn
+    - --bind=0.0.0.0:8000
+    - --config=/opt/patches/gevent_patch.py
+    - --log-file=-
+    - --preload
+    - --threads=4
+    - --timeout=120
+    - --worker-class=gevent
+    - --worker-tmp-dir=/dev/shm
+    - --workers=2
+    - frappe.app:application
     envVars: []
     initContainers: []
     sidecars: []
@@ -267,7 +267,7 @@ jobs:
     siteName: "erp.cluster.local"
     adminPassword: "changeit"
     installApps:
-      - "erpnext"
+    - "erpnext"
     dbType: "mariadb"
     backoffLimit: 0
     resources: {}
