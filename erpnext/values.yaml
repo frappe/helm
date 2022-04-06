@@ -12,7 +12,7 @@ nginx:
   replicaCount: 1
   image:
     repository: frappe/erpnext-nginx
-    tag: v13.24.0
+    tag: v13.25.0
     pullPolicy: IfNotPresent
   # config: |
   #   # custom template /etc/nginx/templates/default.conf.template
@@ -46,7 +46,7 @@ nginx:
 worker:
   image:
     repository: frappe/erpnext-worker
-    tag: v13.24.0
+    tag: v13.25.0
     pullPolicy: IfNotPresent
 
   gunicorn:
@@ -199,7 +199,7 @@ socketio:
     periodSeconds: 10
   image:
     repository: frappe/frappe-socketio
-    tag: v13.24.0
+    tag: v13.25.0
     pullPolicy: IfNotPresent
   resources: {}
   nodeSelector: {}
