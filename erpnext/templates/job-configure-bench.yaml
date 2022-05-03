@@ -56,7 +56,11 @@ spec:
         env:
           - name: DB_HOST
             {{- if .Values.mariadb.enabled }}
+            {{- if eq .Values.mariadb.architecture "replication" }}
+            value: {{ .Release.Name }}-mariadb-primary
+            {{- else }}
             value: {{ .Release.Name }}-mariadb
+            {{- end }}
             {{- else }}
             value: {{ .Values.dbHost }}
             {{- end }}
