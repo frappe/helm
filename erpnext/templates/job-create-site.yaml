@@ -46,7 +46,7 @@ spec:
               do
                 echo "Waiting for common_site_config.json to be created";
                 sleep 5;
-                if (( `date +%s`-start > 120 )); then
+                if (( `date +%s`-start > 600 )); then
                   echo "could not find common_site_config.json with required keys";
                   exit 1
                 fi
@@ -93,7 +93,11 @@ spec:
             {{- else if .Values.postgresql.enabled }}
             value: {{ .Release.Name }}-postgresql
             {{- else if .Values.mariadb.enabled }}
+            {{- if eq .Values.mariadb.architecture "replication" }}
+            value: {{ .Release.Name }}-mariadb-primary
+            {{- else }}
             value: {{ .Release.Name }}-mariadb
+            {{- end }}
             {{- else }}
             value: "{{ .Values.dbHost }}"
             {{- end }}
