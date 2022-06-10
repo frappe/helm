@@ -7,6 +7,7 @@
 # dbPort: 3306
 # dbRootUser: ""
 # dbRootPassword: ""
+# dbRds: false
 
 nginx:
   replicaCount: 1
@@ -72,17 +73,17 @@ worker:
       # https://pythonspeed.com/articles/gunicorn-in-docker/
       # allowed workerClass options are "gevent", "gthread", "sync", default "gevent"
       # set --config=/opt/patches/gevent_patch.py to use gevent.monkey.patch_all()
-    - /home/frappe/frappe-bench/env/bin/gunicorn
-    - --bind=0.0.0.0:8000
-    - --config=/opt/patches/gevent_patch.py
-    - --log-file=-
-    - --preload
-    - --threads=4
-    - --timeout=120
-    - --worker-class=gevent
-    - --worker-tmp-dir=/dev/shm
-    - --workers=2
-    - frappe.app:application
+      - /home/frappe/frappe-bench/env/bin/gunicorn
+      - --bind=0.0.0.0:8000
+      - --config=/opt/patches/gevent_patch.py
+      - --log-file=-
+      - --preload
+      - --threads=4
+      - --timeout=120
+      - --worker-class=gevent
+      - --worker-tmp-dir=/dev/shm
+      - --workers=2
+      - frappe.app:application
     envVars: []
     initContainers: []
     sidecars: []
@@ -233,15 +234,16 @@ persistence:
 ingress:
   # ingressName: ""
   enabled: false
-  annotations: {}
+  annotations:
+    {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
     # cert-manager.io/cluster-issuer: letsencrypt-prod
   hosts:
-  - host: erp.cluster.local
-    paths:
-    - path: /
-      pathType: ImplementationSpecific
+    - host: erp.cluster.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
   tls: []
   #  - secretName: auth-server-tls
   #    hosts:
@@ -271,7 +273,7 @@ jobs:
     siteName: "erp.cluster.local"
     adminPassword: "changeit"
     installApps:
-    - "erpnext"
+      - "erpnext"
     dbType: "mariadb"
     backoffLimit: 0
     resources: {}
@@ -329,7 +331,7 @@ podSecurityContext:
 securityContext:
   capabilities:
     add:
-    - CAP_CHOWN
+      - CAP_CHOWN
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
