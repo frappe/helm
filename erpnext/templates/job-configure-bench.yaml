@@ -53,6 +53,9 @@ spec:
             bench set-config -g redis_queue $REDIS_QUEUE;
             bench set-config -g redis_socketio $REDIS_SOCKETIO;
             bench set-config -gp socketio_port $SOCKETIO_PORT;
+            {{- if .Values.dbRds }}
+            bench set-config -g rds_db 1;
+            {{- end }}
         env:
           - name: DB_HOST
             {{- if .Values.mariadb.enabled }}
