@@ -25,23 +25,23 @@ helm upgrade --install -n nfs in-cluster nfs-ganesha-server-and-external-provisi
 1. [Introduction](#introduction)
 2. [Parameters](#parameters)
 3. [Requirements](#requirements)
-   1. [Storage Class with ReadWriteMany access mode](#storage-class-with-readwritemany-access-mode)
-   2. [Database](#database)
-   3. [Managed Redis](#managed-redis)
+    1. [Storage Class with ReadWriteMany access mode](#storage-class-with-readwritemany-access-mode)
+    2. [Database](#database)
+    3. [Managed Redis](#managed-redis)
 4. [Installation](#installation)
-   1. [Existing PVC](#existing-pvc)
-   2. [Existing Storage Class](#existing-storage-class)
-   3. [External Database](#external-database)
-   4. [External Redis](#external-redis)
-   5. [Install Helm Chart](#install-helm-chart)
+    1. [Existing PVC](#existing-pvc)
+    2. [Existing Storage Class](#existing-storage-class)
+    3. [External Database](#external-database)
+    4. [External Redis](#external-redis)
+    5. [Install Helm Chart](#install-helm-chart)
 5. [Generate Additional Resources](#generate-additional-resources)
-   1. [Create new site](#create-new-site)
-   2. [Create Ingress](#create-ingress)
-   3. [Backup site](#backup-site)
-   4. [Migrate site](#migrate-site)
-   5. [Drop Site](#drop-site)
-   6. [Configure service hosts](#configure-service-hosts)
-   7. [Fix volume permission](#fix-volume-permission)
+    1. [Create new site](#create-new-site)
+    2. [Create Ingress](#create-ingress)
+    3. [Backup site](#backup-site)
+    4. [Migrate site](#migrate-site)
+    5. [Drop Site](#drop-site)
+    6. [Configure service hosts](#configure-service-hosts)
+    7. [Fix volume permission](#fix-volume-permission)
 6. [Uninstall the Chart](#uninstall-the-chart)
 7. [Migrate from Helm Chart 3.x.x to 4.x.x](#migrate-from-helm-chart-3xx-to-4xx)
 
@@ -60,7 +60,6 @@ The following table lists the configurable parameters of the ERPNext chart and t
 | `dbPort`                                      | Database port for the bench to connect                                                                                                                                                                                                                                                                                                                                                                   | `3306`                                   |
 | `dbRootUser`                                  | Database root user for the conneted database service                                                                                                                                                                                                                                                                                                                                                     | `nil`                                    |
 | `dbRootPassword`                              | Database root password for the conneted database service                                                                                                                                                                                                                                                                                                                                                 | `nil`                                    |
-| `dbRds`                                       | Set to true if using AWS RDS, fixes [permission issues](https://github.com/frappe/frappe/pull/7101)                                                                                                                                                                                                                                                                                                      | `false`                                  |
 | `nginx.replicaCount`                          | Replica count for nginx deployment                                                                                                                                                                                                                                                                                                                                                                       | `1`                                      |
 | `nginx.image.repository`                      | Image repository for nginx deployment                                                                                                                                                                                                                                                                                                                                                                    | `frappe/erpnext-nginx`                   |
 | `nginx.image.tag`                             | Image tag for nginx deployment                                                                                                                                                                                                                                                                                                                                                                           | `latest stable tag`                      |
@@ -423,14 +422,14 @@ ingress:
     kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
   hosts:
-    - host: erp.example.com
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
+  - host: erp.example.com
+    paths:
+    - path: /
+      pathType: ImplementationSpecific
   tls:
-    - secretName: erp-example-com-tls
-      hosts:
-        - erp.example.com
+   - secretName: erp-example-com-tls
+     hosts:
+       - erp.example.com
 ```
 
 Note:
