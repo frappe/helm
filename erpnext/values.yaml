@@ -203,7 +203,7 @@ socketio:
     periodSeconds: 10
   image:
     repository: frappe/frappe-socketio
-    tag: v13.35.1
+    tag: v13.35.2
     pullPolicy: IfNotPresent
   resources: {}
   nodeSelector: {}
