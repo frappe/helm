@@ -21,8 +21,7 @@ spec:
         imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
         command: ['sh', '-c']
         args:
-          - chown 
-          - -R
+          - chown -R
           - "{{ default 1000 .Values.securityContext.runAsUser }}:{{ default 1000 .Values.securityContext.runAsUser }}"
           - /home/frappe/frappe-bench
         resources:
