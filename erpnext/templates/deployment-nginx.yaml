@@ -72,7 +72,7 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
-        {{- if .Values.nginx.image.nginxConfig }}
+        {{- if .Values.nginx.config }}
         - name: nginx-config
           configMap:
             name: {{ include "erpnext.fullname" . }}-nginx-config
