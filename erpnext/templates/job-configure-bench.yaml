@@ -47,7 +47,7 @@ spec:
             bench set-config -gp db_port $DB_PORT;
             bench set-config -g db_host $DB_HOST;
             {{- if .Values.dbRds }}
-            bench set-config -g rds_db 1;
+            bench set-config -gp rds_db 1;
             {{- end}}
             bench set-config -g redis_cache $REDIS_CACHE;
             bench set-config -g redis_queue $REDIS_QUEUE;
