@@ -23,10 +23,28 @@ spec:
       serviceAccountName: {{ template "erpnext.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-    {{- if .Values.worker.short.initContainers }}
       initContainers:
+        - name: populate-assets
+          {{- if .Values.worker.short.envVars }}
+          env:
+            {{- toYaml .Values.worker.short.envVars | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
+          imagePullPolicy: {{ .Values.nginx.image.pullPolicy }}
+          command:
+            - cp
+            - -fR
+          args:
+            - /usr/share/nginx/html/assets
+            - /home/frappe/frappe-bench/sites
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          volumeMounts:
+            - name: assets-cache
+              mountPath: /home/frappe/frappe-bench/sites/assets      
+      {{- if .Values.worker.short.initContainers }}
         {{- toYaml .Values.worker.short.initContainers | nindent 8 }}
-    {{- end }}
+      {{- end }}
       containers:
         - name: short
           {{- if .Values.worker.short.envVars }}
@@ -57,6 +75,8 @@ spec:
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           volumeMounts:
+          - name: assets-cache
+            mountPath: /home/frappe/frappe-bench/sites/assets
           - name: sites-dir
             mountPath: /home/frappe/frappe-bench/sites
           - name: logs
@@ -65,6 +85,8 @@ spec:
         {{- toYaml .Values.worker.short.sidecars | nindent 8 }}
       {{- end }}
       volumes:
+        - name: assets-cache
+          emptyDir: {}
         - name: sites-dir
           {{- if .Values.persistence.worker.enabled }}
           persistentVolumeClaim:
