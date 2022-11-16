@@ -21,10 +21,7 @@ spec:
         imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
         command: ['sh', '-c']
         args:
-          - >
-            chown -R \
-              "{{ default 1000 .Values.securityContext.runAsUser }}:{{ default 1000 .Values.securityContext.runAsUser }}" \
-              /home/frappe/frappe-bench
+          - chown -R "{{ default 1000 .Values.securityContext.runAsUser }}:{{ default 1000 .Values.securityContext.runAsUser }}" /home/frappe/frappe-bench
         resources:
           {{- toYaml .Values.jobs.configure.resources | nindent 10 }}
         securityContext:
@@ -49,6 +46,9 @@ spec:
             [[ -f common_site_config.json ]] || echo "{}" > common_site_config.json;
             bench set-config -gp db_port $DB_PORT;
             bench set-config -g db_host $DB_HOST;
+            {{- if .Values.dbRds }}
+            bench set-config -gp rds_db 1;
+            {{- end}}
             bench set-config -g redis_cache $REDIS_CACHE;
             bench set-config -g redis_queue $REDIS_QUEUE;
             bench set-config -g redis_socketio $REDIS_SOCKETIO;

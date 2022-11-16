@@ -13,7 +13,7 @@ nginx:
   replicaCount: 1
   image:
     repository: frappe/erpnext-nginx
-    tag: v13.33.0
+    tag: v14.7.0
     pullPolicy: IfNotPresent
   # config: |
   #   # custom template /etc/nginx/templates/default.conf.template
@@ -47,7 +47,7 @@ nginx:
 worker:
   image:
     repository: frappe/erpnext-worker
-    tag: v13.33.0
+    tag: v14.7.0
     pullPolicy: IfNotPresent
 
   gunicorn:
@@ -204,7 +204,7 @@ socketio:
     periodSeconds: 10
   image:
     repository: frappe/frappe-socketio
-    tag: v13.32.0
+    tag: v14.15.0
     pullPolicy: IfNotPresent
   resources: {}
   nodeSelector: {}
@@ -233,6 +233,7 @@ persistence:
 # Ingress
 ingress:
   # ingressName: ""
+  # className: ""
   enabled: false
   annotations: {}
     # kubernetes.io/ingress.class: nginx
