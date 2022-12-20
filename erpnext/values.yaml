@@ -400,9 +400,12 @@ mariadb:
       socket=/opt/bitnami/mariadb/tmp/mysql.sock
       tmpdir=/opt/bitnami/mariadb/tmp
       max_allowed_packet=16M
-      bind-address=::
+      bind-address=*
       pid-file=/opt/bitnami/mariadb/tmp/mysqld.pid
       log-error=/opt/bitnami/mariadb/logs/mysqld.log
+      slow_query_log=0
+      slow_query_log_file=/opt/bitnami/mariadb/logs/mysqld.log
+      long_query_time=10.0
 
       # Frappe Specific Changes
       character-set-client-handshake=FALSE

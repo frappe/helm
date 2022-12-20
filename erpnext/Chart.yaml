@@ -26,23 +26,23 @@ dependencies:
 - name: redis
   condition: redis-cache.enabled
   alias: redis-cache
-  version: "16.4.0"
+  version: "17.3.17"
   repository: https://charts.bitnami.com/bitnami
 - name: redis
   condition: redis-queue.enabled
   alias: redis-queue
-  version: "16.4.0"
+  version: "17.3.17"
   repository: https://charts.bitnami.com/bitnami
 - name: redis
   condition: redis-socketio.enabled
   alias: redis-socketio
-  version: "16.4.0"
+  version: "17.3.17"
   repository: https://charts.bitnami.com/bitnami
 - name: mariadb
   condition: mariadb.enabled
-  version: "10.3.3"
+  version: "11.4.2"
   repository: https://charts.bitnami.com/bitnami
 - name: postgresql
   condition: postgresql.enabled
-  version: "11.0.3"
+  version: "12.1.6"
   repository: https://charts.bitnami.com/bitnami
