@@ -4,7 +4,7 @@ Release Name: {{ include "erpnext.fullname" . }}
 
 Wait for the pods to start.
 To create sites and other resources, refer:
-https://helm.erpnext.com/kubernetes-resources
+https://github.com/frappe/helm/blob/main/erpnext/README.md
 
 Frequently Asked Questions:
 https://helm.erpnext.com/faq
