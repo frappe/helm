@@ -2,7 +2,7 @@
 
 echo -e "\e[1m\e[4mCreate testcluster with k3d and kubernetes/ingress-nginx\e[0m"
 k3d cluster create testcluster --api-port 127.0.0.1:6443 -p 80:80@loadbalancer -p 443:443@loadbalancer --k3s-arg "--disable=traefik@server:0"
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.1/deploy/static/provider/cloud/deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.5.1/deploy/static/provider/cloud/deploy.yaml
 echo -e "\n"
 
 echo -e "\e[1m\e[4mAdd Helm Repositories\e[0m"
