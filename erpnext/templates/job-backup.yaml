@@ -18,8 +18,8 @@ spec:
         {{- toYaml $.Values.podSecurityContext | nindent 8 }}
       containers:
       - name: backup
-        image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
-        imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["bash", "-c"]
         args:
           - >
@@ -60,14 +60,10 @@ spec:
         volumeMounts:
           - name: sites-dir
             mountPath: /home/frappe/frappe-bench/sites
-          - name: assets-cache
-            mountPath: /home/frappe/frappe-bench/sites/assets
           - name: logs
             mountPath: /home/frappe/frappe-bench/logs
       restartPolicy: Never
       volumes:
-        - name: assets-cache
-          emptyDir: {}
         - name: sites-dir
           {{- if .Values.persistence.worker.enabled }}
           persistentVolumeClaim:

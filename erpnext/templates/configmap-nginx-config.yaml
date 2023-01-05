@@ -6,5 +6,5 @@ metadata:
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
 data:
-  default.conf.template: {{ .Values.nginx.config | quote }}
+  default.conf: {{ .Values.nginx.config | quote }}
 {{- end }}

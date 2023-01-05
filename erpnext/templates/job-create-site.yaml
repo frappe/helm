@@ -17,41 +17,25 @@ spec:
       securityContext:
         {{- toYaml $.Values.podSecurityContext | nindent 8 }}
       initContainers:
-        - name: populate-assets
-          image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
-          imagePullPolicy: {{ .Values.nginx.image.pullPolicy }}
-          command:
-            - cp
-            - -fR
-          args:
-            - /usr/share/nginx/html/assets
-            - /home/frappe/frappe-bench/sites
-          resources:
-            {{- toYaml .Values.jobs.createSite.resources | nindent 12 }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          volumeMounts:
-            - name: assets-cache
-              mountPath: /home/frappe/frappe-bench/sites/assets
         - name: validate-config
-          image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
-          imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["bash", "-c"]
           args:
             - >
               export start=`date +%s`;
-              until [[ -n `grep -hs ^ common_site_config.json | jq -r ".db_host // empty"` ]] && \
-                [[ -n `grep -hs ^ common_site_config.json | jq -r ".redis_cache // empty"` ]] && \
-                [[ -n `grep -hs ^ common_site_config.json | jq -r ".redis_queue // empty"` ]];
+              until [[ -n `grep -hs ^ sites/common_site_config.json | jq -r ".db_host // empty"` ]] && \
+                [[ -n `grep -hs ^ sites/common_site_config.json | jq -r ".redis_cache // empty"` ]] && \
+                [[ -n `grep -hs ^ sites/common_site_config.json | jq -r ".redis_queue // empty"` ]];
               do
-                echo "Waiting for common_site_config.json to be created";
+                echo "Waiting for sites/common_site_config.json to be created";
                 sleep 5;
                 if (( `date +%s`-start > 600 )); then
-                  echo "could not find common_site_config.json with required keys";
+                  echo "could not find sites/common_site_config.json with required keys";
                   exit 1
                 fi
               done;
-              echo "common_site_config.json found";
+              echo "sites/common_site_config.json found";
           resources:
             {{- toYaml .Values.jobs.createSite.resources | nindent 12 }}
           securityContext:
@@ -61,12 +45,13 @@ spec:
               mountPath: /home/frappe/frappe-bench/sites
       containers:
       - name: create-site
-        image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
-        imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["bash", "-c"]
         args:
           - >
             bench new-site $(SITE_NAME)
+            --no-mariadb-socket
             --db-type=$(DB_TYPE)
             --db-host=$(DB_HOST)
             --db-port=$(DB_PORT)
@@ -143,14 +128,10 @@ spec:
         volumeMounts:
           - name: sites-dir
             mountPath: /home/frappe/frappe-bench/sites
-          - name: assets-cache
-            mountPath: /home/frappe/frappe-bench/sites/assets
           - name: logs
             mountPath: /home/frappe/frappe-bench/logs
       restartPolicy: Never
       volumes:
-        - name: assets-cache
-          emptyDir: {}
         - name: sites-dir
           {{- if .Values.persistence.worker.enabled }}
           persistentVolumeClaim:

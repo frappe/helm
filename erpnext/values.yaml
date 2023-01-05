@@ -9,15 +9,15 @@
 # dbRootPassword: ""
 # dbRds: false
 
+image:
+  repository: frappe/erpnext
+  tag: v14.12.1
+  pullPolicy: IfNotPresent
+
 nginx:
   replicaCount: 1
-  image:
-    repository: frappe/erpnext-nginx
-    tag: v14.12.1
-    pullPolicy: IfNotPresent
   # config: |
-  #   # custom template /etc/nginx/templates/default.conf.template
-  #   # https://github.com/nginxinc/docker-nginx-unprivileged/blob/main/stable/alpine/20-envsubst-on-templates.sh
+  #   # custom conf /etc/nginx/conf.d/default.conf
   environment:
     upstreamRealIPAddress: "127.0.0.1"
     upstreamRealIPRecursive: "off"
@@ -45,11 +45,6 @@ nginx:
   sidecars: []
 
 worker:
-  image:
-    repository: frappe/erpnext-worker
-    tag: v14.12.1
-    pullPolicy: IfNotPresent
-
   gunicorn:
     replicaCount: 1
     livenessProbe:
@@ -69,21 +64,7 @@ worker:
     nodeSelector: {}
     tolerations: []
     affinity: {}
-    args:
-      # https://pythonspeed.com/articles/gunicorn-in-docker/
-      # allowed workerClass options are "gevent", "gthread", "sync", default "gevent"
-      # set --config=/opt/patches/gevent_patch.py to use gevent.monkey.patch_all()
-    - /home/frappe/frappe-bench/env/bin/gunicorn
-    - --bind=0.0.0.0:8000
-    - --config=/opt/patches/gevent_patch.py
-    - --log-file=-
-    - --preload
-    - --threads=4
-    - --timeout=120
-    - --worker-class=gevent
-    - --worker-tmp-dir=/dev/shm
-    - --workers=2
-    - frappe.app:application
+    args: []
     envVars: []
     initContainers: []
     sidecars: []
@@ -202,10 +183,6 @@ socketio:
       port: 9000
     initialDelaySeconds: 5
     periodSeconds: 10
-  image:
-    repository: frappe/frappe-socketio
-    tag: v14.22.0
-    pullPolicy: IfNotPresent
   resources: {}
   nodeSelector: {}
   tolerations: []

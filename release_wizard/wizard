@@ -13,14 +13,8 @@ def main():
     args = parse_args()
     values_file = f"{os.getcwd()}/erpnext/values.yaml"
     values_dict = get_yaml_dict(values_file)
-    values_frappe_version = values_dict["socketio"]["image"]["tag"][1:]
-    values_erpnext_version = values_dict["worker"]["image"]["tag"][1:]
-
+    values_erpnext_version = values_dict["image"]["tag"][1:]
     frappe_version = git_version("frappe", args.version)
-    validate_local_and_remote_version(
-        current_version=values_frappe_version,
-        remote_version=frappe_version[1:],
-    )
 
     erpnext_version = git_version("erpnext", args.version)
     validate_local_and_remote_version(
@@ -30,9 +24,7 @@ def main():
 
     if args.ci:
         check_change_in_versions(
-            frappe_version[1:],
             erpnext_version[1:],
-            values_frappe_version,
             values_erpnext_version,
         )
 
@@ -41,7 +33,7 @@ def main():
     chart_version = chart_dict["version"]
 
     print("Updating values.yaml")
-    update_values(frappe_version, erpnext_version)
+    update_values(erpnext_version)
     repo = git.Repo(os.getcwd())
     git_check_branch(repo)
 
@@ -143,13 +135,11 @@ def update_chart(erpnext_version, bump_type):
     return chart_dict
 
 
-def update_values(frappe_version, erpnext_version):
+def update_values(erpnext_version):
     # Update values.yaml
     values_file = f"{os.getcwd()}/erpnext/values.yaml"
     values_dict = get_yaml_dict(values_file)
-    values_dict["nginx"]["image"]["tag"] = erpnext_version
-    values_dict["worker"]["image"]["tag"] = erpnext_version
-    values_dict["socketio"]["image"]["tag"] = frappe_version
+    values_dict["image"]["tag"] = erpnext_version
     save_yaml_file(values_dict, values_file)
 
 
@@ -222,21 +212,14 @@ def validate_local_and_remote_version(current_version, remote_version):
 
 
 def check_change_in_versions(
-    frappe_version,
     erpnext_version,
-    values_frappe_version,
     values_erpnext_version,
 ):
 
-    frappe_version = semantic_version.Version(frappe_version)
     erpnext_version = semantic_version.Version(erpnext_version)
-    values_frappe_version = semantic_version.Version(values_frappe_version)
     values_erpnext_version = semantic_version.Version(values_erpnext_version)
 
-    if (
-        frappe_version == values_frappe_version
-        and erpnext_version == values_erpnext_version
-    ):
+    if erpnext_version == values_erpnext_version:
         print(
             "No chanage in version detected during CI run, skip helm chart release",
         )

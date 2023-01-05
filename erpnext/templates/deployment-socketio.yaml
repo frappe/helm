@@ -29,19 +29,22 @@ spec:
     {{- end }}
       containers:
         - name: socketio
+          args:
+            - node
+            - /home/frappe/frappe-bench/apps/frappe/socketio.js
           {{- if .Values.socketio.envVars }}
           env:
             {{- toYaml .Values.socketio.envVars | nindent 12 }}
           {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.socketio.image.repository }}:{{ .Values.socketio.image.tag }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           volumeMounts:
           - name: sites-dir
             mountPath: /home/frappe/frappe-bench/sites
           - name: logs
             mountPath: /home/frappe/frappe-bench/logs
-          imagePullPolicy: {{ .Values.socketio.image.pullPolicy }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
               containerPort: {{ .Values.socketio.service.port }}
