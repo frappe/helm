@@ -1,6 +1,6 @@
 # Releasing new helm charts
 
-1. Make sure that all the relevant pull requests have been merged on the master branch
+1. Make sure that all the relevant pull requests have been merged on the main branch
 
 2. Setup release_wizard:
 ```shell
@@ -13,4 +13,4 @@ $ . ./venv/bin/activate
 $ ./release_wizard/wizard <number> major|minor|patch
 ```
 
-4. The tag triggers travis, which will then build the chart and deploy it on helm.erpnext.com
+4. The tag triggers github actions to build the chart and deploy it on helm.erpnext.com
