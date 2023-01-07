@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  k3s:
+    image: registry.gitlab.com/gitlab-org/cluster-integration/test-utils/k3s-gitlab-ci/releases/v1.23.4-k3s1:latest
+    command:
+      - server
+      - --tls-san=k3s
+      - --private-registry=/opt/custom/registries.yaml
+      - --no-deploy=traefik
+    volumes:
+      - ./registries.yaml:/opt/custom/registries.yaml
+      - k3s-server:/var/lib/rancher/k3s
+    tmpfs:
+      - /run
+      - /var/run
+    privileged: true
+
+  tests:
+    image: alpine:latest
+    depends_on:
+      - k3s
+    volumes:
+      - ..:/repo
+    entrypoint:
+      - sh
+      - -c
+    command:
+      - |
+        apk add -U curl bash git openssl bind-tools jq wait4ports
+
+        cd /repo
+
+        ./tests/compose-script.sh
+
+
+volumes:
+  k3s-server:

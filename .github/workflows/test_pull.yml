@@ -11,9 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Install k3d
-        run: curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
       - name: Run Tests
         run: |
           helm lint erpnext
-          ./tests/script.sh
+          docker compose -p frappe-helm -f tests/compose.yaml run tests
