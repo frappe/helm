@@ -23,28 +23,10 @@ spec:
       serviceAccountName: {{ include "erpnext.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+    {{- if .Values.worker.gunicorn.initContainers }}
       initContainers:
-        - name: populate-assets
-          {{- if .Values.worker.gunicorn.envVars }}
-          env:
-            {{- toYaml .Values.worker.gunicorn.envVars | nindent 12 }}
-          {{- end }}
-          image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
-          imagePullPolicy: {{ .Values.nginx.image.pullPolicy }}
-          command:
-            - cp
-            - -fR
-          args:
-            - /usr/share/nginx/html/assets
-            - /home/frappe/frappe-bench/sites
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          volumeMounts:
-            - name: assets-cache
-              mountPath: /home/frappe/frappe-bench/sites/assets
-      {{- if .Values.worker.gunicorn.initContainers }}
         {{- toYaml .Values.worker.gunicorn.initContainers | nindent 8 }}
-      {{- end }}
+    {{- end }}
       containers:
         - name: gunicorn
           {{- if .Values.worker.gunicorn.envVars }}
@@ -55,10 +37,9 @@ spec:
             {{- toYaml .Values.worker.gunicorn.args | nindent 12 }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
-          - name: assets-cache
-            mountPath: /home/frappe/frappe-bench/sites/assets
           - name: sites-dir
             mountPath: /home/frappe/frappe-bench/sites
           - name: logs
@@ -67,7 +48,6 @@ spec:
             - name: http
               containerPort: {{ .Values.worker.gunicorn.service.port }}
               protocol: TCP
-          imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
           livenessProbe:
             {{- toYaml .Values.worker.gunicorn.livenessProbe | nindent 12 }}
           readinessProbe:
@@ -78,8 +58,6 @@ spec:
         {{- toYaml .Values.worker.gunicorn.sidecars | nindent 8 }}
       {{- end }}
       volumes:
-        - name: assets-cache
-          emptyDir: {}
         - name: sites-dir
           {{- if .Values.persistence.worker.enabled }}
           persistentVolumeClaim:

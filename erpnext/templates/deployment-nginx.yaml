@@ -23,8 +23,20 @@ spec:
       serviceAccountName: {{ include "erpnext.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+    {{- if .Values.nginx.initContainers }}
+      initContainers:
+        {{- toYaml .Values.nginx.initContainers | nindent 8 }}
+    {{- end }}
       containers:
         - name: nginx
+          args:
+          {{- if .Values.nginx.config }}
+          - nginx
+          - -g
+          - 'daemon off;'
+          {{- else }}
+          - nginx-entrypoint.sh
+          {{- end }}
           env:
             - name: "BACKEND"
               value: {{ print (include "erpnext.fullname" .) "-gunicorn:" .Values.worker.gunicorn.service.port }}
@@ -38,8 +50,11 @@ spec:
               value: {{ .Values.nginx.environment.upstreamRealIPHeader }}
             - name: "FRAPPE_SITE_NAME_HEADER"
               value: {{ .Values.nginx.environment.frappeSiteNameHeader }}
-          image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
-          imagePullPolicy: {{ .Values.nginx.image.pullPolicy }}
+          {{- if .Values.worker.short.envVars }}
+            {{- toYaml .Values.worker.short.envVars | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
               containerPort: {{ .Values.nginx.service.port }}
@@ -54,10 +69,10 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           volumeMounts:
           - name: sites-dir
-            mountPath: /usr/share/nginx/html/sites
+            mountPath: /home/frappe/frappe-bench/sites
           {{- if .Values.nginx.config }}
           - name: nginx-config
-            mountPath: /etc/nginx/templates
+            mountPath: /etc/nginx/conf.d
           {{- end }}
       volumes:
         - name: sites-dir

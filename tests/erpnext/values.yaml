@@ -12,3 +12,7 @@ persistence:
     storageClass: nfs
   logs:
     enabled: false
+
+jobs:
+  configure:
+    fixVolume: false

@@ -36,8 +36,8 @@ spec:
           args:
           - bench
           - schedule
-          image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
-          imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           livenessProbe:
             {{- if .Values.worker.scheduler.livenessProbe.override }}
             {{- toYaml .Values.worker.scheduler.livenessProbe.probe | nindent 12 }}

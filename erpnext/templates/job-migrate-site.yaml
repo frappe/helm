@@ -16,27 +16,10 @@ spec:
       serviceAccountName: {{ template "erpnext.serviceAccountName" $ }}
       securityContext:
         {{- toYaml $.Values.podSecurityContext | nindent 8 }}
-      initContainers:
-      - name: populate-assets
-        image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
-        imagePullPolicy: {{ .Values.nginx.image.pullPolicy }}
-        command:
-          - cp
-          - -fR
-        args:
-          - /usr/share/nginx/html/assets
-          - /home/frappe/frappe-bench/sites
-        resources:
-          {{- toYaml .Values.jobs.migrate.resources | nindent 10 }}
-        securityContext:
-          {{- toYaml .Values.securityContext | nindent 10 }}
-        volumeMounts:
-          - name: assets-cache
-            mountPath: /home/frappe/frappe-bench/sites/assets
       containers:
       - name: migrate
-        image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
-        imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["bash", "-c"]
         args:
           - >
@@ -53,14 +36,10 @@ spec:
         volumeMounts:
           - name: sites-dir
             mountPath: /home/frappe/frappe-bench/sites
-          - name: assets-cache
-            mountPath: /home/frappe/frappe-bench/sites/assets
           - name: logs
             mountPath: /home/frappe/frappe-bench/logs
       restartPolicy: Never
       volumes:
-        - name: assets-cache
-          emptyDir: {}
         - name: sites-dir
           {{- if .Values.persistence.worker.enabled }}
           persistentVolumeClaim:
