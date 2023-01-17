@@ -272,13 +272,6 @@ jobs:
     enabled: false
     siteName: "erp.cluster.local"
     withFiles: true
-    push:
-      enabled: false
-      # bucket: "erpnext"
-      # region: "us-east-1"
-      # accessKey: "ACCESSKEY"
-      # secretKey: "SECRETKEY"
-      # endpoint: http://store.storage.svc.cluster.local
     backoffLimit: 0
     resources: {}
     nodeSelector: {}

@@ -29,30 +29,9 @@ spec:
           {{- else }}
             backup;
           {{- end }}
-          {{- if .Values.jobs.backup.push.enabled }}
-            push-backup
-            --site=$(SITE_NAME)
-            --bucket=$(BUCKET)
-            --region-name=$(REGION)
-            --endpoint-url=$(ENDPOINT_URL)
-            --aws-access-key-id=$(ACCESS_KEY)
-            --aws-secret-access-key=$(SECRET_KEY);
-          {{- end }}
         env:
           - name: "SITE_NAME"
             value: "{{ .Values.jobs.backup.siteName }}"
-          {{- if .Values.jobs.backup.push.enabled }}
-          - name: "BUCKET"
-            value: "{{ .Values.jobs.backup.push.bucket }}"
-          - name: "REGION"
-            value: "{{ .Values.jobs.backup.push.region }}"
-          - name: "ENDPOINT_URL"
-            value: "{{ .Values.jobs.backup.push.endpoint }}"
-          - name: "ACCESS_KEY"
-            value: "{{ .Values.jobs.backup.push.accessKey }}"
-          - name: "SECRET_KEY"
-            value: "{{ .Values.jobs.backup.push.secretKey }}"
-          {{- end }}
         resources:
           {{- toYaml .Values.jobs.backup.resources | nindent 10 }}
         securityContext:
