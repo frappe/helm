@@ -37,7 +37,7 @@ echo -e "\n"
 
 echo -e "\e[1m\e[4mCreate frappe-bench release from frappe/erpnext helm chart\e[0m"
 kubectl create namespace erpnext
-helm install frappe-bench --namespace erpnext frappe/erpnext -f tests/erpnext/values.yaml --wait
+helm install frappe-bench --namespace erpnext frappe/erpnext -f tests/erpnext/values.yaml --wait --timeout=15m0s
 echo -e "\n"
 
 echo -e "\e[1m\e[4mCreate mysite.localhost\e[0m"
@@ -59,8 +59,30 @@ curl -sS -H "Host: mysite.localhost" http://k3s/api/method/ping
 echo -e "\n"
 
 echo -e "\e[1m\e[4mUpgrade frappe-bench release with chart from PR\e[0m"
-helm upgrade frappe-bench -n erpnext erpnext -f tests/erpnext/values.yaml --wait
+helm upgrade frappe-bench -n erpnext erpnext -f tests/erpnext/values.yaml --wait --timeout=15m0s
 echo -e "\n"
+
+echo -e "\e[1m\e[4mMigrate mysite.localhost\e[0m"
+helm template frappe-bench \
+  -n erpnext erpnext \
+  -f tests/erpnext/values.yaml \
+  -f tests/erpnext/values-job-migrate-mysite.yaml \
+  -s templates/job-migrate-site.yaml > /tmp/migrate-job.yaml
+kubectl -n erpnext apply -f /tmp/migrate-job.yaml
+JOBNAME=$(yq '.metadata.name' /tmp/migrate-job.yaml)
+export JOBNAME
+echo -e "\n"
+
+echo -e "\033[1mWaiting for "${JOBNAME}" to complete\033[0m"
+JOBUUID=$(kubectl -n erpnext get job "${JOBNAME}" -o jsonpath="{.metadata.uid}")
+export JOBUUID
+PODNAME=$(kubectl -n erpnext get pod -l controller-uid="${JOBUUID}" -o name)
+export PODNAME
+echo "Job name ${JOBNAME} / Job uuid ${JOBUUID}"
+echo "Pod name ${PODNAME}"
+kubectl -n erpnext wait --timeout=900s --for=condition=ready "${PODNAME}"
+echo "Migration Logs..."
+kubectl -n erpnext logs job/${JOBNAME} -f
 
 echo -e "\e[1m\e[4mPing mysite.localhost (pr chart)\e[0m"
 curl -sS -H "Host: mysite.localhost" http://k3s/api/method/ping
