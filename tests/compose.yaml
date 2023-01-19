@@ -27,7 +27,7 @@ services:
       - -c
     command:
       - |
-        apk add -U curl bash git openssl bind-tools jq wait4ports
+        apk add -U curl bash git openssl bind-tools jq wait4ports yq
 
         cd /repo
 

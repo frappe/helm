@@ -23,9 +23,9 @@ spec:
         command: ["bash", "-c"]
         args:
           - >
-            bench --site=$(SITE_NAME) set-maintenance-mode on;
-            bench --site=$(SITE_NAME) migrate;
-            bench --site=$(SITE_NAME) set-maintenance-mode off;
+            bench --site $(SITE_NAME) set-maintenance-mode on;
+            bench --site $(SITE_NAME) migrate;
+            bench --site $(SITE_NAME) set-maintenance-mode off;
         env:
           - name: "SITE_NAME"
             value: "{{ .Values.jobs.migrate.siteName }}"

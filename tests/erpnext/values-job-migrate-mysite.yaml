@@ -1,0 +1,4 @@
+jobs:
+  migrate:
+    enabled: true
+    siteName: "mysite.localhost"
