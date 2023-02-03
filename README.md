@@ -6,7 +6,7 @@ Helm Chart to deploy a *frappe-bench*-like environment on Kubernetes. It adds fo
 
 ConfigMaps:
 
-- `nginx-config` is used to override template to render default.conf for nginx reverse proxy and static assets container.
+- `nginx-config` is used to override default.conf for nginx reverse proxy and static assets container.
 
 Deployments:
 
@@ -30,6 +30,7 @@ Jobs:
 - `drop-site` job to drop existing site.
 - `backup-push` job to backup and optionally push backup to S3 for existing site.
 - `migrate` job to migrate existing site.
+- `custom` job to run custom additional commands and configuration.
 
 PVC:
 

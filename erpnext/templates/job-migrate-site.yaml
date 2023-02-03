@@ -24,7 +24,7 @@ spec:
         args:
           - >
             bench --site $(SITE_NAME) set-maintenance-mode on;
-            bench --site $(SITE_NAME) migrate;
+            bench --site $(SITE_NAME) migrate {{ if .Values.jobs.migrate.skipFailing }}--skip-failing{{ end }};
             bench --site $(SITE_NAME) set-maintenance-mode off;
         env:
           - name: "SITE_NAME"
