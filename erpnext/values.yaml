@@ -288,6 +288,19 @@ jobs:
     tolerations: []
     affinity: {}
 
+  custom:
+    enabled: false
+    jobName: ""
+    labels: {}
+    backoffLimit: 0
+    initContainers: []
+    containers: []
+    restartPolicy: Never
+    volumes: []
+    nodeSelector: {}
+    affinity: {}
+    tolerations: []
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
