@@ -18,12 +18,21 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       serviceAccountName: {{ template "erpnext.serviceAccountName" $ }}
-      initContainers: {{ .Values.jobs.custom.initContainers }}
+    {{- with .Values.jobs.custom.initContainers }}
+      initContainers:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
       securityContext:
         {{- toYaml $.Values.podSecurityContext | nindent 8 }}
-      containers: {{ .Values.jobs.custom.containers }}
+    {{- with .Values.jobs.custom.containers }}
+      containers:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
       restartPolicy: {{ .Values.jobs.custom.restartPolicy }}
-      volumes: {{ .Values.jobs.custom.volumes }}
+    {{- with .Values.jobs.custom.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
       {{- with .Values.jobs.custom.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
