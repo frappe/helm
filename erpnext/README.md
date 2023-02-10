@@ -345,13 +345,13 @@ Make following changes to `custom-values.yaml`:
 ```yaml
 redis-cache:
   enabled: false
-  host: "1.1.1.1"
+  host: "redis://1.1.1.1:6379"
 redis-queue:
   enabled: false
-  host: "2.2.2.2"
+  host: "redis://2.2.2.2:6379"
 redis-socketio:
   enabled: false
-  host: "3.3.3.3"
+  host: "redis://3.3.3.3:6379"
 ```
 
 Make sure the redis hosts are correct.
