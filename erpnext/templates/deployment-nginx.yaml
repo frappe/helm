@@ -50,8 +50,8 @@ spec:
               value: {{ .Values.nginx.environment.upstreamRealIPHeader }}
             - name: "FRAPPE_SITE_NAME_HEADER"
               value: {{ .Values.nginx.environment.frappeSiteNameHeader }}
-          {{- if .Values.worker.short.envVars }}
-            {{- toYaml .Values.worker.short.envVars | nindent 12 }}
+          {{- if .Values.nginx.envVars }}
+            {{- toYaml .Values.nginx.envVars | nindent 12 }}
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
