@@ -18,8 +18,8 @@ spec:
         {{- toYaml $.Values.podSecurityContext | nindent 8 }}
       containers:
       - name: frappe-bench-ownership
-        image: {{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}
-        imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ['sh', '-c']
         args:
           - >
