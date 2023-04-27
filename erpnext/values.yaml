@@ -16,6 +16,12 @@ image:
 
 nginx:
   replicaCount: 1
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPU: 75
+    targetMemory: 75
   # config: |
   #   # custom conf /etc/nginx/conf.d/default.conf
   environment:
@@ -47,6 +53,12 @@ nginx:
 worker:
   gunicorn:
     replicaCount: 1
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPU: 75
+      targetMemory: 75
     livenessProbe:
       tcpSocket:
         port: 8000
@@ -71,6 +83,12 @@ worker:
 
   default:
     replicaCount: 1
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPU: 75
+      targetMemory: 75
     resources: {}
     nodeSelector: {}
     tolerations: []
@@ -87,6 +105,12 @@ worker:
 
   short:
     replicaCount: 1
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPU: 75
+      targetMemory: 75
     resources: {}
     nodeSelector: {}
     tolerations: []
@@ -103,6 +127,12 @@ worker:
 
   long:
     replicaCount: 1
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPU: 75
+      targetMemory: 75
     resources: {}
     nodeSelector: {}
     tolerations: []
@@ -173,6 +203,12 @@ worker:
 
 socketio:
   replicaCount: 1
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPU: 75
+    targetMemory: 75
   livenessProbe:
     tcpSocket:
       port: 9000
