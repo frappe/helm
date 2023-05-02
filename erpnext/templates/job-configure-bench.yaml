@@ -39,8 +39,17 @@ spec:
       - name: configure
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        command: ['bash', '-c']
+        command:
+        {{- if .Values.jobs.configure.command }}
+          {{- toYaml .Values.jobs.configure.command | nindent 10 }}
+        {{- else }}
+          - bash
+          - -c
+        {{- end }}
         args:
+        {{- if .Values.jobs.configure.args }}
+          {{- toYaml .Values.jobs.configure.args | nindent 10 }}
+        {{- else }}
           - >
             ls -1 apps > sites/apps.txt;
             [[ -f sites/common_site_config.json ]] || echo "{}" > sites/common_site_config.json;
@@ -53,6 +62,7 @@ spec:
             bench set-config -g redis_queue $REDIS_QUEUE;
             bench set-config -g redis_socketio $REDIS_SOCKETIO;
             bench set-config -gp socketio_port $SOCKETIO_PORT;
+        {{- end }}
         env:
           - name: DB_HOST
             {{- if .Values.mariadb.enabled }}
@@ -84,6 +94,9 @@ spec:
             {{- else }}
             value: {{ index .Values "redis-socketio" "host" }}
             {{- end }}
+          {{- if .Values.jobs.configure.envVars }}
+            {{- toYaml .Values.jobs.configure.envVars | nindent 12 }}
+          {{- end }}
           - name: SOCKETIO_PORT
             value: {{ .Values.socketio.service.port | quote }}
         resources:

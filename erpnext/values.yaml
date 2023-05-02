@@ -279,6 +279,9 @@ jobs:
     nodeSelector: {}
     tolerations: []
     affinity: {}
+    envVars: []
+    command: []
+    args: []
 
   createSite:
     enabled: false
