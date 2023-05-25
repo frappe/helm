@@ -3,8 +3,8 @@ name: erpnext
 description: Kubernetes Helm Chart for the latest stable ERPNext branch
 icon: https://raw.githubusercontent.com/frappe/erpnext/develop/erpnext/public/images/erpnext-logo.png
 type: application
-version: 6.0.36
-appVersion: v14.25.0
+version: 6.0.37
+appVersion: v14.25.1
 dependencies:
 - name: redis
   condition: redis-cache.enabled
