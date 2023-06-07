@@ -37,7 +37,7 @@ spec:
               done;
               echo "sites/common_site_config.json found";
 
-              {{ .Values.jobs.createSite.initContainer.customCommand | nindent 14 }};
+              {{ .Values.jobs.createSite.initContainer.additionalCustomCmd | nindent 14 }};
           resources:
             {{- toYaml .Values.jobs.createSite.resources | nindent 12 }}
           securityContext:
