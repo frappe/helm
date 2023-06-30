@@ -13,10 +13,19 @@ Deployments:
 - `gunicorn` deployment contains frappe/erpnext gunicorn.
 - `nginx` deployment contains frappe/erpnext static assets and nginx reverse proxy.
 - `scheduler` deployment contains frappe/erpnext scheduler.
-- `socketio` deployment contains frappe-socketio.
+- `socketio` deployment contains frappe/erpnext socketio.
 - `worker-d` deployment contains frappe/erpnext default worker.
 - `worker-l` deployment contains frappe/erpnext long worker.
 - `worker-s` deployment contains frappe/erpnext short worker.
+
+HorizontalPodAutoscalers:
+
+- `gunicorn` hpa scales frappe/erpnext gunicorn deployment.
+- `nginx` hpa scales frappe/erpnext nginx deployment.
+- `socketio` hpa scales frappe/erpnext socketio deployment.
+- `worker-d` hpa scales frappe/erpnext default worker deployment.
+- `worker-l` hpa scales frappe/erpnext long worker deployment.
+- `worker-s` hpa scales frappe/erpnext short worker deployment.
 
 Ingresses:
 
