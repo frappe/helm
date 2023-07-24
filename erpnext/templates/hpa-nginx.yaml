@@ -1,5 +1,5 @@
 {{- if .Values.nginx.autoscaling.enabled }}
-apiVersion: autoscaling/v1
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "erpnext.fullname" . }}-nginx
