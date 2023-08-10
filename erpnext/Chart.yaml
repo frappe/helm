@@ -9,17 +9,17 @@ dependencies:
 - name: redis
   condition: redis-cache.enabled
   alias: redis-cache
-  version: "17.3.17"
+  version: "17.15.2"
   repository: https://charts.bitnami.com/bitnami
 - name: redis
   condition: redis-queue.enabled
   alias: redis-queue
-  version: "17.3.17"
+  version: "17.15.2"
   repository: https://charts.bitnami.com/bitnami
 - name: redis
   condition: redis-socketio.enabled
   alias: redis-socketio
-  version: "17.3.17"
+  version: "17.15.2"
   repository: https://charts.bitnami.com/bitnami
 - name: mariadb
   condition: mariadb.enabled
