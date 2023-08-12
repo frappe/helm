@@ -281,12 +281,6 @@ The following table lists the configurable parameters of the ERPNext chart and t
 | `redis-queue.auth.sentinal`                           | Sentinal auth is disabled for use with frappe. Do not change.                                                              | `false`                                  |
 | `redis-queue.master.containerPorts.redis`             | Container port for redis-queue service                                                                                     | `6379`                                   |
 | `redis-queue.master.persistence.enabled`              | Persistence is disabled for in-memory storage use case                                                                     | `false`                                  |
-| `redis-socketio.enabled`                              | Install redis-socketio sub chart                                                                                           | `true`                                   |
-| `redis-socketio.architecture`                         | Architecture for sub-chart. Do not change.                                                                                 | `standalone`                             |
-| `redis-socketio.auth.enabled`                         | Authentication is disabled for use with frappe. Do not change.                                                             | `false`                                  |
-| `redis-socketio.auth.sentinal`                        | Sentinal auth is disabled for use with frappe. Do not change.                                                              | `false`                                  |
-| `redis-socketio.master.containerPorts.redis`          | Container port for redis-socketio service                                                                                  | `6379`                                   |
-| `redis-socketio.master.persistence.enabled`           | Persistence is disabled for in-memory storage use case                                                                     | `false`                                  |
 | `mariadb.enabled`                                     | Install mariadb sub chart.                                                                                                 | `true`                                   |
 | `mariadb.auth.rootPassword`                           | Root password for in-cluster mariadb setup                                                                                 | `changeit`                               |
 | `mariadb.auth.username`                               | Initial database username for in-cluster mariadb setup                                                                     | `erpnext`                                |
@@ -382,9 +376,6 @@ redis-cache:
 redis-queue:
   enabled: false
   host: "redis://2.2.2.2:6379"
-redis-socketio:
-  enabled: false
-  host: "redis://3.3.3.3:6379"
 ```
 
 Make sure the redis hosts are correct.
@@ -592,10 +583,6 @@ redis-cache:
 redis-queue:
   enabled: false
   host: redis://redis-queue.7abc2d.0001.usw2.cache.amazonaws.com:6379
-
-redis-socketio:
-  enabled: false
-  host: redis://redis-socketio.7abc2d.0001.usw2.cache.amazonaws.com:6379
 
 jobs:
   configure:

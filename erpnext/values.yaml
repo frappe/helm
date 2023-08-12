@@ -188,11 +188,6 @@ worker:
         {{- else if index .Values "redis-queue" "host" }}
         - wait-for-it {{ index .Values "redis-queue" "host" }} -t 1;
         {{- end }}
-        {{- if index .Values "redis-socketio" "host" }}
-        - wait-for-it {{ .Release.Name }}-redis-socketio-master:{{ index .Values "redis-socketio" "master" "containerPorts" "redis" }} -t 1;
-        {{- else if index .Values "redis-socketio" "host" }}
-        - wait-for-it {{ index .Values "redis-socketio" "host" }} -t 1;
-        {{- end }}
         {{- if .Values.postgresql.host }}
         - wait-for-it {{ .Values.postgresql.host }}:{{ .Values.postgresql.primary.service.ports.postgresql }} -t 1;
         {{- else if .Values.postgresql.enabled }}
@@ -387,20 +382,6 @@ redis-queue:
     persistence:
       enabled: false
 
-redis-socketio:
-  # https://github.com/bitnami/charts/tree/master/bitnami/redis
-  enabled: true
-  # host: ""
-  architecture: standalone
-  auth:
-    enabled: false
-    sentinal: false
-  master:
-    containerPorts:
-      redis: 6379
-    persistence:
-      enabled: false
-
 mariadb:
   # https://github.com/bitnami/charts/tree/master/bitnami/mariadb
   enabled: true
@@ -413,40 +394,11 @@ mariadb:
     service:
       ports:
         mysql: 3306
-    configuration: |-
-      [mysqld]
-      skip-name-resolve
-      explicit_defaults_for_timestamp
-      basedir=/opt/bitnami/mariadb
-      plugin_dir=/opt/bitnami/mariadb/plugin
-      port=3306
-      socket=/opt/bitnami/mariadb/tmp/mysql.sock
-      tmpdir=/opt/bitnami/mariadb/tmp
-      max_allowed_packet=16M
-      bind-address=*
-      pid-file=/opt/bitnami/mariadb/tmp/mysqld.pid
-      log-error=/opt/bitnami/mariadb/logs/mysqld.log
-      slow_query_log=0
-      slow_query_log_file=/opt/bitnami/mariadb/logs/mysqld.log
-      long_query_time=10.0
-
-      # Frappe Specific Changes
-      character-set-client-handshake=FALSE
-      character-set-server=utf8mb4
-      collation-server=utf8mb4_unicode_ci
-
-      [client]
-      port=3306
-      socket=/opt/bitnami/mariadb/tmp/mysql.sock
-      plugin_dir=/opt/bitnami/mariadb/plugin
-
-      # Frappe Specific Changes
-      default-character-set=utf8mb4
-
-      [manager]
-      port=3306
-      socket=/opt/bitnami/mariadb/tmp/mysql.sock
-      pid-file=/opt/bitnami/mariadb/tmp/mysqld.pid
+    extraFlags: >-
+      --skip-character-set-client-handshake
+      --skip-innodb-read-only-compressed
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
 
 postgresql:
   # https://github.com/bitnami/charts/tree/master/bitnami/postgresql

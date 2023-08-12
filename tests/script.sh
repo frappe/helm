@@ -32,7 +32,7 @@ echo -e "\n"
 
 echo -e "\e[1m\e[4mCreate in-cluster release from nfs-ganesha-server-and-external-provisioner/nfs-server-provisioner helm chart\e[0m"
 kubectl create namespace nfs
-helm install in-cluster -n nfs nfs-ganesha-server-and-external-provisioner/nfs-server-provisioner -f tests/nfs/values.yaml --version 1.4.0 --wait
+helm install in-cluster -n nfs nfs-ganesha-server-and-external-provisioner/nfs-server-provisioner -f tests/nfs/values.yaml --wait
 echo -e "\n"
 
 echo -e "\e[1m\e[4mCreate frappe-bench release from frappe/erpnext helm chart\e[0m"
