@@ -15,7 +15,7 @@ export KUBECONFIG=/root/.kube/config
 kubectl cluster-info
 
 echo -e "\e[1m\e[4mInstall kubernetes/ingress-nginx\e[0m"
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.5.1/deploy/static/provider/cloud/deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
 echo -e "\n"
 
 echo -e "\e[1m\e[4mAdd Helm Repositories\e[0m"
@@ -27,12 +27,12 @@ echo -e "\n"
 
 echo -e "\e[1m\e[4mCreate mariadb release from bitnami/mariadb helm chart\e[0m"
 kubectl create namespace mariadb
-helm install mariadb -n mariadb bitnami/mariadb -f tests/mariadb/values.yaml --version 11.4.2 --wait
+helm install mariadb -n mariadb bitnami/mariadb -f tests/mariadb/values.yaml --version 11.5.7 --wait
 echo -e "\n"
 
 echo -e "\e[1m\e[4mCreate in-cluster release from nfs-ganesha-server-and-external-provisioner/nfs-server-provisioner helm chart\e[0m"
 kubectl create namespace nfs
-helm install in-cluster -n nfs nfs-ganesha-server-and-external-provisioner/nfs-server-provisioner -f tests/nfs/values.yaml --version 1.4.0 --wait
+helm install in-cluster -n nfs nfs-ganesha-server-and-external-provisioner/nfs-server-provisioner -f tests/nfs/values.yaml --wait
 echo -e "\n"
 
 echo -e "\e[1m\e[4mCreate frappe-bench release from frappe/erpnext helm chart\e[0m"

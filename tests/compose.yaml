@@ -2,12 +2,12 @@ version: '3.8'
 
 services:
   k3s:
-    image: registry.gitlab.com/gitlab-org/cluster-integration/test-utils/k3s-gitlab-ci/releases/v1.23.4-k3s1:latest
+    image: registry.gitlab.com/gitlab-org/cluster-integration/test-utils/k3s-gitlab-ci/releases/v1.27.1-k3s1:latest
     command:
       - server
       - --tls-san=k3s
       - --private-registry=/opt/custom/registries.yaml
-      - --no-deploy=traefik
+      - --disable=traefik
     volumes:
       - ./registries.yaml:/opt/custom/registries.yaml
       - k3s-server:/var/lib/rancher/k3s

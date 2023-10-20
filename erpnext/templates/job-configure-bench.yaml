@@ -60,7 +60,6 @@ spec:
             {{- end}}
             bench set-config -g redis_cache $REDIS_CACHE;
             bench set-config -g redis_queue $REDIS_QUEUE;
-            bench set-config -g redis_socketio $REDIS_SOCKETIO;
             bench set-config -gp socketio_port $SOCKETIO_PORT;
         {{- end }}
         env:
@@ -87,12 +86,6 @@ spec:
             value: redis://{{ .Release.Name }}-redis-queue-master:{{ index .Values "redis-queue" "master" "containerPorts" "redis" }}
             {{- else }}
             value: {{ index .Values "redis-queue" "host" }}
-            {{- end }}
-          - name: REDIS_SOCKETIO
-            {{- if index .Values "redis-socketio" "enabled" }}
-            value: redis://{{ .Release.Name }}-redis-socketio-master:{{ index .Values "redis-socketio" "master" "containerPorts" "redis" }}
-            {{- else }}
-            value: {{ index .Values "redis-socketio" "host" }}
             {{- end }}
           {{- if .Values.jobs.configure.envVars }}
             {{- toYaml .Values.jobs.configure.envVars | nindent 12 }}
