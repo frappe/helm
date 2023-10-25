@@ -37,7 +37,7 @@ spec:
           - bench
           - worker
           - --queue
-          - long
+          - long,default,short
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           livenessProbe:
