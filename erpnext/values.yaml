@@ -11,7 +11,7 @@
 
 image:
   repository: frappe/erpnext
-  tag: v15.14.4
+  tag: v15.14.5
   pullPolicy: IfNotPresent
 
 nginx:
