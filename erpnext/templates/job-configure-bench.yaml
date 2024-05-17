@@ -88,7 +88,7 @@ spec:
             value: {{ index .Values "redis-queue" "host" }}
             {{- end }}
           {{- if .Values.jobs.configure.envVars }}
-            {{- toYaml .Values.jobs.configure.envVars | nindent 12 }}
+            {{- toYaml .Values.jobs.configure.envVars | nindent 10 }}
           {{- end }}
           - name: SOCKETIO_PORT
             value: {{ .Values.socketio.service.port | quote }}
