@@ -5,6 +5,12 @@ metadata:
   name: {{ template "erpnext.fullname" . }}-new-site-{{ now | date "20060102150405" }}
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
+  annotations:
+  {{- if .Values.jobs.createSite.annotations }}
+  {{- range .Values.jobs.createSite.annotations }}
+    {{ . }}
+  {{- end }}
+  {{- end }}
 spec:
   backoffLimit: {{ .Values.jobs.createSite.backoffLimit }}
   template:
