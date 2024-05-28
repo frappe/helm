@@ -6,11 +6,11 @@ metadata:
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
   annotations:
-  {{- if .Values.jobs.createSite.annotations }}
-  {{- range .Values.jobs.createSite.annotations }}
-    {{ . }}
-  {{- end }}
-  {{- end }}
+{{- with .Values.jobs.createSite.annotations }}
+{{- range $key, $value := . }}
+    {{ $key }}: {{ $value | quote }}
+{{- end }}
+{{- end }}
 spec:
   backoffLimit: {{ .Values.jobs.createSite.backoffLimit }}
   template:
