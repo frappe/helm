@@ -36,6 +36,33 @@ spec:
                 fi
               done;
               echo "sites/common_site_config.json found";
+
+              echo "Waiting for database to be reachable...";
+              wait-for-it -t 180 $(DB_HOST):$(DB_PORT);
+              echo "Database is reachable.";
+          env:
+            - name: "DB_HOST"
+              {{- if .Values.postgresql.host }}
+              value: {{ .Values.postgresql.host }}
+              {{- else if .Values.postgresql.enabled }}
+              value: {{ .Release.Name }}-postgresql
+              {{- else if .Values.mariadb.enabled }}
+              {{- if eq .Values.mariadb.architecture "replication" }}
+              value: {{ .Release.Name }}-mariadb-primary
+              {{- else }}
+              value: {{ .Release.Name }}-mariadb
+              {{- end }}
+              {{- else }}
+              value: "{{ .Values.dbHost }}"
+              {{- end }}
+            - name: "DB_PORT"
+              {{- if .Values.dbPort }}
+              value: {{ .Values.dbPort | quote }}
+              {{- else if .Values.postgresql.enabled }}
+              value: {{ .Values.postgresql.primary.service.ports.postgresql | quote }}
+              {{- else }}
+              value: {{ .Values.mariadb.primary.service.ports.mysql | quote }}
+              {{- end }}
           resources:
             {{- toYaml .Values.jobs.createSite.resources | nindent 12 }}
           securityContext:
@@ -50,6 +77,8 @@ spec:
         command: ["bash", "-c"]
         args:
           - >
+            set -e;
+
             bench new-site $(SITE_NAME)
             --no-mariadb-socket
             --db-type=$(DB_TYPE)
