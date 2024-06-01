@@ -85,7 +85,7 @@ spec:
           - >
             set -x;
 
-            bench_output=$(bench new-site $(SITE_NAME) \
+            bench_output=$(bench new-site ${SITE_NAME} \
               --no-mariadb-socket \
               --db-type=$(DB_TYPE) \
               --db-host=$(DB_HOST) \
