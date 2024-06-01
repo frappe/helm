@@ -83,24 +83,37 @@ spec:
         command: ["bash", "-c"]
         args:
           - >
-            set -e;
+            bench_output=$(bench new-site $(SITE_NAME) \
+              --no-mariadb-socket \
+              --db-type=$(DB_TYPE) \
+              --db-host=$(DB_HOST) \
+              --db-port=$(DB_PORT) \
+              --admin-password=$(ADMIN_PASSWORD) \
+              --mariadb-root-username=$(DB_ROOT_USER) \
+              --mariadb-root-password=$(DB_ROOT_PASSWORD) \
+              {{- if .Values.jobs.createSite.installApps }}
+                {{- range .Values.jobs.createSite.installApps }}
+                  --install-app={{ . }}
+                {{- end }}
+              {{- end }}
+                {{- if .Values.jobs.createSite.forceCreate }}
+                  --force
+                {{- end }} 2>&1)
 
-            bench new-site $(SITE_NAME)
-            --no-mariadb-socket
-            --db-type=$(DB_TYPE)
-            --db-host=$(DB_HOST)
-            --db-port=$(DB_PORT)
-            --admin-password=$(ADMIN_PASSWORD)
-            --mariadb-root-username=$(DB_ROOT_USER)
-            --mariadb-root-password=$(DB_ROOT_PASSWORD)
-        {{- if .Values.jobs.createSite.installApps }}
-          {{- range .Values.jobs.createSite.installApps }}
-            --install-app={{ . }}
-          {{- end }}
-        {{- end }}
-          {{- if .Values.jobs.createSite.forceCreate }}
-            --force
-          {{- end }}
+            bench_exit_status=$?
+
+            if [ $bench_exit_status -ne 0 ]; then
+                # Don't consider the case "site already exists" an error.
+                if [[ $bench_output == *"already exists"* ]]; then
+                    echo "Site already exists, continuing..."
+                else
+                    echo "An error occurred in bench new-site: $bench_output"
+                    exit $bench_exit_status
+                fi
+            fi
+ 
+            ;set -e
+
             ;rm -f currentsite.txt
         env:
           - name: "SITE_NAME"
