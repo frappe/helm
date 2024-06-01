@@ -101,7 +101,7 @@ spec:
             {{- if .Values.jobs.createSite.forceCreate }}
               --force \
             {{- end }}
-             | tee /dev/tty);
+             | tee /dev/stderr);
 
             bench_exit_status=$?;
 
