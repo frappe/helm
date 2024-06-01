@@ -93,26 +93,27 @@ spec:
               --mariadb-root-password=$(DB_ROOT_PASSWORD) \
               {{- if .Values.jobs.createSite.installApps }}
                 {{- range .Values.jobs.createSite.installApps }}
-                  --install-app={{ . }}
+                  --install-app={{ . }} \
                 {{- end }}
               {{- end }}
                 {{- if .Values.jobs.createSite.forceCreate }}
-                  --force
+                  --force \
                 {{- end }} 2>&1)
+              ;
 
-            bench_exit_status=$?
+            bench_exit_status=$?;
 
             if [ $bench_exit_status -ne 0 ]; then
                 # Don't consider the case "site already exists" an error.
                 if [[ $bench_output == *"already exists"* ]]; then
-                    echo "Site already exists, continuing..."
+                    echo "Site already exists, continuing...";
                 else
                     echo "An error occurred in bench new-site: $bench_output"
-                    exit $bench_exit_status
+                    exit $bench_exit_status;
                 fi
             fi
  
-            ;set -e
+            set -e;
 
             ;rm -f currentsite.txt
         env:
