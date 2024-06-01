@@ -100,7 +100,7 @@ spec:
               {{- end }}
                 {{- if .Values.jobs.createSite.forceCreate }}
                   --force \
-                {{- end }} 2>&1);
+                {{- end }});
 
             bench_exit_status=$?;
 
