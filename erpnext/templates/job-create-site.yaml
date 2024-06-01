@@ -83,6 +83,8 @@ spec:
         command: ["bash", "-c"]
         args:
           - >
+            set -x;
+
             bench_output=$(bench new-site $(SITE_NAME) \
               --no-mariadb-socket \
               --db-type=$(DB_TYPE) \
