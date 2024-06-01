@@ -116,7 +116,7 @@ spec:
  
             set -e;
 
-            ;rm -f currentsite.txt
+            rm -f currentsite.txt
         env:
           - name: "SITE_NAME"
             value: "{{ .Values.jobs.createSite.siteName }}"
