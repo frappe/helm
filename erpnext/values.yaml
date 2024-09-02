@@ -314,7 +314,10 @@ jobs:
 
   migrate:
     enabled: false
-    siteName: "erp.cluster.local"
+    siteNames:
+      - erp1.cluster.local
+      - erp2.cluster.local
+      - erp3.cluster.local
     skipFailing: false
     backoffLimit: 0
     resources: {}

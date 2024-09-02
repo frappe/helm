@@ -1,15 +1,16 @@
 {{- if .Values.jobs.migrate.enabled }}
+{{- range $index, $siteName := .Values.jobs.migrate.siteNames }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ template "erpnext.fullname" . }}-migrate-{{ now | date "20060102150405" }}
+  name: {{ template "erpnext.fullname" . }}-migrate-{{ $siteName }}-{{ now | date "20060102150405" }}
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
 spec:
-  backoffLimit: {{ .Values.jobs.migrate.backoffLimit }}
+  backoffLimit: {{ $.Values.jobs.migrate.backoffLimit }}
   template:
     spec:
-    {{- with .Values.imagePullSecrets }}
+    {{- with $.Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
@@ -18,19 +19,19 @@ spec:
         {{- toYaml $.Values.podSecurityContext | nindent 8 }}
       containers:
       - name: migrate
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag }}"
+        imagePullPolicy: {{ $.Values.image.pullPolicy }}
         command: ["bash", "-c"]
         args:
           - >
             bench --site $(SITE_NAME) set-maintenance-mode on;
-            bench --site $(SITE_NAME) migrate {{ if .Values.jobs.migrate.skipFailing }}--skip-failing{{ end }};
+            bench --site $(SITE_NAME) migrate {{ if $.Values.jobs.migrate.skipFailing }}--skip-failing{{ end }};
             bench --site $(SITE_NAME) set-maintenance-mode off;
         env:
           - name: "SITE_NAME"
-            value: "{{ .Values.jobs.migrate.siteName }}"
+            value: "{{ $siteName }}"
         resources:
-          {{- toYaml .Values.jobs.migrate.resources | nindent 10 }}
+          {{- toYaml $.Values.jobs.migrate.resources | nindent 10 }}
         securityContext:
           {{- toYaml $.Values.securityContext | nindent 10 }}
         volumeMounts:
@@ -41,39 +42,41 @@ spec:
       restartPolicy: Never
       volumes:
         - name: sites-dir
-          {{- if .Values.persistence.worker.enabled }}
+          {{- if $.Values.persistence.worker.enabled }}
           persistentVolumeClaim:
-            {{- if .Values.persistence.worker.existingClaim }}
-            claimName: {{ .Values.persistence.worker.existingClaim }}
+            {{- if $.Values.persistence.worker.existingClaim }}
+            claimName: {{ $.Values.persistence.worker.existingClaim }}
             {{- else }}
-            claimName: {{ template "erpnext.fullname" . }}
+            claimName: {{ template "erpnext.fullname" $ }}
             {{- end }}
             readOnly: false
           {{- else }}
           emptyDir: {}
           {{- end }}
         - name: logs
-          {{- if .Values.persistence.logs.enabled }}
+          {{- if $.Values.persistence.logs.enabled }}
           persistentVolumeClaim:
-            {{- if .Values.persistence.logs.existingClaim }}
-            claimName: {{ .Values.persistence.logs.existingClaim }}
+            {{- if $.Values.persistence.logs.existingClaim }}
+            claimName: {{ $.Values.persistence.logs.existingClaim }}
             {{- else }}
-            claimName: {{ template "erpnext.fullname" . }}-logs
+            claimName: {{ template "erpnext.fullname" $ }}-logs
             {{- end }}
             readOnly: false
           {{- else }}
           emptyDir: {}
           {{- end }}
-      {{- with .Values.jobs.migrate.nodeSelector }}
+      {{- with $.Values.jobs.migrate.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.jobs.migrate.affinity }}
+      {{- with $.Values.jobs.migrate.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.jobs.migrate.tolerations }}
+      {{- with $.Values.jobs.migrate.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+{{- end }}
+{{- end }}
 {{- end }}

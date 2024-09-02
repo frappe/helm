@@ -38,7 +38,7 @@ Jobs:
 - `create-site` job to create new site.
 - `drop-site` job to drop existing site.
 - `backup-push` job to backup and optionally push backup to S3 for existing site.
-- `migrate` job to migrate existing site.
+- `migrate` job to migrate existing sites.
 - `custom` job to run custom additional commands and configuration.
 
 PVC:
