@@ -54,244 +54,271 @@ This chart bootstraps a [Frappe/ERPNext](https://github.com/frappe/frappe_docker
 
 The following table lists the configurable parameters of the ERPNext chart and their default values.
 
-| Parameter                                             | Description                                                                                                                | Default                                  |
-|-------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|------------------------------------------|
-| `dbHost`                                              | Database host for the bench to connect                                                                                     | `nil`                                    |
-| `dbPort`                                              | Database port for the bench to connect                                                                                     | `3306`                                   |
-| `dbRootUser`                                          | Database root user for the conneted database service                                                                       | `nil`                                    |
-| `dbRootPassword`                                      | Database root password for the conneted database service                                                                   | `nil`                                    |
-| `dbRds`                                               | Enable when using an RDS database                                                                                          | `false`                                  |
-| `image.repository`                                    | Image repository deployment                                                                                                | `frappe/erpnext`                         |
-| `image.tag`                                           | Image tag deployment                                                                                                       | `latest stable tag`                      |
-| `image.pullPolicy`                                    | imagePullPolicy deployment                                                                                                 | `IfNotPresent`                           |
-| `nginx.replicaCount`                                  | Replica count for nginx deployment                                                                                         | `1`                                      |
-| `nginx.autoscaling.enabled`                           | Create HPA for nginx deployment                                                                                            | `false`                                  |
-| `nginx.autoscaling.minReplicas`                       | Minimum Replica count for nginx deployment                                                                                 | `1`                                      |
-| `nginx.autoscaling.maxReplicas`                       | Maximum Replica count for nginx deployment                                                                                 | `3`                                      |
-| `nginx.autoscaling.targetCPU`                         | Target CPU to trigger auto scale for nginx deployment                                                                      | `75`                                     |
-| `nginx.autoscaling.targetMemory`                      | Target Memory to trigger auto scale for nginx deployment                                                                   | `75`                                     |
-| `nginx.config`                                        | Custom nginx config for /etc/nginx/conf.d/default.conf.                                                                    | `nil`                                    |
-| `nginx.environment.upstreamRealIPAddress`             | http://nginx.org/en/docs/http/ngx_http_realip_module.html#set_real_ip_from                                                 | `127.0.0.1`                              |
-| `nginx.environment.upstreamRealIPRecursive`           | http://nginx.org/en/docs/http/ngx_http_realip_module.html#real_ip_recursive                                                | `off`                                    |
-| `nginx.environment.upstreamRealIPHeader`              | http://nginx.org/en/docs/http/ngx_http_realip_module.html#real_ip_header                                                   | `X-Forwarded-For`                        |
-| `nginx.environment.frappeSiteNameHeader`              | Default value is `$host` which resolves site by host. Set it to name of the site to serve only that site                   | `$host`                                  |
-| `nginx.livenessProbe`                                 | Liveness probe for nginx deployment                                                                                        | `Probe to ping port 8080`                |
-| `nginx.readinessProbe`                                | Readiess probe for nginx deployment                                                                                        | `Probe to ping port 8080`                |
-| `nginx.service.type`                                  | Service type for nginx service                                                                                             | `ClusterIP`                              |
-| `nginx.service.port`                                  | Service port for nginx service                                                                                             | `8080`                                   |
-| `nginx.resources`                                     | Container resources for nginx deployment pods                                                                              | `{}`                                     |
-| `nginx.nodeSelector`                                  | Pod nodeSelector for nginx deployment pods                                                                                 | `{}`                                     |
-| `nginx.tolerations`                                   | Pod tolerations for nginx deployment pods                                                                                  | `[]`                                     |
-| `nginx.affinity`                                      | Pod affinity for nginx deployment pods                                                                                     | `{}`                                     |
-| `nginx.envVars`                                       | Additional environment variables for nginx deployment pods                                                                 | `[]`                                     |
-| `nginx.initContainers`                                | Additional initContainers for nginx deployment pods                                                                        | `[]`                                     |
-| `nginx.sidecars`                                      | Additional sideCars for nginx deployment pods                                                                              | `[]`                                     |
-| `worker.gunicorn.replicaCount`                        | Replica count for gunicorn deployment                                                                                      | `1`                                      |
-| `worker.gunicorn.autoscaling.enabled`                 | Create HPA for gunicorn deployment                                                                                         | `false`                                  |
-| `worker.gunicorn.autoscaling.minReplicas`             | Minimum Replica count for gunicorn deployment                                                                              | `1`                                      |
-| `worker.gunicorn.autoscaling.maxReplicas`             | Maximum Replica count for gunicorn deployment                                                                              | `3`                                      |
-| `worker.gunicorn.autoscaling.targetCPU`               | Target CPU to trigger auto scale for gunicorn deployment                                                                   | `75`                                     |
-| `worker.gunicorn.autoscaling.targetMemory`            | Target Memory to trigger auto scale for gunicorn deployment                                                                | `75`                                     |
-| `worker.gunicorn.livenessProbe`                       | Liveness probe for gunicorn deployment                                                                                     | `{}`                                     |
-| `worker.gunicorn.readinessProbe`                      | Readiess probe for gunicorn deployment                                                                                     | `{}`                                     |
-| `worker.gunicorn.service.type`                        | Service type for gunicorn service                                                                                          | `ClusterIP`                              |
-| `worker.gunicorn.service.port`                        | Service port for gunicorn service                                                                                          | `8000`                                   |
-| `worker.gunicorn.args`                                | Override container args for gunicorn deployment                                                                            | `Use gevent worker class`                |
-| `worker.gunicorn.resources`                           | Container resources for gunicorn deployment pods                                                                           | `{}`                                     |
-| `worker.gunicorn.nodeSelector`                        | Pod nodeSelector for gunicorn deployment pods                                                                              | `{}`                                     |
-| `worker.gunicorn.tolerations`                         | Pod tolerations for gunicorn deployment pods                                                                               | `[]`                                     |
-| `worker.gunicorn.affinity`                            | Pod affinity for gunicorn deployment pods                                                                                  | `{}`                                     |
-| `worker.gunicorn.envVars`                             | Additional environment variables for gunicorn deployment pods                                                              | `[]`                                     |
-| `worker.gunicorn.initContainers`                      | Additional initContainers for gunicorn deployment pods                                                                     | `[]`                                     |
-| `worker.gunicorn.sidecars`                            | Additional sideCars for gunicorn deployment pods                                                                           | `[]`                                     |
-| `worker.default.replicaCount`                         | Replica count for default worker deployment                                                                                | `1`                                      |
-| `worker.default.autoscaling.enabled`                 | Create HPA for default worker deployment                                                                                    | `false`                                  |
-| `worker.default.autoscaling.minReplicas`             | Minimum Replica count for default worker deployment                                                                         | `1`                                      |
-| `worker.default.autoscaling.maxReplicas`             | Maximum Replica count for default worker deployment                                                                         | `3`                                      |
-| `worker.default.autoscaling.targetCPU`               | Target CPU to trigger auto scale for default worker deployment                                                              | `75`                                     |
-| `worker.default.autoscaling.targetMemory`            | Target Memory to trigger auto scale for default worker deployment                                                           | `75`                                     |
-| `worker.default.livenessProbe.override`               | Enable liveness probe override for default worker deployment                                                               | `false`                                  |
-| `worker.default.livenessProbe.probe`                  | Liveness probe for default worker deployment                                                                               | `{}`                                     |
-| `worker.default.readinessProbe.override`              | Enable readiness probe override for default worker deployment                                                              | `false`                                  |
-| `worker.default.readinessProbe.probe`                 | Readiess probe for default worker deployment                                                                               | `{}`                                     |
-| `worker.default.resources`                            | Container resources for default worker deployment pods                                                                     | `{}`                                     |
-| `worker.default.nodeSelector`                         | Pod nodeSelector for default worker deployment pods                                                                        | `{}`                                     |
-| `worker.default.tolerations`                          | Pod tolerations for default worker deployment pods                                                                         | `[]`                                     |
-| `worker.default.affinity`                             | Pod affinity for default worker deployment pods                                                                            | `{}`                                     |
-| `worker.default.envVars`                              | Additional environment variables for default worker deployment pods                                                        | `[]`                                     |
-| `worker.default.initContainers`                       | Additional initContainers for default worker deployment pods                                                               | `[]`                                     |
-| `worker.default.sidecars`                             | Additional sideCars for default worker deployment pods                                                                     | `[]`                                     |
-| `worker.short.replicaCount`                           | Replica count for short worker deployment                                                                                  | `1`                                      |
-| `worker.short.autoscaling.enabled`                    | Create HPA for short worker deployment                                                                                     | `false`                                  |
-| `worker.short.autoscaling.minReplicas`                | Minimum Replica count for short worker deployment                                                                          | `1`                                      |
-| `worker.short.autoscaling.maxReplicas`                | Maximum Replica count for short worker deployment                                                                          | `3`                                      |
-| `worker.short.autoscaling.targetCPU`                  | Target CPU to trigger auto scale for short worker deployment                                                               | `75`                                     |
-| `worker.short.autoscaling.targetMemory`               | Target Memory to trigger auto scale for short worker deployment                                                            | `75`                                     |
-| `worker.short.livenessProbe.override`                 | Enable liveness probe override for short worker deployment                                                                 | `false`                                  |
-| `worker.short.livenessProbe.probe`                    | Liveness probe for short worker deployment                                                                                 | `{}`                                     |
-| `worker.short.readinessProbe.override`                | Enable readiness probe override for short worker deployment                                                                | `false`                                  |
-| `worker.short.readinessProbe.probe`                   | Readiess probe for short worker deployment                                                                                 | `{}`                                     |
-| `worker.short.resources`                              | Container resources for short worker deployment pods                                                                       | `{}`                                     |
-| `worker.short.nodeSelector`                           | Pod nodeSelector for short worker deployment pods                                                                          | `{}`                                     |
-| `worker.short.tolerations`                            | Pod tolerations for short worker deployment pods                                                                           | `[]`                                     |
-| `worker.short.affinity`                               | Pod affinity for short worker deployment pods                                                                              | `{}`                                     |
-| `worker.short.envVars`                                | Additional environment variables for short worker deployment pods                                                          | `[]`                                     |
-| `worker.short.initContainers`                         | Additional initContainers for short worker deployment pods                                                                 | `[]`                                     |
-| `worker.short.sidecars`                               | Additional sideCars for short worker deployment pods                                                                       | `[]`                                     |
-| `worker.long.replicaCount`                            | Replica count for long worker deployment                                                                                   | `1`                                      |
-| `worker.long.autoscaling.enabled`                     | Create HPA for long worker deployment                                                                                      | `false`                                  |
-| `worker.long.autoscaling.minReplicas`                 | Minimum Replica count for long worker deployment                                                                           | `1`                                      |
-| `worker.long.autoscaling.maxReplicas`                 | Maximum Replica count for long worker deployment                                                                           | `3`                                      |
-| `worker.long.autoscaling.targetCPU`                   | Target CPU to trigger auto scale for long worker deployment                                                                | `75`                                     |
-| `worker.long.autoscaling.targetMemory`                | Target Memory to trigger auto scale for long worker deployment                                                             | `75`                                     |
-| `worker.long.livenessProbe.override`                  | Enable liveness probe override for long worker deployment                                                                  | `false`                                  |
-| `worker.long.livenessProbe.probe`                     | Liveness probe for long worker deployment                                                                                  | `{}`                                     |
-| `worker.long.readinessProbe.override`                 | Enable readiness probe override for long worker deployment                                                                 | `false`                                  |
-| `worker.long.readinessProbe.probe`                    | Readiess probe for long worker deployment                                                                                  | `{}`                                     |
-| `worker.long.resources`                               | Container resources for long worker deployment pods                                                                        | `{}`                                     |
-| `worker.long.nodeSelector`                            | Pod nodeSelector for long worker deployment pods                                                                           | `{}`                                     |
-| `worker.long.tolerations`                             | Pod tolerations for long worker deployment pods                                                                            | `[]`                                     |
-| `worker.long.affinity`                                | Pod affinity for long worker deployment pods                                                                               | `{}`                                     |
-| `worker.long.envVars`                                 | Additional environment variables for long worker deployment pods                                                           | `[]`                                     |
-| `worker.long.initContainers`                          | Additional initContainers for long worker deployment pods                                                                  | `[]`                                     |
-| `worker.long.sidecars`                                | Additional sideCars for long worker deployment pods                                                                        | `[]`                                     |
-| `worker.scheduler.replicaCount`                       | Replica count for scheduler deployment                                                                                     | `1`                                      |
-| `worker.scheduler.livenessProbe.override`             | Enable liveness probe override for scheduler deployment                                                                    | `false`                                  |
-| `worker.scheduler.livenessProbe.probe`                | Liveness probe for scheduler deployment                                                                                    | `{}`                                     |
-| `worker.scheduler.readinessProbe.override`            | Enable readiness probe override for scheduler deployment                                                                   | `false`                                  |
-| `worker.scheduler.readinessProbe.probe`               | Readiess probe for scheduler deployment                                                                                    | `{}`                                     |
-| `worker.scheduler.resources`                          | Container resources for scheduler deployment pods                                                                          | `{}`                                     |
-| `worker.scheduler.nodeSelector`                       | Pod nodeSelector for scheduler deployment pods                                                                             | `{}`                                     |
-| `worker.scheduler.tolerations`                        | Pod tolerations for scheduler deployment pods                                                                              | `[]`                                     |
-| `worker.scheduler.affinity`                           | Pod affinity for scheduler deployment pods                                                                                 | `{}`                                     |
-| `worker.scheduler.envVars`                            | Additional environment variables for scheduler deployment pods                                                             | `[]`                                     |
-| `worker.scheduler.initContainers`                     | Additional initContainers for scheduler deployment pods                                                                    | `[]`                                     |
-| `worker.scheduler.sidecars`                           | Additional sideCars for scheduler deployment pods                                                                          | `[]`                                     |
-| `worker.healthProbe`                                  | Helm template string for all worker deployments                                                                            | `YAML Template as string`                |
-| `socketio.replicaCount`                               | Replica count for socketio deployment                                                                                      | `1`                                      |
-| `socketio.autoscaling.enabled`                        | Create HPA for socketio deployment                                                                                         | `false`                                  |
-| `socketio.autoscaling.minReplicas`                    | Minimum Replica count for socketio deployment                                                                              | `1`                                      |
-| `socketio.autoscaling.maxReplicas`                    | Maximum Replica count for socketio deployment                                                                              | `3`                                      |
-| `socketio.autoscaling.targetCPU`                      | Target CPU to trigger auto scale for socketio deployment                                                                   | `75`                                     |
-| `socketio.autoscaling.targetMemory`                   | Target Memory to trigger auto scale for nginx deployment                                                                   | `75`                                     |
-| `socketio.livenessProbe`                              | Liveness probe for socketio deployment                                                                                     | `{}`                                     |
-| `socketio.readinessProbe`                             | Readiess probe for socketio deployment                                                                                     | `{}`                                     |
-| `socketio.service.type`                               | Service type for socketio service                                                                                          | `ClusterIP`                              |
-| `socketio.service.port`                               | Service port for socketio service                                                                                          | `9000`                                   |
-| `socketio.resources`                                  | Container resources for socketio deployment pods                                                                           | `{}`                                     |
-| `socketio.nodeSelector`                               | Pod nodeSelector socketio deployment pods                                                                                  | `{}`                                     |
-| `socketio.tolerations`                                | Pod tolerations for socketio deployment pods                                                                               | `[]`                                     |
-| `socketio.affinity`                                   | Pod affinity for socketio deployment pods                                                                                  | `{}`                                     |
-| `socketio.envVars`                                    | Additional environment variables for socketio deployment pods                                                              | `[]`                                     |
-| `socketio.initContainers`                             | Additional initContainers for socketio deployment pods                                                                     | `[]`                                     |
-| `socketio.sidecars`                                   | Additional sideCars for socketio deployment pods                                                                           | `[]`                                     |
-| `persistence.worker.enabled`                          | Enable volume persistence for all worker deployments                                                                       | `true`                                   |
-| `persistence.worker.existingClaim`                    | Use existing RWX persistence volume claim for worker deployments                                                           | `nil`                                    |
-| `persistence.worker.size`                             | Size of volume to be created for worker deployments                                                                        | `8Gi`                                    |
-| `persistence.worker.storageClass`                     | Storage class to use to create volume for worker deployments. Must be RWX.                                                 | `nil`                                    |
-| `persistence.logs.enabled`                            | Enable volume persistence for logs deployments                                                                             | `true`                                   |
-| `persistence.logs.existingClaim`                      | Use existing RWX persistence volume claim for logs                                                                         | `nil`                                    |
-| `persistence.logs.size`                               | Size of volume to be created for logs                                                                                      | `8Gi`                                    |
-| `persistence.logs.storageClass`                       | Storage class to use to create volume for logs. Must be RWX.                                                               | `nil`                                    |
-| `ingress.enabled`                                     | Enable ingress for site that will be created                                                                               | `false`                                  |
-| `ingress.ingressName`                                 | Override name of the ingress to be created                                                                                 | `nil`                                    |
-| `ingress.className`                                   | Class name of the ingress controller                                                                                       | `nil`                                    |
-| `ingress.annotations`                                 | Ingress annotations. e.g. for cert-manager.io                                                                              | `{}`                                     |
-| `ingress.hosts[0].host`                               | Ingress host                                                                                                               | `erp.cluster.local`                      |
-| `ingress.hosts[0].paths[0].path`                      | Ingress path                                                                                                               | `/`                                      |
-| `ingress.hosts[0].paths[0].pathType`                  | Ingress pathType                                                                                                           | `ImplementationSpecific`                 |
-| `ingress.tls`                                         | Ingress tls                                                                                                                | `[]`                                     |
-| `jobs.volumePermissions.enabled`                      | Enable job to fix volume permissions, runs `chown -R 1000:1000` on volumes                                                 | `false`                                  |
-| `jobs.volumePermissions.backoffLimit`                 | Volume permission job backoff limit                                                                                        | `0`                                      |
-| `jobs.volumePermissions.resources`                    | Container resources for fix volume pods                                                                                    | `{}`                                     |
-| `jobs.volumePermissions.nodeSelector`                 | Pod nodeSelector for fix volume pods                                                                                       | `{}`                                     |
-| `jobs.volumePermissions.tolerations`                  | Pod tolerations for fix volume pods                                                                                        | `[]`                                     |
-| `jobs.volumePermissions.affinity`                     | Pod affinity for fix volume pods                                                                                           | `{}`                                     |
-| `jobs.configure.enabled`                              | Enable job to configure common site config with db host and port, socketio port and redis hosts.                           | `true`                                   |
-| `jobs.configure.fixVolume`                            | Enable initContainer to fix volume permission and set them to 1000:1000                                                    | `true`                                   |
-| `jobs.configure.backoffLimit`                         | Configuration job backoff limit                                                                                            | `0`                                      |
-| `jobs.configure.resources`                            | Container resources for configuration pods                                                                                 | `{}`                                     |
-| `jobs.configure.nodeSelector`                         | Pod nodeSelector for configuration pods                                                                                    | `{}`                                     |
-| `jobs.configure.tolerations`                          | Pod tolerations for configuration pods                                                                                     | `[]`                                     |
-| `jobs.configure.affinity`                             | Pod affinity for configuration pods                                                                                        | `{}`                                     |
-| `jobs.configure.envVars`                              | Additional environment variables for configuration pods                                                                    | `[]`                                     |
-| `jobs.configure.command`                              | Override command for configuration pods                                                                                    | `[]`                                     |
-| `jobs.configure.args`                                 | Override args for configuration pods                                                                                       | `[]`                                     |
-| `jobs.createSite.enabled`                             | Enable job to create new site                                                                                              | `false`                                  |
-| `jobs.createSite.forceCreate`                         | Use `bench new-site –force` and force create new site if site already exists                                               | `false`                                  |
-| `jobs.createSite.siteName`                            | Name of the site to be created. Must be valid resolvable DNS entry in case of live setup.                                  | `erp.cluster.local`                      |
-| `jobs.createSite.adminPassword`                       | Password for site `Administrator`                                                                                          | `admin`                                  |
-| `jobs.createSite.installApps`                         | List of apps to be installed                                                                                               | `[“erpnext”]`                            |
-| `jobs.createSite.dbType`                              | Database to use for the new site. Choose from `postgres\mariadb`. Use `mariadb` for ERPNext.                               | `mariadb`                                |
-| `jobs.createSite.backoffLimit`                        | Site creation job backoff limit.                                                                                           | `0`                                      |
-| `jobs.createSite.resources`                           | Container resources for site creation pods                                                                                 | `{}`                                     |
-| `jobs.createSite.nodeSelector`                        | Pod nodeSelector for site creation pods                                                                                    | `{}`                                     |
-| `jobs.createSite.tolerations`                         | Pod tolerations for site creation pods                                                                                     | `[]`                                     |
-| `jobs.createSite.affinity`                            | Pod affinity for site creation pods                                                                                        | `{}`                                     |
-| `jobs.dropSite.enabled`                               | Enable job to drop site                                                                                                    | `false`                                  |
-| `jobs.dropSite.forced`                                | Use `bench frop-site –force`                                                                                               | `false`                                  |
-| `jobs.dropSite.siteName`                              | Name of the site to be deleted. Must exist in the bench.                                                                   | `erp.cluster.local`                      |
-| `jobs.dropSite.backoffLimit`                          | Drop site job backoff limit                                                                                                | `0`                                      |
-| `jobs.dropSite.resources`                             | Container resources for drop site pods                                                                                     | `{}`                                     |
-| `jobs.dropSite.nodeSelector`                          | Pod nodeSelector for drop site pods                                                                                        | `{}`                                     |
-| `jobs.dropSite.tolerations`                           | Pod tolerations for drop site pods                                                                                         | `[]`                                     |
-| `jobs.dropSite.affinity`                              | Pod affinity for drop site pods                                                                                            | `{}`                                     |
-| `jobs.backup.enabled`                                 | Enable backup job                                                                                                          | `false`                                  |
-| `jobs.backup.siteName`                                | Name of the site to backup                                                                                                 | `erp.cluster.local`                      |
-| `jobs.backup.withFiles`                               | Enable backup with files. Uses `bench –site $SITE_NAME backup –with-files`.                                                | `true`                                   |
-| `jobs.backup.backoffLimit`                            | Backup job backoff limit                                                                                                   | `0`                                      |
-| `jobs.backup.resources`                               | Container resources for backup site pods                                                                                   | `{}`                                     |
-| `jobs.backup.nodeSelector`                            | Pod nodeSelector for backup site pods                                                                                      | `{}`                                     |
-| `jobs.backup.tolerations`                             | Pod tolerations for backup site pods                                                                                       | `[]`                                     |
-| `jobs.backup.affinity`                                | Pod affinity for backup site pods                                                                                          | `{}`                                     |
-| `jobs.migrate.enabled`                                | Enable migrate site job                                                                                                    | `false`                                  |
-| `jobs.migrate.siteName`                               | Site name to migrate                                                                                                       | `erp.cluster.local`                      |
-| `jobs.migrate.skipFailing`                            | Skip failing patches during migration                                                                                      | `false`                                  |
-| `jobs.migrate.backoffLimit`                           | Migrate job backoff limit                                                                                                  | `0`                                      |
-| `jobs.migrate.resources`                              | Container resources for migrate site pods                                                                                  | `{}`                                     |
-| `jobs.migrate.nodeSelector`                           | Pod nodeSelector for migrate site pods                                                                                     | `{}`                                     |
-| `jobs.migrate.tolerations`                            | Pod tolerations for migrate site pods                                                                                      | `[]`                                     |
-| `jobs.migrate.affinity`                               | Pod affinity for migrate site pods                                                                                         | `{}`                                     |
-| `jobs.custom.enabled`                                 | Enable custom job                                                                                                          | `false`                                  |
-| `jobs.custom.jobName`                                 | Specify custom Job name                                                                                                    | `""`                                     |
-| `jobs.custom.labels`                                  | Specify custom Job labels                                                                                                  | `{}`                                     |
-| `jobs.custom.backoffLimit`                            | Custom job backoff limit                                                                                                   | `0`                                      |
-| `jobs.custom.initContainers`                          | Custom job init containers                                                                                                 | `[]`                                     |
-| `jobs.custom.containers`                              | Custom job containers                                                                                                      | `[]`                                     |
-| `jobs.custom.restartPolicy`                           | Custom job restartPolicy                                                                                                   | `Never`                                  |
-| `jobs.custom.volumes`                                 | Custom job volumes                                                                                                         | `[]`                                     |
-| `jobs.custom.nodeSelector`                            | Pod nodeSelector for custom job pods                                                                                       | `{}`                                     |
-| `jobs.custom.affinity`                                | Pod affinity for custom job pods                                                                                           | `{}`                                     |
-| `jobs.custom.tolerations`                             | Pod tolerations for custom job pods                                                                                        | `[]`                                     |
-| `imagePullSecrets`                                    | List of secret names containing registry credentials to pull images                                                        | `[]`                                     |
-| `nameOverride`                                        | String to partially override common.names.fullname template with a string (will prepend the release name)                  | `nil`                                    |
-| `fullnameOverride`                                    | String to fully override common.names.fullname template with a string                                                      | `nil`                                    |
-| `serviceAccount.create`                               | Specify whether a ServiceAccount should be created                                                                         | `true`                                   |
-| `podSecurityContext.supplementalGroups`               | List of supplemental groups for the containers                                                                             | ``[1000]``                               |
-| `securityContext`                                     | Security Context for containers                                                                                            | ``capabilities: add: [“CAP_CHOWN”]``     |
-| `redis-cache.enabled`                                 | Install redis-cache sub chart                                                                                              | `true`                                   |
-| `redis-cache.architecture`                            | Architecture for sub-chart. Do not change.                                                                                 | `standalone`                             |
-| `redis-cache.auth.enabled`                            | Authentication is disabled for use with frappe. Do not change.                                                             | `false`                                  |
-| `redis-cache.auth.sentinal`                           | Sentinal auth is disabled for use with frappe. Do not change.                                                              | `false`                                  |
-| `redis-cache.master.containerPorts.redis`             | Container port for redis-cache service                                                                                     | `6379`                                   |
-| `redis-cache.master.persistence.enabled`              | Persistence is disabled for in-memory storage use case                                                                     | `false`                                  |
-| `redis-queue.enabled`                                 | Install redis-queue sub chart                                                                                              | `true`                                   |
-| `redis-queue.architecture`                            | Architecture for sub-chart. Do not change.                                                                                 | `standalone`                             |
-| `redis-queue.auth.enabled`                            | Authentication is disabled for use with frappe. Do not change.                                                             | `false`                                  |
-| `redis-queue.auth.sentinal`                           | Sentinal auth is disabled for use with frappe. Do not change.                                                              | `false`                                  |
-| `redis-queue.master.containerPorts.redis`             | Container port for redis-queue service                                                                                     | `6379`                                   |
-| `redis-queue.master.persistence.enabled`              | Persistence is disabled for in-memory storage use case                                                                     | `false`                                  |
-| `mariadb.enabled`                                     | Install mariadb sub chart.                                                                                                 | `true`                                   |
-| `mariadb.auth.rootPassword`                           | Root password for in-cluster mariadb setup                                                                                 | `changeit`                               |
-| `mariadb.auth.username`                               | Initial database username for in-cluster mariadb setup                                                                     | `erpnext`                                |
-| `mariadb.auth.password`                               | Initial database password for in-cluster mariadb setup                                                                     | `changeit`                               |
-| `mariadb.auth.replicationPassword`                    | Required for sub chart setup                                                                                               | `changeit`                               |
-| `mariadb.primary.service.ports.mysql`                 | Container port for mariadb service                                                                                         | `3306`                                   |
-| `mariadb.primary.configuration`                       | Frappe related additional configuration for mariadb. Do not change                                                         | `Configuration required for frappe apps` |
-| `postgresql.enabled`                                  | Install postgresql sub chart.                                                                                              | `false`                                  |
-| `postgresql.auth.username`                            | Root username for in-cluster postgresql setup                                                                              | `postgres`                               |
-| `postgresql.auth.postgresPassword`                    | Root password for in-cluster postgresql setup                                                                              | `changeit`                               |
-| `postgresql.primary.service.ports.postgresql`         | Container port for postgresql service                                                                                      | `5432`                                   |
+# erpnext
+
+![Version: 7.0.109](https://img.shields.io/badge/Version-7.0.109-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v15.34.1](https://img.shields.io/badge/AppVersion-v15.34.1-informational?style=flat-square)
+
+Kubernetes Helm Chart for the latest stable ERPNext branch
+
+## Requirements
+
+| Repository | Name | Version |
+|------------|------|---------|
+| https://charts.bitnami.com/bitnami | mariadb | 11.5.7 |
+| https://charts.bitnami.com/bitnami | postgresql | 12.1.6 |
+| https://charts.bitnami.com/bitnami | redis-cache(redis) | 17.15.2 |
+| https://charts.bitnami.com/bitnami | redis-queue(redis) | 17.15.2 |
+
+## Values
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| fullnameOverride | string | `""` |  |
+| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.repository | string | `"frappe/erpnext"` |  |
+| image.tag | string | `"v15.34.1"` |  |
+| imagePullSecrets | list | `[]` |  |
+| ingress.annotations | object | `{}` |  |
+| ingress.enabled | bool | `false` |  |
+| ingress.hosts[0].host | string | `"erp.cluster.local"` |  |
+| ingress.hosts[0].paths[0].path | string | `"/"` |  |
+| ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
+| ingress.tls | list | `[]` |  |
+| jobs.backup.affinity | object | `{}` |  |
+| jobs.backup.backoffLimit | int | `0` |  |
+| jobs.backup.enabled | bool | `false` |  |
+| jobs.backup.nodeSelector | object | `{}` |  |
+| jobs.backup.resources | object | `{}` |  |
+| jobs.backup.siteName | string | `"erp.cluster.local"` |  |
+| jobs.backup.tolerations | list | `[]` |  |
+| jobs.backup.withFiles | bool | `true` |  |
+| jobs.configure.affinity | object | `{}` |  |
+| jobs.configure.args | list | `[]` |  |
+| jobs.configure.backoffLimit | int | `0` |  |
+| jobs.configure.command | list | `[]` |  |
+| jobs.configure.enabled | bool | `true` |  |
+| jobs.configure.envVars | list | `[]` |  |
+| jobs.configure.fixVolume | bool | `true` |  |
+| jobs.configure.nodeSelector | object | `{}` |  |
+| jobs.configure.resources | object | `{}` |  |
+| jobs.configure.tolerations | list | `[]` |  |
+| jobs.createSite.adminPassword | string | `"changeit"` |  |
+| jobs.createSite.affinity | object | `{}` |  |
+| jobs.createSite.backoffLimit | int | `0` |  |
+| jobs.createSite.dbType | string | `"mariadb"` |  |
+| jobs.createSite.enabled | bool | `false` |  |
+| jobs.createSite.forceCreate | bool | `false` |  |
+| jobs.createSite.installApps[0] | string | `"erpnext"` |  |
+| jobs.createSite.nodeSelector | object | `{}` |  |
+| jobs.createSite.resources | object | `{}` |  |
+| jobs.createSite.siteName | string | `"erp.cluster.local"` |  |
+| jobs.createSite.tolerations | list | `[]` |  |
+| jobs.custom.affinity | object | `{}` |  |
+| jobs.custom.backoffLimit | int | `0` |  |
+| jobs.custom.containers | list | `[]` |  |
+| jobs.custom.enabled | bool | `false` |  |
+| jobs.custom.initContainers | list | `[]` |  |
+| jobs.custom.jobName | string | `""` |  |
+| jobs.custom.labels | object | `{}` |  |
+| jobs.custom.nodeSelector | object | `{}` |  |
+| jobs.custom.restartPolicy | string | `"Never"` |  |
+| jobs.custom.tolerations | list | `[]` |  |
+| jobs.custom.volumes | list | `[]` |  |
+| jobs.dropSite.affinity | object | `{}` |  |
+| jobs.dropSite.backoffLimit | int | `0` |  |
+| jobs.dropSite.enabled | bool | `false` |  |
+| jobs.dropSite.forced | bool | `false` |  |
+| jobs.dropSite.nodeSelector | object | `{}` |  |
+| jobs.dropSite.resources | object | `{}` |  |
+| jobs.dropSite.siteName | string | `"erp.cluster.local"` |  |
+| jobs.dropSite.tolerations | list | `[]` |  |
+| jobs.migrate.affinity | object | `{}` |  |
+| jobs.migrate.backoffLimit | int | `0` |  |
+| jobs.migrate.enabled | bool | `false` |  |
+| jobs.migrate.nodeSelector | object | `{}` |  |
+| jobs.migrate.resources | object | `{}` |  |
+| jobs.migrate.siteName | string | `"erp.cluster.local"` |  |
+| jobs.migrate.skipFailing | bool | `false` |  |
+| jobs.migrate.tolerations | list | `[]` |  |
+| jobs.volumePermissions.affinity | object | `{}` |  |
+| jobs.volumePermissions.backoffLimit | int | `0` |  |
+| jobs.volumePermissions.enabled | bool | `false` |  |
+| jobs.volumePermissions.nodeSelector | object | `{}` |  |
+| jobs.volumePermissions.resources | object | `{}` |  |
+| jobs.volumePermissions.tolerations | list | `[]` |  |
+| mariadb.auth.password | string | `"changeit"` |  |
+| mariadb.auth.replicationPassword | string | `"changeit"` |  |
+| mariadb.auth.rootPassword | string | `"changeit"` |  |
+| mariadb.auth.username | string | `"erpnext"` |  |
+| mariadb.enabled | bool | `true` |  |
+| mariadb.primary.extraFlags | string | `"--skip-character-set-client-handshake --skip-innodb-read-only-compressed --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci"` |  |
+| mariadb.primary.service.ports.mysql | int | `3306` |  |
+| nameOverride | string | `""` |  |
+| nginx.affinity | object | `{}` |  |
+| nginx.autoscaling.enabled | bool | `false` |  |
+| nginx.autoscaling.maxReplicas | int | `3` |  |
+| nginx.autoscaling.minReplicas | int | `1` |  |
+| nginx.autoscaling.targetCPU | int | `75` |  |
+| nginx.autoscaling.targetMemory | int | `75` |  |
+| nginx.defaultTopologySpread.maxSkew | int | `1` |  |
+| nginx.defaultTopologySpread.topologyKey | string | `"kubernetes.io/hostname"` |  |
+| nginx.defaultTopologySpread.whenUnsatisfiable | string | `"DoNotSchedule"` |  |
+| nginx.envVars | list | `[]` |  |
+| nginx.environment.frappeSiteNameHeader | string | `"$host"` |  |
+| nginx.environment.upstreamRealIPAddress | string | `"127.0.0.1"` |  |
+| nginx.environment.upstreamRealIPHeader | string | `"X-Forwarded-For"` |  |
+| nginx.environment.upstreamRealIPRecursive | string | `"off"` |  |
+| nginx.initContainers | list | `[]` |  |
+| nginx.livenessProbe.initialDelaySeconds | int | `5` |  |
+| nginx.livenessProbe.periodSeconds | int | `10` |  |
+| nginx.livenessProbe.tcpSocket.port | int | `8080` |  |
+| nginx.nodeSelector | object | `{}` |  |
+| nginx.readinessProbe.initialDelaySeconds | int | `5` |  |
+| nginx.readinessProbe.periodSeconds | int | `10` |  |
+| nginx.readinessProbe.tcpSocket.port | int | `8080` |  |
+| nginx.replicaCount | int | `1` |  |
+| nginx.resources | object | `{}` |  |
+| nginx.service.port | int | `8080` |  |
+| nginx.service.type | string | `"ClusterIP"` |  |
+| nginx.sidecars | list | `[]` |  |
+| nginx.tolerations | list | `[]` |  |
+| persistence.logs.enabled | bool | `false` |  |
+| persistence.logs.size | string | `"8Gi"` |  |
+| persistence.worker.enabled | bool | `true` |  |
+| persistence.worker.size | string | `"8Gi"` |  |
+| podSecurityContext.supplementalGroups[0] | int | `1000` |  |
+| postgresql.auth.postgresPassword | string | `"changeit"` |  |
+| postgresql.auth.username | string | `"postgres"` |  |
+| postgresql.enabled | bool | `false` |  |
+| postgresql.primary.service.ports.postgresql | int | `5432` |  |
+| redis-cache.architecture | string | `"standalone"` |  |
+| redis-cache.auth.enabled | bool | `false` |  |
+| redis-cache.auth.sentinal | bool | `false` |  |
+| redis-cache.enabled | bool | `true` |  |
+| redis-cache.master.containerPorts.redis | int | `6379` |  |
+| redis-cache.master.persistence.enabled | bool | `false` |  |
+| redis-queue.architecture | string | `"standalone"` |  |
+| redis-queue.auth.enabled | bool | `false` |  |
+| redis-queue.auth.sentinal | bool | `false` |  |
+| redis-queue.enabled | bool | `true` |  |
+| redis-queue.master.containerPorts.redis | int | `6379` |  |
+| redis-queue.master.persistence.enabled | bool | `false` |  |
+| securityContext.capabilities.add[0] | string | `"CAP_CHOWN"` |  |
+| serviceAccount.create | bool | `true` |  |
+| socketio.affinity | object | `{}` |  |
+| socketio.autoscaling.enabled | bool | `false` |  |
+| socketio.autoscaling.maxReplicas | int | `3` |  |
+| socketio.autoscaling.minReplicas | int | `1` |  |
+| socketio.autoscaling.targetCPU | int | `75` |  |
+| socketio.autoscaling.targetMemory | int | `75` |  |
+| socketio.envVars | list | `[]` |  |
+| socketio.initContainers | list | `[]` |  |
+| socketio.livenessProbe.initialDelaySeconds | int | `5` |  |
+| socketio.livenessProbe.periodSeconds | int | `10` |  |
+| socketio.livenessProbe.tcpSocket.port | int | `9000` |  |
+| socketio.nodeSelector | object | `{}` |  |
+| socketio.readinessProbe.initialDelaySeconds | int | `5` |  |
+| socketio.readinessProbe.periodSeconds | int | `10` |  |
+| socketio.readinessProbe.tcpSocket.port | int | `9000` |  |
+| socketio.replicaCount | int | `1` |  |
+| socketio.resources | object | `{}` |  |
+| socketio.service.port | int | `9000` |  |
+| socketio.service.type | string | `"ClusterIP"` |  |
+| socketio.sidecars | list | `[]` |  |
+| socketio.tolerations | list | `[]` |  |
+| worker.default.affinity | object | `{}` |  |
+| worker.default.autoscaling.enabled | bool | `false` |  |
+| worker.default.autoscaling.maxReplicas | int | `3` |  |
+| worker.default.autoscaling.minReplicas | int | `1` |  |
+| worker.default.autoscaling.targetCPU | int | `75` |  |
+| worker.default.autoscaling.targetMemory | int | `75` |  |
+| worker.default.envVars | list | `[]` |  |
+| worker.default.initContainers | list | `[]` |  |
+| worker.default.livenessProbe.override | bool | `false` |  |
+| worker.default.livenessProbe.probe | object | `{}` |  |
+| worker.default.nodeSelector | object | `{}` |  |
+| worker.default.readinessProbe.override | bool | `false` |  |
+| worker.default.readinessProbe.probe | object | `{}` |  |
+| worker.default.replicaCount | int | `1` |  |
+| worker.default.resources | object | `{}` |  |
+| worker.default.sidecars | list | `[]` |  |
+| worker.default.tolerations | list | `[]` |  |
+| worker.defaultTopologySpread.maxSkew | int | `1` |  |
+| worker.defaultTopologySpread.topologyKey | string | `"kubernetes.io/hostname"` |  |
+| worker.defaultTopologySpread.whenUnsatisfiable | string | `"DoNotSchedule"` |  |
+| worker.gunicorn.affinity | object | `{}` |  |
+| worker.gunicorn.args | list | `[]` |  |
+| worker.gunicorn.autoscaling.enabled | bool | `false` |  |
+| worker.gunicorn.autoscaling.maxReplicas | int | `3` |  |
+| worker.gunicorn.autoscaling.minReplicas | int | `1` |  |
+| worker.gunicorn.autoscaling.targetCPU | int | `75` |  |
+| worker.gunicorn.autoscaling.targetMemory | int | `75` |  |
+| worker.gunicorn.envVars | list | `[]` |  |
+| worker.gunicorn.initContainers | list | `[]` |  |
+| worker.gunicorn.livenessProbe.initialDelaySeconds | int | `5` |  |
+| worker.gunicorn.livenessProbe.periodSeconds | int | `10` |  |
+| worker.gunicorn.livenessProbe.tcpSocket.port | int | `8000` |  |
+| worker.gunicorn.nodeSelector | object | `{}` |  |
+| worker.gunicorn.readinessProbe.initialDelaySeconds | int | `5` |  |
+| worker.gunicorn.readinessProbe.periodSeconds | int | `10` |  |
+| worker.gunicorn.readinessProbe.tcpSocket.port | int | `8000` |  |
+| worker.gunicorn.replicaCount | int | `1` |  |
+| worker.gunicorn.resources | object | `{}` |  |
+| worker.gunicorn.service.port | int | `8000` |  |
+| worker.gunicorn.service.type | string | `"ClusterIP"` |  |
+| worker.gunicorn.sidecars | list | `[]` |  |
+| worker.gunicorn.tolerations | list | `[]` |  |
+| worker.healthProbe | string | `"exec:\n  command:\n    - bash\n    - -c\n    - echo \"Ping backing services\";\n    {{- if .Values.mariadb.enabled }}\n    {{- if eq .Values.mariadb.architecture \"replication\" }}\n    - wait-for-it {{ .Release.Name }}-mariadb-primary:{{ .Values.mariadb.primary.service.ports.mysql }} -t 1;\n    {{- else }}\n    - wait-for-it {{ .Release.Name }}-mariadb:{{ .Values.mariadb.primary.service.ports.mysql }} -t 1;\n    {{- end }}\n    {{- else if .Values.dbHost }}\n    - wait-for-it {{ .Values.dbHost }}:{{ .Values.mariadb.primary.service.ports.mysql }} -t 1;\n    {{- end }}\n    {{- if index .Values \"redis-cache\" \"host\" }}\n    - wait-for-it {{ .Release.Name }}-redis-cache-master:{{ index .Values \"redis-cache\" \"master\" \"containerPorts\" \"redis\" }} -t 1;\n    {{- else if index .Values \"redis-cache\" \"host\" }}\n    - wait-for-it {{ index .Values \"redis-cache\" \"host\" }} -t 1;\n    {{- end }}\n    {{- if index .Values \"redis-queue\" \"host\" }}\n    - wait-for-it {{ .Release.Name }}-redis-queue-master:{{ index .Values \"redis-queue\" \"master\" \"containerPorts\" \"redis\" }} -t 1;\n    {{- else if index .Values \"redis-queue\" \"host\" }}\n    - wait-for-it {{ index .Values \"redis-queue\" \"host\" }} -t 1;\n    {{- end }}\n    {{- if .Values.postgresql.host }}\n    - wait-for-it {{ .Values.postgresql.host }}:{{ .Values.postgresql.primary.service.ports.postgresql }} -t 1;\n    {{- else if .Values.postgresql.enabled }}\n    - wait-for-it {{ .Release.Name }}-postgresql:{{ .Values.postgresql.primary.service.ports.postgresql }} -t 1;\n    {{- end }}\ninitialDelaySeconds: 15\nperiodSeconds: 5\n"` |  |
+| worker.long.affinity | object | `{}` |  |
+| worker.long.autoscaling.enabled | bool | `false` |  |
+| worker.long.autoscaling.maxReplicas | int | `3` |  |
+| worker.long.autoscaling.minReplicas | int | `1` |  |
+| worker.long.autoscaling.targetCPU | int | `75` |  |
+| worker.long.autoscaling.targetMemory | int | `75` |  |
+| worker.long.envVars | list | `[]` |  |
+| worker.long.initContainers | list | `[]` |  |
+| worker.long.livenessProbe.override | bool | `false` |  |
+| worker.long.livenessProbe.probe | object | `{}` |  |
+| worker.long.nodeSelector | object | `{}` |  |
+| worker.long.readinessProbe.override | bool | `false` |  |
+| worker.long.readinessProbe.probe | object | `{}` |  |
+| worker.long.replicaCount | int | `1` |  |
+| worker.long.resources | object | `{}` |  |
+| worker.long.sidecars | list | `[]` |  |
+| worker.long.tolerations | list | `[]` |  |
+| worker.scheduler.affinity | object | `{}` |  |
+| worker.scheduler.envVars | list | `[]` |  |
+| worker.scheduler.initContainers | list | `[]` |  |
+| worker.scheduler.livenessProbe.override | bool | `false` |  |
+| worker.scheduler.livenessProbe.probe | object | `{}` |  |
+| worker.scheduler.nodeSelector | object | `{}` |  |
+| worker.scheduler.readinessProbe.override | bool | `false` |  |
+| worker.scheduler.readinessProbe.probe | object | `{}` |  |
+| worker.scheduler.replicaCount | int | `1` |  |
+| worker.scheduler.resources | object | `{}` |  |
+| worker.scheduler.sidecars | list | `[]` |  |
+| worker.scheduler.tolerations | list | `[]` |  |
+| worker.short.affinity | object | `{}` |  |
+| worker.short.autoscaling.enabled | bool | `false` |  |
+| worker.short.autoscaling.maxReplicas | int | `3` |  |
+| worker.short.autoscaling.minReplicas | int | `1` |  |
+| worker.short.autoscaling.targetCPU | int | `75` |  |
+| worker.short.autoscaling.targetMemory | int | `75` |  |
+| worker.short.envVars | list | `[]` |  |
+| worker.short.initContainers | list | `[]` |  |
+| worker.short.livenessProbe.override | bool | `false` |  |
+| worker.short.livenessProbe.probe | object | `{}` |  |
+| worker.short.nodeSelector | object | `{}` |  |
+| worker.short.readinessProbe.override | bool | `false` |  |
+| worker.short.readinessProbe.probe | object | `{}` |  |
+| worker.short.replicaCount | int | `1` |  |
+| worker.short.resources | object | `{}` |  |
+| worker.short.sidecars | list | `[]` |  |
+| worker.short.tolerations | list | `[]` |  |
+
+----------------------------------------------
+Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)
+              |
 
 The above parameters map to the env variables defined in [frappe_docker](http://github.com/frappe/frappe_docker). For more information please refer to the [frappe_docker](http://github.com/frappe/frappe_docker) images documentation.
 

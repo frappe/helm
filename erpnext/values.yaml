@@ -46,6 +46,17 @@ nginx:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  # Custom topologySpreadConstraints (uncomment and modify to override defaults)
+  # topologySpreadConstraints:
+  #   - maxSkew: 2
+  #     topologyKey: failure-domain.beta.kubernetes.io/zone
+  #     whenUnsatisfiable: ScheduleAnyway
+
+  # Default topologySpreadConstraints (used if topologySpreadConstraints is not set)
+  defaultTopologySpread:
+    maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: DoNotSchedule
   envVars: []
   initContainers: []
   sidecars: []
@@ -162,6 +173,20 @@ worker:
     envVars: []
     initContainers: []
     sidecars: []
+
+
+  # Custom topologySpreadConstraints (uncomment and modify to override defaults)
+  # topologySpreadConstraints:
+  #   - maxSkew: 2
+  #     topologyKey: failure-domain.beta.kubernetes.io/zone
+  #     whenUnsatisfiable: ScheduleAnyway
+
+  # Default topologySpreadConstraints (used if topologySpreadConstraints is not set)
+  defaultTopologySpread:
+    maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: DoNotSchedule
+
 
   healthProbe: |
     exec:

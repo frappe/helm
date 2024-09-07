@@ -104,3 +104,15 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+      topologySpreadConstraints:
+        {{- if .Values.nginx.topologySpreadConstraints }}
+        {{- toYaml .Values.nginx.topologySpreadConstraints | nindent 8 }}
+        {{- else }}
+        - maxSkew: {{ .Values.nginx.defaultTopologySpread.maxSkew | default 1 }}
+          topologyKey: {{ .Values.nginx.defaultTopologySpread.topologyKey | default "kubernetes.io/hostname" }}
+          whenUnsatisfiable: {{ .Values.nginx.defaultTopologySpread.whenUnsatisfiable | default "ScheduleAnyway" }}
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: {{ include "erpnext.name" . }}-nginx
+              app.kubernetes.io/instance: {{ .Release.Name }}-nginx
+        {{- end }}
