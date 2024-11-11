@@ -256,12 +256,16 @@ persistence:
     # existingClaim: ""
     size: 8Gi
     # storageClass: "nfs"
+    accessModes: 
+      - ReadWriteMany
   logs:
     # Container based log search and analytics stack recommended
     enabled: false
     # existingClaim: ""
     size: 8Gi
     # storageClass: "nfs"
+    accessModes: 
+      - ReadWriteMany
 
 # Ingress
 ingress:
