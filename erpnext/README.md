@@ -184,8 +184,10 @@ Kubernetes Helm Chart for the latest stable ERPNext branch
 | nginx.tolerations | list | `[]` |  |
 | persistence.logs.enabled | bool | `false` |  |
 | persistence.logs.size | string | `"8Gi"` |  |
+| persistence.logs.accessModes[0] | string | `ReadWriteMany` |  |
 | persistence.worker.enabled | bool | `true` |  |
 | persistence.worker.size | string | `"8Gi"` |  |
+| persistence.worker.accessModes[0] | string | `ReadWriteMany` |  |
 | podSecurityContext.supplementalGroups[0] | int | `1000` |  |
 | postgresql.auth.postgresPassword | string | `"changeit"` |  |
 | postgresql.auth.username | string | `"postgres"` |  |
@@ -335,6 +337,8 @@ Frappe framework sites are stored in shared volume that needs to be accessed by 
 - [In-cluster NFS Server](https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner): Provisioner based on in-cluster NFS server.
 - [More Cloud Native Storage alternatives](https://landscape.cncf.io/card-mode?category=cloud-native-storage&grouping=category): Make sure the `storageclass` has `ReadWriteMany` access mode to use it as storage for sites.
 
+> **Note**: If you are running a single-node cluster or deploying to a specific node using node affinity, you can use ReadWriteOnce (RWO) access mode if your storage class supports it. This is because all pods will be scheduled on the same node, eliminating the need for multi-node access.
+
 ### Database
 
 By default it installs pre configured MariaDB that works with Frappe/ERPNext sites.
@@ -378,6 +382,19 @@ persistence:
 ```
 
 Make sure the PVC called `existing-sites` exists in the namespace.
+
+### Access Modes
+
+Make following changes to custom-values.yaml:
+
+```yaml
+persistence:
+  worker:
+    accessModes:
+      - ReadWriteMany  # default mode
+```
+
+You can configure this to use ReadWriteOnce (RWO) if you are running a single-node cluster or deploying to a specific node using node affinity.
 
 ### External Database
 
