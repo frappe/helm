@@ -10,7 +10,7 @@ metadata:
   name: {{ template "erpnext.fullname" . }}
 spec:
   accessModes:
-    - ReadWriteMany
+    {{- toYaml .Values.persistence.worker.accessModes | nindent 4 }}
   resources:
     requests:
       storage: {{ .Values.persistence.worker.size | quote }}
