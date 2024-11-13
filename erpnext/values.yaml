@@ -11,7 +11,7 @@
 
 image:
   repository: frappe/erpnext
-  tag: v15.41.2
+  tag: v15.42.0
   pullPolicy: IfNotPresent
 
 nginx:
@@ -256,16 +256,16 @@ persistence:
     # existingClaim: ""
     size: 8Gi
     # storageClass: "nfs"
-    accessModes: 
-      - ReadWriteMany
+    accessModes:
+    - ReadWriteMany
   logs:
     # Container based log search and analytics stack recommended
     enabled: false
     # existingClaim: ""
     size: 8Gi
     # storageClass: "nfs"
-    accessModes: 
-      - ReadWriteMany
+    accessModes:
+    - ReadWriteMany
 
 # Ingress
 ingress:
