@@ -87,6 +87,7 @@ Kubernetes Helm Chart for the latest stable ERPNext branch
 | jobs.backup.affinity | object | `{}` |  |
 | jobs.backup.backoffLimit | int | `0` |  |
 | jobs.backup.enabled | bool | `false` |  |
+| jobs.backup.jobName | string | `""` |  |
 | jobs.backup.nodeSelector | object | `{}` |  |
 | jobs.backup.resources | object | `{}` |  |
 | jobs.backup.siteName | string | `"erp.cluster.local"` |  |
@@ -99,6 +100,7 @@ Kubernetes Helm Chart for the latest stable ERPNext branch
 | jobs.configure.enabled | bool | `true` |  |
 | jobs.configure.envVars | list | `[]` |  |
 | jobs.configure.fixVolume | bool | `true` |  |
+| jobs.configure.jobName | string | `""` |  |
 | jobs.configure.nodeSelector | object | `{}` |  |
 | jobs.configure.resources | object | `{}` |  |
 | jobs.configure.tolerations | list | `[]` |  |
@@ -109,6 +111,7 @@ Kubernetes Helm Chart for the latest stable ERPNext branch
 | jobs.createSite.enabled | bool | `false` |  |
 | jobs.createSite.forceCreate | bool | `false` |  |
 | jobs.createSite.installApps[0] | string | `"erpnext"` |  |
+| jobs.createSite.jobName | string | `""` |  |
 | jobs.createSite.nodeSelector | object | `{}` |  |
 | jobs.createSite.resources | object | `{}` |  |
 | jobs.createSite.siteName | string | `"erp.cluster.local"` |  |
@@ -128,6 +131,7 @@ Kubernetes Helm Chart for the latest stable ERPNext branch
 | jobs.dropSite.backoffLimit | int | `0` |  |
 | jobs.dropSite.enabled | bool | `false` |  |
 | jobs.dropSite.forced | bool | `false` |  |
+| jobs.dropSite.jobName | string | `""` |  |
 | jobs.dropSite.nodeSelector | object | `{}` |  |
 | jobs.dropSite.resources | object | `{}` |  |
 | jobs.dropSite.siteName | string | `"erp.cluster.local"` |  |
@@ -135,6 +139,7 @@ Kubernetes Helm Chart for the latest stable ERPNext branch
 | jobs.migrate.affinity | object | `{}` |  |
 | jobs.migrate.backoffLimit | int | `0` |  |
 | jobs.migrate.enabled | bool | `false` |  |
+| jobs.migrate.jobName | string | `""` |  |
 | jobs.migrate.nodeSelector | object | `{}` |  |
 | jobs.migrate.resources | object | `{}` |  |
 | jobs.migrate.siteName | string | `"erp.cluster.local"` |  |
@@ -143,6 +148,7 @@ Kubernetes Helm Chart for the latest stable ERPNext branch
 | jobs.volumePermissions.affinity | object | `{}` |  |
 | jobs.volumePermissions.backoffLimit | int | `0` |  |
 | jobs.volumePermissions.enabled | bool | `false` |  |
+| jobs.volumePermissions.jobName | string | `""` |  |
 | jobs.volumePermissions.nodeSelector | object | `{}` |  |
 | jobs.volumePermissions.resources | object | `{}` |  |
 | jobs.volumePermissions.tolerations | list | `[]` |  |
