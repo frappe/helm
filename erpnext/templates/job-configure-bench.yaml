@@ -2,7 +2,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
+  {{- if .Values.jobs.configure.jobName }}
+  name: {{ .Values.jobs.configure.jobName }}
+  {{- else }}
   name: {{ template "erpnext.fullname" . }}-conf-bench-{{ now | date "20060102150405" }}
+  {{- end }}
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
 spec:
