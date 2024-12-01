@@ -2,7 +2,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
+  {{- if .Values.jobs.migrate.jobName }}
+  name: {{ .Values.jobs.migrate.jobName }}
+  {{- else }}
   name: {{ template "erpnext.fullname" . }}-migrate-{{ now | date "20060102150405" }}
+  {{- end }}
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
 spec:

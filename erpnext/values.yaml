@@ -288,6 +288,7 @@ ingress:
 
 jobs:
   volumePermissions:
+    # jobName: ""
     enabled: false
     backoffLimit: 0
     resources: {}
@@ -296,6 +297,7 @@ jobs:
     affinity: {}
 
   configure:
+    # jobName: ""
     enabled: true
     fixVolume: true
     backoffLimit: 0
@@ -308,6 +310,7 @@ jobs:
     args: []
 
   createSite:
+    # jobName: ""
     enabled: false
     forceCreate: false
     siteName: "erp.cluster.local"
@@ -322,6 +325,7 @@ jobs:
     affinity: {}
 
   dropSite:
+    # jobName: ""
     enabled: false
     forced: false
     siteName: "erp.cluster.local"
@@ -332,6 +336,7 @@ jobs:
     affinity: {}
 
   backup:
+    # jobName: ""
     enabled: false
     siteName: "erp.cluster.local"
     withFiles: true
@@ -342,6 +347,7 @@ jobs:
     affinity: {}
 
   migrate:
+    # jobName: ""
     enabled: false
     siteName: "erp.cluster.local"
     skipFailing: false

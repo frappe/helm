@@ -2,7 +2,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
+  {{- if .Values.jobs.createSite.jobName }}
+  name: {{ .Values.jobs.createSite.jobName }}
+  {{- else }}
   name: {{ template "erpnext.fullname" . }}-new-site-{{ now | date "20060102150405" }}
+  {{- end }}
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
   annotations:
@@ -114,7 +118,7 @@ spec:
                     exit $bench_exit_status;
                 fi
             fi
- 
+
             set -e;
 
             rm -f currentsite.txt

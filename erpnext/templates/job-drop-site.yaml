@@ -2,7 +2,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
+  {{- if .Values.jobs.dropSite.jobName }}
+  name: {{ .Values.jobs.dropSite.jobName }}
+  {{- else }}
   name: {{ template "erpnext.fullname" . }}-drop-site-{{ now | date "20060102150405" }}
+  {{- end }}
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
 spec:

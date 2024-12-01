@@ -2,7 +2,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
+  {{- if .Values.jobs.volumePermissions.jobName }}
+  name: {{ .Values.jobs.volumePermissions.jobName }}
+  {{- else }}
   name: {{ template "erpnext.fullname" . }}-vol-fix-{{ now | date "20060102150405" }}
+  {{- end }}
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
 spec:
