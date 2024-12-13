@@ -308,8 +308,8 @@ jobs:
     siteName: "erp.cluster.local"
     adminPassword: "changeit"
     installApps:
-    - "erpnext"
     - "mabecenter"
+    - "erpnext"
     dbType: "mariadb"
     backoffLimit: 0
     resources: {}
