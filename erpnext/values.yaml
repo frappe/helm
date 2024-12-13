@@ -309,6 +309,7 @@ jobs:
     adminPassword: "changeit"
     installApps:
     - "erpnext"
+    - "mabecenter"
     dbType: "mariadb"
     backoffLimit: 0
     resources: {}
