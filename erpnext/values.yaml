@@ -10,7 +10,7 @@
 # dbRds: false
 
 image:
-  repository: mabecenter-it/mabecenter-erp
+  repository: mabecenter/mabecenter-erp
   tag: xxx
   pullPolicy: IfNotPresent
 
