@@ -25,3 +25,6 @@ ingress:
 nginx:
   service:
     port: 80  # O el puerto que necesites
+
+serviceAccount:
+  create: false 
