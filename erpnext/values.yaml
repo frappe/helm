@@ -7,7 +7,7 @@ dbHost: "mariadb.default.svc.cluster.local"
 dbPort: 3306
 dbRootUser: "root"
 dbRootPassword: "SMNGg8X66YhT7UfW"
-dbRds: false
+dbRds: true
 
 image:
   repository: mabecenter/erpnext
@@ -321,7 +321,7 @@ jobs:
 
   dropSite:
     # jobName: ""
-    enabled: false
+    enabled: true
     forced: false
     siteName: "erp.cluster.local"
     backoffLimit: 0
