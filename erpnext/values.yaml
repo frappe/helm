@@ -274,8 +274,6 @@ socketio:
       volumeMounts:
         - name: etc-hosts
           mountPath: /etc/hosts
-      securityContext:
-        privileged: true
   volumes:
     - name: etc-hosts
       emptyDir: {}
