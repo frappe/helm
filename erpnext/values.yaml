@@ -7,7 +7,7 @@ dbHost: "mariadb.database.svc.cluster.local"
 dbPort: 3306
 dbRootUser: "root"
 dbRootPassword: "SMNGg8X66YhT7UfW"
-dbRds: true
+dbRds: false
 
 image:
   repository: mabecenter/erpnext
