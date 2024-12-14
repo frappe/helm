@@ -3,11 +3,11 @@
 # Declare variables to be passed into your templates.
 
 # Configure external database host
-# dbHost: ""
-# dbPort: 3306
-# dbRootUser: ""
-# dbRootPassword: ""
-# dbRds: false
+dbHost: "mariadb.default.svc.cluster.local"
+dbPort: 3306
+dbRootUser: "root"
+dbRootPassword: "SMNGg8X66YhT7UfW"
+dbRds: false
 
 image:
   repository: mabecenter/erpnext
