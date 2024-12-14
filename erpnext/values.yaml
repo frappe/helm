@@ -303,13 +303,13 @@ jobs:
 
   createSite:
     # jobName: ""
-    enabled: true
+    enabled: false
     forceCreate: false
     siteName: "erp.cluster.local"
     adminPassword: "changeit"
     installApps:
-    - "mabecenter"
     - "erpnext"
+    - "mabecenter"
     dbType: "mariadb"
     backoffLimit: 0
     resources: {}
@@ -319,7 +319,7 @@ jobs:
 
   dropSite:
     # jobName: ""
-    enabled: true
+    enabled: false
     forced: false
     siteName: "erp.cluster.local"
     backoffLimit: 0
@@ -330,7 +330,7 @@ jobs:
 
   backup:
     # jobName: ""
-    enabled: false
+    enabled: true
     siteName: "erp.cluster.local"
     withFiles: true
     backoffLimit: 0
@@ -341,7 +341,7 @@ jobs:
 
   migrate:
     # jobName: ""
-    enabled: false
+    enabled: true
     siteName: "erp.cluster.local"
     skipFailing: false
     backoffLimit: 0
