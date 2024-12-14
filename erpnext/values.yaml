@@ -243,7 +243,7 @@ worker:
 socketio:
   replicaCount: 1
   autoscaling:
-    enabled: false
+    enabled: true
     minReplicas: 1
     maxReplicas: 3
     targetCPU: 75
@@ -265,27 +265,9 @@ socketio:
   service:
     type: ClusterIP
     port: 9000
-  envVars:
-    - name: SOCKETIO_HOST
-      value: "127.0.0.1"
-    - name: SOCKETIO_PORT
-      value: "9000"
-  initContainers:
-    - name: modify-hosts
-      image: busybox
-      command: ["/bin/sh", "-c"]
-      args:
-        - echo "127.0.0.1 erp.cluster.local >> /etc/hosts";
-      volumeMounts:
-        - name: etc-hosts
-          mountPath: /etc/hosts
+  envVars: []
+  initContainers: []
   sidecars: []
-  extraVolumes:
-    - name: etc-hosts
-      emptyDir: {}
-  extraVolumeMounts:
-    - name: etc-hosts
-      mountPath: /etc/hosts
 
 # Ingress
 ingress:
