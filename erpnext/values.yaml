@@ -274,7 +274,7 @@ ingress:
     enabled: true
     annotations: {}
     hosts:
-    - host: erp.cluster.local
+    - host: development.localhost
       paths:
         - path: /
           pathType: Prefix
@@ -305,7 +305,7 @@ jobs:
     # jobName: ""
     enabled: false
     forceCreate: false
-    siteName: "erp.cluster.local"
+    siteName: "development.localhost"
     adminPassword: "changeit"
     installApps:
     - "erpnext"
@@ -321,7 +321,7 @@ jobs:
     # jobName: ""
     enabled: false
     forced: false
-    siteName: "erp.cluster.local"
+    siteName: "development.localhost"
     backoffLimit: 0
     resources: {}
     nodeSelector: {}
@@ -331,7 +331,7 @@ jobs:
   backup:
     # jobName: ""
     enabled: true
-    siteName: "erp.cluster.local"
+    siteName: "development.localhost"
     withFiles: true
     backoffLimit: 0
     resources: {}
@@ -342,7 +342,7 @@ jobs:
   migrate:
     # jobName: ""
     enabled: true
-    siteName: "erp.cluster.local"
+    siteName: "development.localhost"
     skipFailing: false
     backoffLimit: 0
     resources: {}
