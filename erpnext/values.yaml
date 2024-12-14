@@ -60,6 +60,8 @@ nginx:
     type: ClusterIP
     port: 8080
   resources: {}
+
+  
   nodeSelector: {}
   tolerations: []
   affinity: {}
@@ -303,7 +305,7 @@ jobs:
 
   createSite:
     # jobName: ""
-    enabled: false
+    enabled: true
     forceCreate: false
     siteName: "development.localhost"
     adminPassword: "changeit"
