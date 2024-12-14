@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 # Configure external database host
-dbHost: "mariadb.default.svc.cluster.local"
+dbHost: "mariadb.database.svc.cluster.local"
 dbPort: 3306
 dbRootUser: "root"
 dbRootPassword: "SMNGg8X66YhT7UfW"
