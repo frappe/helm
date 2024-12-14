@@ -414,7 +414,7 @@ redis-queue:
 
 mariadb:
   # https://github.com/bitnami/charts/tree/master/bitnami/mariadb
-  enabled: true
+  enabled: false
   auth:
     rootPassword: "changeit"
     username: "erpnext"
