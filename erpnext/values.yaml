@@ -265,6 +265,11 @@ socketio:
   service:
     type: ClusterIP
     port: 9000
+  envVars:
+    - name: SOCKETIO_HOST
+      value: "127.0.0.1"
+    - name: SOCKETIO_PORT
+      value: "9000"
   initContainers:
     - name: modify-hosts
       image: busybox
@@ -274,10 +279,13 @@ socketio:
       volumeMounts:
         - name: etc-hosts
           mountPath: /etc/hosts
-  volumes:
+  sidecars: []
+  extraVolumes:
     - name: etc-hosts
       emptyDir: {}
-  sidecars: []
+  extraVolumeMounts:
+    - name: etc-hosts
+      mountPath: /etc/hosts
 
 # Ingress
 ingress:
