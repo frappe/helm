@@ -321,7 +321,7 @@ jobs:
 
   dropSite:
     # jobName: ""
-    enabled: true
+    enabled: false
     forced: false
     siteName: "erp.cluster.local"
     backoffLimit: 0
