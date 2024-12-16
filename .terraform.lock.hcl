@@ -1,6 +1,29 @@
 # This file is maintained automatically by "terraform init".
 # Manual edits may be lost in future updates.
 
+provider "registry.terraform.io/gavinbunney/kubectl" {
+  version     = "1.18.0"
+  constraints = ">= 1.7.0"
+  hashes = [
+    "h1:N8cTnMMS8evZ0kTEheFJ55RizWmdyBaI82lfUs0biA4=",
+    "zh:06721b083cceb1c8c43535b21879e32b25ce22d4d2dac9c9d7717349ef97a1b0",
+    "zh:172eaf0d7a1b536e454c9b066a7aaf1027b51a1ca6f1d5918055c3da11055c9f",
+    "zh:2c34140c46674971bc2dd45f84c9701e86654b8c6b019c5a0ff26c4f111232c4",
+    "zh:3dc5623d74a5f373bff189b2939aa05d6b48c9d5070b20c6514c05c0c2b3d1bc",
+    "zh:4f4169427d5f13348e378cdb1cebd4c34914a8aaa0a6fc42b5aa63df76ca1e47",
+    "zh:8ceecf5c01a4f72f3f26ffaaa56a5a73660d8eb4c382c9066dfa82166e63df93",
+    "zh:9b12af85486a96aedd8d7984b0ff811a4b42e3d88dad1a3fb4c0b580d04fa425",
+    "zh:a01fbfb974d7b6c54db71efb5e35d3ea54aed48c147220b0fde8a9c91db55667",
+    "zh:bb6428db2b84e814c1c4cb59006dcc47177c0c6c90d92eabfd33e535525d6e28",
+    "zh:c3163db5b43fa303e9058fab1c49e590f19bbb984b1f4704b0678c050cb4ab17",
+    "zh:ce57a14f0b8f6ecafa2623ff3ce08a87398fcc26cd072645334334ec4a176075",
+    "zh:cfb135b0488b76be5a016299730da749fd9493200ca43ac13c57c665e43eecd7",
+    "zh:d0b0fa3aac0be376e429206414be6a37a05e926699d258f55d81bdc531959482",
+    "zh:d6b7df802d4344b6bbc41777788fa6917dcf7cb6e2c9cceeff434f5930a44df1",
+    "zh:fd1e6d5fa802723dfb26a87405117dca70530b168222f2fbd62075e91f748e18",
+  ]
+}
+
 provider "registry.terraform.io/hashicorp/helm" {
   version     = "2.16.1"
   constraints = "~> 2.0"
