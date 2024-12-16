@@ -26,3 +26,21 @@ variable "argocd_namespace" {
   type        = string
   default     = "argocd"
 }
+
+variable "github_repo" {
+  description = "URL del repositorio de GitHub para las aplicaciones"
+  type        = string
+  default     = "https://github.com/tu-usuario/tu-repo"
+}
+
+variable "github_path" {
+  description = "Ruta dentro del repositorio donde están los manifiestos"
+  type        = string
+  default     = "erpnext"
+}
+
+variable "github_branch" {
+  description = "Rama del repositorio a utilizar"
+  type        = string
+  default     = "main"
+}

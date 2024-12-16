@@ -12,6 +12,10 @@ terraform {
       source  = "gavinbunney/kubectl"
       version = ">= 1.7.0"
     }
+    argocd = {
+      source = "argoproj-labs/argocd"
+      version = "7.2.0"
+    }
   }
 
   required_version = ">= 1.2.0"
@@ -29,4 +33,10 @@ provider "helm" {
 
 provider "kubectl" {
   config_path = "~/.kube/config"
+}
+
+provider "argocd" {
+  port_forward_with_namespace = var.argocd_namespace
+  insecure    = true
+  plain_text  = true
 }

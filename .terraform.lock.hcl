@@ -1,6 +1,24 @@
 # This file is maintained automatically by "terraform init".
 # Manual edits may be lost in future updates.
 
+provider "registry.terraform.io/argoproj-labs/argocd" {
+  version     = "7.2.0"
+  constraints = "7.2.0"
+  hashes = [
+    "h1:utZ7CHruyvxpQ/fMtxg18W4HmiQeW80yw7dLNCzHQEQ=",
+    "zh:03d4a81f3a4838014c58e411763f70c5d79f4957305fe1bee79830da6beee74c",
+    "zh:1c4e73dd82354872e73a868a87c7e320c9e35a40ede7d7ce58d9dd203c69001d",
+    "zh:29dfb129509349b45a89c9696f15e58d8899df4b8a706090059b960195a2244a",
+    "zh:2dba2fa2b45236834aa4244a22036d238d22e64d05ecfb0696ff5f2fd42e2375",
+    "zh:62767f7b449e77da5b8175b69cf9d24171865ed607268ca4a5ed105994dedf37",
+    "zh:68fbec5caab392156b5178b368800deaab17c6f4d39552d2e668311b0c51aa0f",
+    "zh:b3231892087755ccb1a1b0cff3b9c03768ef55ac663053d0c66b2ad546554985",
+    "zh:bac26d3dcc8b417b939eaf0e7fd58d7ee40112822b6dd773129092280d0b98e6",
+    "zh:c5d4283c6704bb5b8dd428ddf48484063c6f79a440b6d6ac6dbefc3d3f4446a2",
+    "zh:de9e852236724f97f44759c1b9d4b4c0b05efb3dc94d324ac85afdcd75b112dd",
+  ]
+}
+
 provider "registry.terraform.io/gavinbunney/kubectl" {
   version     = "1.18.0"
   constraints = ">= 1.7.0"
