@@ -1,0 +1,17 @@
+# redis-ha:
+#   enabled: true
+
+controller:
+  replicas: 1
+
+server:
+  replicas: 1
+  service:
+    type: LoadBalancer
+
+repoServer:
+  replicas: 1
+
+applicationSet:
+  replicaCount: 1
+  # replicaCount: 2

@@ -9,6 +9,7 @@ spec:
     server: https://kubernetes.default.svc
   source:
     path: erpnext
+    repoURL: https://github.com/mabecenter-it/helm
     targetRevision: main
     helm:
       valueFiles:

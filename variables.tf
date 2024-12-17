@@ -44,3 +44,14 @@ variable "github_branch" {
   type        = string
   default     = "main"
 }
+
+variable "env" {
+  default = "staging"
+}
+
+variable "alb_name" {
+  description = "Name of the Application Load Balancer"
+  type        = string
+  default     = "argocd-alb" # You can change this default value
+}
+

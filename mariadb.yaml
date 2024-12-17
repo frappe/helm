@@ -2,6 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: mariadb
+  namespace: database
 spec:
   syncPolicy:
     syncOptions:
@@ -22,11 +23,9 @@ spec:
         primary:
           extraFlags: "--character-set-server=utf8mb4 --collation-server=utf8mb4_bin"
           persistence:
-            enabled: false
-        secondary:
-          replicaCount: 1
-          persistence:
-            enabled: false
+            enabled: true
+            storageClass: "nfs"
+            size: "8Gi"
         image:
           registry: docker.io
           pullPolicy: IfNotPresent

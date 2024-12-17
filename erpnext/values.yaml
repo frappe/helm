@@ -17,15 +17,12 @@ image:
 persistence:
   worker:
     enabled: true
-    # existingClaim: ""
     size: 8Gi
     storageClass: "nfs"
     accessModes:
     - ReadWriteMany
   logs:
-    # Container based log search and analytics stack recommended
     enabled: true
-    # existingClaim: ""
     size: 8Gi
     storageClass: "nfs"
     accessModes:
@@ -179,16 +176,37 @@ worker:
 
   scheduler:
     replicaCount: 1
-    resources: {}
-    nodeSelector: {}
-    tolerations: []
-    affinity: {}
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "200m"
     livenessProbe:
-      override: false
-      probe: {}
+      override: true
+      probe:
+        exec:
+          command:
+            - bash
+            - -c
+            - pgrep -f "bench schedule"
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 3
     readinessProbe:
-      override: false
-      probe: {}
+      override: true
+      probe:
+        exec:
+          command:
+            - bash
+            - -c
+            - pgrep -f "bench schedule"
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 3
     envVars: []
     initContainers: []
     sidecars: []
@@ -332,7 +350,7 @@ jobs:
 
   backup:
     # jobName: ""
-    enabled: true
+    enabled: false
     siteName: "erp.cluster.local"
     withFiles: true
     backoffLimit: 0
