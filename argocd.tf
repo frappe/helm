@@ -130,6 +130,13 @@ resource "helm_release" "argocd-apps" {
   ]
 }
 
+# Resource below are used to wait for ALB interfaces will be published
+resource "time_sleep" "wait_60_seconds" {
+  depends_on = [helm_release.argocd-apps]
+
+  create_duration = "60s"
+}
+
 resource "kubernetes_namespace" "nfs" {
   metadata {
     name = "nfs"
@@ -137,16 +144,12 @@ resource "kubernetes_namespace" "nfs" {
 }
 
 resource "helm_release" "nfs_server" {
-  name       = "nfs-server"
+  name       = "in-cluster"
   repository = "https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner"
   chart      = "nfs-server-provisioner"
   namespace  = kubernetes_namespace.nfs.metadata[0].name
 
-  set {
-    name  = "storageClass.name"
-    value = "nfs"
-  }
-
+  # Ajustar valores con 'set' para emular --set en helm
   set {
     name  = "storageClass.mountOptions[0]"
     value = "vers=4.1"
@@ -173,39 +176,39 @@ resource "kubernetes_namespace" "erpnext" {
   }
 }
 
-resource "helm_release" "frappe_erpnext" {
+/* resource "helm_release" "frappe_erpnext" {
   name       = "frappe-bench"
   namespace  = kubernetes_namespace.erpnext.metadata[0].name
   repository = "https://helm.erpnext.com"
   chart      = "erpnext"
-  timeout    = 900
-  version    = "5.2.0"
 
-  values = [
-    file("erpnext/values.yaml")
-  ]
-
+  # Agregar configuración para forzar la limpieza y recreación
   set {
     name  = "persistence.worker.storageClass"
     value = "nfs"
   }
 
   set {
-    name  = "nginx.livenessProbe.initialDelaySeconds"
-    value = "60"
+    name  = "persistence.worker.annotations.\"helm.sh/resource-policy\""
+    value = "keep"
   }
 
   set {
-    name  = "nginx.readinessProbe.initialDelaySeconds"
-    value = "60"
+    name  = "persistence.worker.accessMode"
+    value = "ReadWriteOnce"
   }
 
+  # Forzar la recreación del release si existe
+  replace = true
+  force_update = true
+  cleanup_on_fail = true
+  
   depends_on = [
     helm_release.nfs_server,
     kubernetes_namespace.erpnext,
     kubernetes_manifest.argocd_application_mariadb
   ]
-}
+} */
 
 resource "kubernetes_namespace" "database" {
   metadata {
@@ -298,13 +301,13 @@ resource "kubernetes_manifest" "argocd_application_mariadb" {
       }
       syncPolicy = {
         automated = {
-          prune    = true
-          selfHeal = true
+          prune       = true
+          selfHeal    = true
+          allowEmpty  = true
         }
         syncOptions = [
           "CreateNamespace=true",
-          "ServerSideApply=true",
-          "AllowEmpty=true"
+          "ServerSideApply=true"
         ]
       }
     }
@@ -317,7 +320,6 @@ resource "time_sleep" "wait_for_services_erpnext" {
     helm_release.nfs_server,
     kubernetes_secret.mariadb_credentials,
     time_sleep.wait_for_argocd,
-    helm_release.frappe_erpnext
   ]
 
   create_duration = "90s"
