@@ -178,10 +178,10 @@ worker:
     replicaCount: 1
     resources:
       requests:
-        memory: "256Mi"
+        memory: "512Mi"
         cpu: "100m"
       limits:
-        memory: "512Mi"
+        memory: "1Gi"
         cpu: "200m"
     livenessProbe:
       override: true
@@ -191,10 +191,10 @@ worker:
             - bash
             - -c
             - pgrep -f "bench schedule"
-        initialDelaySeconds: 30
-        periodSeconds: 10
-        timeoutSeconds: 5
-        failureThreshold: 3
+        initialDelaySeconds: 120
+        periodSeconds: 30
+        timeoutSeconds: 10
+        failureThreshold: 5
     readinessProbe:
       override: true
       probe:
@@ -203,10 +203,10 @@ worker:
             - bash
             - -c
             - pgrep -f "bench schedule"
-        initialDelaySeconds: 30
-        periodSeconds: 10
-        timeoutSeconds: 5
-        failureThreshold: 3
+        initialDelaySeconds: 120
+        periodSeconds: 30
+        timeoutSeconds: 10
+        failureThreshold: 5
     envVars: []
     initContainers: []
     sidecars: []
