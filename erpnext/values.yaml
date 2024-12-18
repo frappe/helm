@@ -10,28 +10,14 @@ dbRootPassword: "SMNGg8X66YhT7UfW"
 dbRds: false
 
 image:
-  repository: mabecenter/erpnext
-  tag: 0.0.1-42b2b99
+  repository: frappe/erpnext
+  tag: v15.45.5
   pullPolicy: IfNotPresent
-
-persistence:
-  worker:
-    enabled: true
-    size: 8Gi
-    storageClass: "nfs"
-    accessModes:
-    - ReadWriteMany
-  logs:
-    enabled: true
-    size: 8Gi
-    storageClass: "nfs"
-    accessModes:
-    - ReadWriteMany
 
 nginx:
   replicaCount: 1
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 1
     maxReplicas: 3
     targetCPU: 75
@@ -57,8 +43,6 @@ nginx:
     type: ClusterIP
     port: 8080
   resources: {}
-
-  
   nodeSelector: {}
   tolerations: []
   affinity: {}
@@ -176,37 +160,16 @@ worker:
 
   scheduler:
     replicaCount: 1
-    resources:
-      requests:
-        memory: "512Mi"
-        cpu: "100m"
-      limits:
-        memory: "1Gi"
-        cpu: "200m"
+    resources: {}
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
     livenessProbe:
-      override: true
-      probe:
-        exec:
-          command:
-            - bash
-            - -c
-            - pgrep -f "bench schedule"
-        initialDelaySeconds: 120
-        periodSeconds: 30
-        timeoutSeconds: 10
-        failureThreshold: 5
+      override: false
+      probe: {}
     readinessProbe:
-      override: true
-      probe:
-        exec:
-          command:
-            - bash
-            - -c
-            - pgrep -f "bench schedule"
-        initialDelaySeconds: 120
-        periodSeconds: 30
-        timeoutSeconds: 10
-        failureThreshold: 5
+      override: false
+      probe: {}
     envVars: []
     initContainers: []
     sidecars: []
@@ -261,7 +224,7 @@ worker:
 socketio:
   replicaCount: 1
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 1
     maxReplicas: 3
     targetCPU: 75
@@ -287,21 +250,42 @@ socketio:
   initContainers: []
   sidecars: []
 
+persistence:
+  worker:
+    enabled: true
+    # existingClaim: ""
+    size: 8Gi
+    # storageClass: "nfs"
+    accessModes:
+    - ReadWriteMany
+  logs:
+    # Container based log search and analytics stack recommended
+    enabled: false
+    # existingClaim: ""
+    size: 8Gi
+    # storageClass: "nfs"
+    accessModes:
+    - ReadWriteMany
+
 # Ingress
 ingress:
-    ingressName: "erpnext-ingress"
-    className: nginx
-    enabled: true
-    annotations: 
-      kubernetes.io/ingress.class: nginx
-      nginx.ingress.kubernetes.io/proxy-body-size: "50m"
-      nginx.ingress.kubernetes.io/proxy-read-timeout: "1800"
-      nginx.ingress.kubernetes.io/proxy-send-timeout: "1800"
-    hosts:
-    - host: erp.cluster.local
-      paths:
-        - path: /
-          pathType: Prefix
+  # ingressName: ""
+  # className: ""
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+  - host: erp.cluster.local
+    paths:
+    - path: /
+      pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: auth-server-tls
+  #    hosts:
+  #      - auth-server.local
+
 jobs:
   volumePermissions:
     # jobName: ""
@@ -327,13 +311,12 @@ jobs:
 
   createSite:
     # jobName: ""
-    enabled: true
+    enabled: false
     forceCreate: false
     siteName: "erp.cluster.local"
     adminPassword: "changeit"
     installApps:
     - "erpnext"
-    - "mabecenter"
     dbType: "mariadb"
     backoffLimit: 0
     resources: {}
@@ -365,7 +348,7 @@ jobs:
 
   migrate:
     # jobName: ""
-    enabled: true
+    enabled: false
     siteName: "erp.cluster.local"
     skipFailing: false
     backoffLimit: 0
