@@ -188,25 +188,25 @@ worker:
       probe:
         exec:
           command:
-            - pgrep
-            - -f
-            - "bench schedule"
-        initialDelaySeconds: 60
-        periodSeconds: 30
-        timeoutSeconds: 10
-        failureThreshold: 5
+            - bash
+            - -c
+            - pgrep -f "bench schedule"
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 3
     readinessProbe:
       override: true
       probe:
         exec:
           command:
-            - pgrep
-            - -f
-            - "bench schedule"
-        initialDelaySeconds: 60
-        periodSeconds: 30
-        timeoutSeconds: 10
-        failureThreshold: 5
+            - bash
+            - -c
+            - pgrep -f "bench schedule"
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 3
     envVars: []
     initContainers: []
     sidecars: []
