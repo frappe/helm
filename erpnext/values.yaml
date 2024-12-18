@@ -255,7 +255,7 @@ persistence:
     enabled: true
     # existingClaim: ""
     size: 8Gi
-    # storageClass: "nfs"
+    storageClass: "nfs"
     accessModes:
     - ReadWriteMany
   logs:
@@ -263,7 +263,7 @@ persistence:
     enabled: false
     # existingClaim: ""
     size: 8Gi
-    # storageClass: "nfs"
+    storageClass: "nfs"
     accessModes:
     - ReadWriteMany
 
