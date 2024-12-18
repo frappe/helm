@@ -175,7 +175,7 @@ worker:
     sidecars: []
 
   scheduler:
-    replicaCount: 1
+    replicaCount: 0
     resources:
       requests:
         memory: "512Mi"
