@@ -1,44 +1,18 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: mariadb
-  namespace: database
-spec:
-  syncPolicy:
-    syncOptions:
-    - CreateNamespace=true
-  project: default
-  source:
-    repoURL: https://charts.bitnami.com/bitnami
-    chart: mariadb
-    targetRevision: 16.3.2
-    helm:
-      releaseName: mariadb
-      values: |
-        architecture: standalone
-        auth:
-          database: geekcity
-          username: ben.wangz
-          existingSecret: ${mariadb_credentials}
-        primary:
-          extraFlags: "--character-set-server=utf8mb4 --collation-server=utf8mb4_bin"
-          persistence:
-            enabled: true
-            storageClass: "nfs"
-            size: "8Gi"
-        image:
-          registry: docker.io
-          pullPolicy: IfNotPresent
-        volumePermissions:
-          enabled: false
-          image:
-            registry: docker.io
-            pullPolicy: IfNotPresent
-        metrics:
-          enabled: false
-          image:
-            registry: docker.io
-            pullPolicy: IfNotPresent
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: database
+{
+  architecture = "standalone"
+  auth = {
+    existingSecret = "mariadb-credentials"
+  }
+  primary = {
+    extraFlags = "--character-set-server=utf8mb4 --collation-server=utf8mb4_bin"
+    persistence = {
+      enabled = false
+    }
+  }
+  secondary = {
+    replicaCount = 1
+    persistence = {
+      enabled = false
+    }
+  }
+}

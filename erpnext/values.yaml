@@ -334,6 +334,13 @@ jobs:
     enabled: true
     siteName: "erp.cluster.local"
     withFiles: true
+    volumes:
+      - name: backup-pvc
+        persistentVolumeClaim:
+          claimName: pvc-backups
+    volumeMounts:
+      - name: backup-pvc
+        mountPath: /home/frappe/frappe-bench/sites
     backoffLimit: 0
     resources: {}
     nodeSelector: {}

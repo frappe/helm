@@ -35,12 +35,18 @@ resource "kubernetes_namespace" "erpnext" {
   metadata {
     name = "erpnext"
   }
+  depends_on = [
+    helm_release.nfs_server
+  ]
 }
 
 resource "kubernetes_namespace" "database" {
   metadata {
     name = "database"
   }
+  depends_on = [
+    helm_release.nfs_server
+  ]
 }
 
 resource "kubernetes_secret" "mariadb_credentials" {
@@ -71,21 +77,64 @@ resource "time_sleep" "wait_for_services" {
   create_duration = "30s"
 }
 
-data "template_file" "mariadb_manifest" {
-  template = file("mariadb.yaml")
-  vars = {
-    mariadb_credentials = kubernetes_secret.mariadb_credentials.metadata[0].name
-  }
-}
-
 resource "kubernetes_manifest" "argocd_application_mariadb" {
   depends_on = [
     time_sleep.wait_for_services,
-    kubernetes_secret.mariadb_credentials,
-    kubernetes_namespace.database
+    kubernetes_secret.mariadb_credentials
   ]
 
-  manifest = data.template_file.mariadb_manifest.rendered
+  manifest = {
+    apiVersion = "argoproj.io/v1alpha1"
+    kind       = "Application"
+    metadata = {
+      name      = "mariadb"
+      namespace = "argocd"
+    }
+    spec = {
+      project = "default"
+      source = {
+        repoURL        = "https://charts.bitnami.com/bitnami"
+        chart          = "mariadb"
+        targetRevision = "16.3.2"
+        helm = {
+          releaseName = "mariadb"
+          values = yamlencode({
+            architecture = "standalone"
+            auth = {
+              existingSecret = "mariadb-credentials"
+            }
+            primary = {
+              extraFlags = "--character-set-server=utf8mb4 --collation-server=utf8mb4_bin"
+              persistence = {
+                enabled = false
+              }
+            }
+            secondary = {
+              replicaCount = 1
+              persistence = {
+                enabled = false
+              }
+            }
+          })
+        }
+      }
+      destination = {
+        server    = "https://kubernetes.default.svc"
+        namespace = kubernetes_namespace.database.metadata[0].name
+      }
+      syncPolicy = {
+        automated = {
+          prune       = true
+          selfHeal    = true
+          allowEmpty  = true
+        }
+        syncOptions = [
+          "CreateNamespace=true",
+          "ServerSideApply=true"
+        ]
+      }
+    }
+  }
 }
 
 resource "time_sleep" "wait_for_services_erpnext" {
@@ -97,7 +146,7 @@ resource "time_sleep" "wait_for_services_erpnext" {
   create_duration = "90s"
 }
 
-/* resource "kubernetes_manifest" "argocd_application_erpnext" {
+resource "kubernetes_manifest" "argocd_application_erpnext" {
   depends_on = [
     time_sleep.wait_for_services_erpnext,
     kubernetes_manifest.argocd_application_mariadb,
@@ -107,4 +156,3 @@ resource "time_sleep" "wait_for_services_erpnext" {
   manifest = yamldecode(file("app.yaml"))
 
 }
- */
