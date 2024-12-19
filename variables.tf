@@ -17,3 +17,8 @@ variable "selected_context" {
   description = "Selected Kubernetes context"
   type        = string
 }
+
+variable "branch_name" {
+  description = "Branch name"
+  type        = string
+}
