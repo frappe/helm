@@ -269,15 +269,15 @@ persistence:
 
 # Ingress
 ingress:
-    ingressName: "erpnext-ingress"
-    className: "nginx"
-    enabled: true
-    annotations: {}
-    hosts:
-    - host: erp.cluster.local
-        paths:
-        - path: /
-        pathType: Prefix
+  ingressName: "erpnext-ingress"
+  className: "nginx"
+  enabled: true
+  annotations: {}
+  hosts:
+  - host: erp.cluster.local
+      paths:
+      - path: /
+      pathType: Prefix
 
 jobs:
   volumePermissions:
