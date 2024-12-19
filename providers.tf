@@ -8,6 +8,10 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 2.0"
     }
+    argocd = {
+      source = "argoproj-labs/argocd"
+      version = "7.2.0"
+    }
   }
 
   required_version = ">= 1.2.0"
@@ -27,4 +31,10 @@ provider "helm" {
     client_certificate     = base64decode(lookup(var.kube_users[lookup(var.kube_contexts, var.selected_context).user], "client_certificate", ""))
     client_key             = base64decode(lookup(var.kube_users[lookup(var.kube_contexts, var.selected_context).user], "client_key", ""))
   }
+}
+
+provider "argocd" {
+  port_forward_with_namespace = "argocd"
+  insecure    = true
+  plain_text  = true
 }

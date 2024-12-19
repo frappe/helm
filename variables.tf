@@ -1,13 +1,3 @@
-variable "kube_context" {
-  description = "Contexto de Kubernetes a utilizar"
-  type        = string
-}
-
-variable "kube_config_path" {
-  description = "Path to the kubeconfig file"
-  type        = string
-}
-
 variable "kube_clusters" {
   description = "Map of Kubernetes clusters configurations"
   type        = map(any)
