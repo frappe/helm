@@ -275,9 +275,9 @@ ingress:
   annotations: {}
   hosts:
   - host: erp.cluster.local
-      paths:
-      - path: /
-      pathType: Prefix
+    paths:
+    - path: /
+    pathType: Prefix
 
 jobs:
   volumePermissions:
