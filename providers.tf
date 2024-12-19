@@ -8,14 +8,6 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 2.0"
     }
-    kubectl = {
-      source  = "alekc/kubectl"
-      version = "2.0.4"
-    }
-    argocd = {
-      source = "argoproj-labs/argocd"
-      version = "7.2.0"
-    }
   }
 
   required_version = ">= 1.2.0"
@@ -35,11 +27,4 @@ provider "helm" {
     client_certificate     = base64decode(lookup(var.kube_users[lookup(var.kube_contexts, var.selected_context).user], "client_certificate", ""))
     client_key             = base64decode(lookup(var.kube_users[lookup(var.kube_contexts, var.selected_context).user], "client_key", ""))
   }
-}
-
-provider "kubectl" {
-  host                   = lookup(var.kube_clusters[lookup(var.kube_contexts, var.selected_context).cluster], "server", null)
-  cluster_ca_certificate = base64decode(lookup(var.kube_clusters[lookup(var.kube_contexts, var.selected_context).cluster], "certificate_authority", ""))
-  client_certificate     = base64decode(lookup(var.kube_users[lookup(var.kube_contexts, var.selected_context).user], "client_certificate", ""))
-  client_key             = base64decode(lookup(var.kube_users[lookup(var.kube_contexts, var.selected_context).user], "client_key", ""))
 }
