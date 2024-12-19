@@ -10,8 +10,8 @@ dbRootPassword: "SMNGg8X66YhT7UfW"
 dbRds: false
 
 image:
-  repository: frappe/erpnext
-  tag: v15.45.5
+  repository: mabecenter/erpnext
+  tag: 0.0.1-42b2b99
   pullPolicy: IfNotPresent
 
 nginx:
@@ -310,6 +310,7 @@ jobs:
     adminPassword: "changeit"
     installApps:
     - "erpnext"
+    - "mabecenter"
     dbType: "mariadb"
     backoffLimit: 0
     resources: {}
@@ -330,7 +331,7 @@ jobs:
 
   backup:
     # jobName: ""
-    enabled: false
+    enabled: true
     siteName: "erp.cluster.local"
     withFiles: true
     backoffLimit: 0
@@ -341,7 +342,7 @@ jobs:
 
   migrate:
     # jobName: ""
-    enabled: false
+    enabled: true
     siteName: "erp.cluster.local"
     skipFailing: false
     backoffLimit: 0
