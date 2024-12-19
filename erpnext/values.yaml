@@ -277,7 +277,7 @@ ingress:
   - host: erp.cluster.local
     paths:
     - path: /
-    pathType: Prefix
+      pathType: Prefix
 
 jobs:
   volumePermissions:
