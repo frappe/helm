@@ -22,21 +22,24 @@ terraform {
 }
 
 provider "kubernetes" {
-  config_path = "~/.kube/config"  # Ruta por defecto de kubeconfig para MicroK8s
+  host                   = lookup(var.kube_clusters[lookup(var.kube_contexts, var.selected_context).cluster], "server", null)
+  cluster_ca_certificate = base64decode(lookup(var.kube_clusters[lookup(var.kube_contexts, var.selected_context).cluster], "certificate_authority", ""))
+  client_certificate     = base64decode(lookup(var.kube_users[lookup(var.kube_contexts, var.selected_context).user], "client_certificate", ""))
+  client_key             = base64decode(lookup(var.kube_users[lookup(var.kube_contexts, var.selected_context).user], "client_key", ""))
 }
 
 provider "helm" {
   kubernetes {
-    config_path = "~/.kube/config"
+    host                   = lookup(var.kube_clusters[lookup(var.kube_contexts, var.selected_context).cluster], "server", null)
+    cluster_ca_certificate = base64decode(lookup(var.kube_clusters[lookup(var.kube_contexts, var.selected_context).cluster], "certificate_authority", ""))
+    client_certificate     = base64decode(lookup(var.kube_users[lookup(var.kube_contexts, var.selected_context).user], "client_certificate", ""))
+    client_key             = base64decode(lookup(var.kube_users[lookup(var.kube_contexts, var.selected_context).user], "client_key", ""))
   }
 }
 
 provider "kubectl" {
-  config_path = "~/.kube/config"
-}
-
-provider "argocd" {
-  port_forward_with_namespace = var.argocd_namespace
-  insecure    = true
-  plain_text  = true
+  host                   = lookup(var.kube_clusters[lookup(var.kube_contexts, var.selected_context).cluster], "server", null)
+  cluster_ca_certificate = base64decode(lookup(var.kube_clusters[lookup(var.kube_contexts, var.selected_context).cluster], "certificate_authority", ""))
+  client_certificate     = base64decode(lookup(var.kube_users[lookup(var.kube_contexts, var.selected_context).user], "client_certificate", ""))
+  client_key             = base64decode(lookup(var.kube_users[lookup(var.kube_contexts, var.selected_context).user], "client_key", ""))
 }

@@ -1,7 +1,0 @@
-charts:
-  - name: erpnext
-    resetTag: v1
-    resetVersion: 1.0.0
-    repo:
-      git: frappe/helm
-      published: https://helm.erpnext.com/

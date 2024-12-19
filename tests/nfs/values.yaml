@@ -1,3 +1,0 @@
-storageClass:
-  mountOptions:
-    - vers=4.1

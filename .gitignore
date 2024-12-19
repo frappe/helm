@@ -6,3 +6,13 @@ deploy_key
 deploy_key.pub
 venv
 *.egg-info
+
+.env
+.terraform
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
+
+
+enviroments/
+*.tfvars
