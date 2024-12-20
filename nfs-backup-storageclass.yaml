@@ -1,0 +1,7 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-backup
+provisioner: cluster.local/nfs-provisioner  # Usa el provisionador adecuado si es necesario
+reclaimPolicy: Retain
+volumeBindingMode: WaitForFirstConsumer
