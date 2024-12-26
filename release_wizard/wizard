@@ -198,7 +198,9 @@ def git_push_all(repo, remote=None):
 
 def get_yaml_dict(file_name):
     yaml_string = get_yaml_file(file_name)
-    yaml_dict = ruamel.yaml.round_trip_load(yaml_string, preserve_quotes=True)
+    yaml = YAML()
+    yaml.preserve_quotes = True
+    yaml_dict = yaml.load(yaml_string)
     return yaml_dict
 
 
