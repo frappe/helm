@@ -2,6 +2,36 @@ apiVersion: v1
 entries:
   erpnext:
   - apiVersion: v2
+    appVersion: v15.50.1
+    created: "2025-02-04T10:33:49.804719601Z"
+    dependencies:
+    - alias: redis-cache
+      condition: redis-cache.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.15.2
+    - alias: redis-queue
+      condition: redis-queue.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.15.2
+    - condition: mariadb.enabled
+      name: mariadb
+      repository: https://charts.bitnami.com/bitnami
+      version: 11.5.7
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 12.1.6
+    description: Kubernetes Helm Chart for the latest stable ERPNext branch
+    digest: 6ef9607fec4fe5bad3b21159298a8dff4553bc642a679f66aa6e0af4dd48546f
+    icon: https://raw.githubusercontent.com/frappe/erpnext/develop/erpnext/public/images/erpnext-logo.png
+    name: erpnext
+    type: application
+    urls:
+    - https://helm.erpnext.com/erpnext-7.0.162.tgz
+    version: 7.0.162
+  - apiVersion: v2
     appVersion: v15.50.0
     created: "2025-01-29T11:40:14.705042797Z"
     dependencies:
@@ -13200,4 +13230,4 @@ entries:
     urls:
     - https://helm.erpnext.com/erpnext-1.0.0.tgz
     version: 1.0.0
-generated: "2025-01-29T11:40:14.692150485Z"
+generated: "2025-02-04T10:33:49.792742441Z"
