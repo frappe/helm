@@ -78,7 +78,11 @@ spec:
             value: {{ .Values.dbHost }}
             {{- end }}
           - name: DB_PORT
+            {{- if .Values.mariadb.enabled }}
             value: {{ .Values.mariadb.primary.service.ports.mysql | quote }}
+            {{- else }}
+            value: {{ .Values.dbPort | quote }}
+            {{- end }}
           - name: REDIS_CACHE
             {{- if index .Values "redis-cache" "enabled" }}
             value: redis://{{ .Release.Name }}-redis-cache-master:{{ index .Values "redis-cache" "master" "containerPorts" "redis" }}
