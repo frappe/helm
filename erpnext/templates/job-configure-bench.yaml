@@ -64,6 +64,7 @@ spec:
             {{- end}}
             bench set-config -g redis_cache $REDIS_CACHE;
             bench set-config -g redis_queue $REDIS_QUEUE;
+            bench set-config -g redis_socketio $REDIS_QUEUE;
             bench set-config -gp socketio_port $SOCKETIO_PORT;
         {{- end }}
         env:
