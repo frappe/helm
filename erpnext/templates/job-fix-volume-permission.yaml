@@ -24,16 +24,15 @@ spec:
       - name: frappe-bench-ownership
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        command: ['sh', '-c']
+        command: ['/bin/sh', '-c']
         args:
-          - >
-            chown -R \
-              "{{ default 1000 .Values.securityContext.runAsUser }}:{{ default 1000 .Values.securityContext.runAsUser }}" \
-              /home/frappe/frappe-bench
+          - |
+            chown -R {{ default 1000 .Values.securityContext.runAsUser }}:{{ default 1000 .Values.securityContext.runAsUser }} /home/frappe/frappe-bench
         resources:
           {{- toYaml .Values.jobs.volumePermissions.resources | nindent 10 }}
         securityContext:
           # run as root to set ownership
+          runAsNonRoot: false
           runAsUser: 0
         volumeMounts:
           - name: sites-dir
