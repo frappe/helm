@@ -51,7 +51,7 @@ spec:
             - name: "FRAPPE_SITE_NAME_HEADER"
               value: {{ .Values.nginx.environment.frappeSiteNameHeader }}
             - name: "PROXY_READ_TIMEOUT"
-              value: {{ .Values.nginx.environment.proxyReadTimeout }}
+              value: {{ .Values.nginx.environment.proxyReadTimeout | quote }}
             - name: "CLIENT_MAX_BODY_SIZE"
               value: {{ .Values.nginx.environment.clientMaxBodySize }}
           {{- if .Values.nginx.envVars }}
