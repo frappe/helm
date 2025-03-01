@@ -29,7 +29,7 @@ nginx:
     upstreamRealIPRecursive: "off"
     upstreamRealIPHeader: "X-Forwarded-For"
     frappeSiteNameHeader: "$host"
-    proxyReadTimeout: 120
+    proxyReadTimeout: "120"
     clientMaxBodySize: "50m"
   livenessProbe:
     tcpSocket:
