@@ -30,26 +30,26 @@ spec:
         - name: validate-config
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["bash", "-c"]
+          command: ["/bin/bash", "-c"]
           args:
-            - >
-              export start=`date +%s`;
+            - |
+              export start=`date +%s`
               until [[ -n `grep -hs ^ sites/common_site_config.json | jq -r ".db_host // empty"` ]] && \
                 [[ -n `grep -hs ^ sites/common_site_config.json | jq -r ".redis_cache // empty"` ]] && \
-                [[ -n `grep -hs ^ sites/common_site_config.json | jq -r ".redis_queue // empty"` ]];
+                [[ -n `grep -hs ^ sites/common_site_config.json | jq -r ".redis_queue // empty"` ]]
               do
-                echo "Waiting for sites/common_site_config.json to be created";
-                sleep 5;
+                echo "Waiting for sites/common_site_config.json to be created"
+                sleep 5
                 if (( `date +%s`-start > 600 )); then
-                  echo "could not find sites/common_site_config.json with required keys";
+                  echo "could not find sites/common_site_config.json with required keys"
                   exit 1
                 fi
-              done;
-              echo "sites/common_site_config.json found";
+              done
+              echo "sites/common_site_config.json found"
 
-              echo "Waiting for database to be reachable...";
-              wait-for-it -t 180 $(DB_HOST):$(DB_PORT);
-              echo "Database is reachable.";
+              echo "Waiting for database to be reachable..."
+              wait-for-it -t 180 $(DB_HOST):$(DB_PORT)
+              echo "Database is reachable."
           env:
             - name: "DB_HOST"
               {{- if .Values.postgresql.host }}
