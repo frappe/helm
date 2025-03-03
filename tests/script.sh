@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 echo -e "\e[1m\e[4mInstall kubectl\e[0m"
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
