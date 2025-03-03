@@ -8,6 +8,8 @@
 # dbRootUser: ""
 # dbRootPassword: ""
 # dbRds: false
+# dbExistingSecret: ""
+# dbExistingSecretPasswordKey: "password"
 
 image:
   repository: frappe/erpnext
@@ -317,6 +319,8 @@ jobs:
     forceCreate: false
     siteName: "erp.cluster.local"
     adminPassword: "changeit"
+    adminExistingSecret: ""
+    adminExistingSecretKey: "password"
     installApps:
     - "erpnext"
     dbType: "mariadb"
