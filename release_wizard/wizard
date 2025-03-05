@@ -223,7 +223,7 @@ def check_change_in_versions(
 
     if erpnext_version == values_erpnext_version:
         print(
-            "No chanage in version detected during CI run, skip helm chart release",
+            "No change in version detected during CI run, skip helm chart release",
         )
         exit(0)
 
