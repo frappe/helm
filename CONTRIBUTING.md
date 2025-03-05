@@ -1,3 +1,16 @@
+# Run pre-commit
+
+After making changes to the repo run `pre-commit` to ensure everything is correct.
+
+```shell
+python3 -m venv env
+. ./env/bin/activate
+pip install -U pip pre-commit
+pre-commit run --all-files
+```
+
+Make sure `pre-commit` doesn't fail.
+
 # Releasing new helm charts
 
 1. Make sure that all the relevant pull requests have been merged on the main branch
