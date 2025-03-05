@@ -402,7 +402,7 @@ redis-cache:
   architecture: standalone
   auth:
     enabled: false
-    sentinal: false
+    sentinel: false
   master:
     containerPorts:
       redis: 6379
@@ -416,7 +416,7 @@ redis-queue:
   architecture: standalone
   auth:
     enabled: false
-    sentinal: false
+    sentinel: false
   master:
     containerPorts:
       redis: 6379
