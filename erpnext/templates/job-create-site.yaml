@@ -163,6 +163,11 @@ spec:
               secretKeyRef:
                 key:  db-root-password
                 name: {{ .Release.Name }}
+            {{- else if .Values.dbExistingSecret }}
+            valueFrom:
+              secretKeyRef:
+                key: {{ .Values.dbExistingSecretPasswordKey }}
+                name: {{ .Values.dbExistingSecret }}
             {{- else if .Values.postgresql.enabled }}
             valueFrom:
               secretKeyRef:
@@ -175,7 +180,14 @@ spec:
                 name: {{ .Release.Name }}-mariadb
             {{- end }}
           - name: "ADMIN_PASSWORD"
+            {{- if .Values.jobs.createSite.adminExistingSecret }}
+            valueFrom:
+              secretKeyRef:
+                key: {{ .Values.jobs.createSite.adminExistingSecretKey }}
+                name: {{ .Values.jobs.createSite.adminExistingSecret }}
+            {{- else}}
             value: "{{ .Values.jobs.createSite.adminPassword }}"
+            {{- end }}
         resources:
           {{- toYaml .Values.jobs.createSite.resources | nindent 10 }}
         securityContext:

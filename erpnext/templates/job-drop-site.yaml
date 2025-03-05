@@ -47,7 +47,12 @@ spec:
             value: "{{ .Values.dbRootUser }}"
             {{- end }}
           - name: "DB_ROOT_PASSWORD"
-            {{- if .Values.mariadb.enabled }}
+            {{- if .Values.dbExistingSecret }}
+            valueFrom:
+              secretKeyRef:
+                key: {{ .Values.dbExistingSecretPasswordKey }}
+                name: {{ .Values.dbExistingSecret }}
+            {{- else if .Values.mariadb.enabled }}
             valueFrom:
               secretKeyRef:
                 key: mariadb-root-password
