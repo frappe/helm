@@ -12,7 +12,7 @@
 # dbExistingSecretPasswordKey: "password"
 
 image:
-  repository: frappe/erpnext
+  repository: docker.io/frappe/erpnext
   tag: v15.80.0
   pullPolicy: IfNotPresent
 
