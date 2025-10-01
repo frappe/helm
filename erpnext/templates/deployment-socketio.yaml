@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.worker.socketio.autoscaler.enabled }}
+  {{- if not .Values.socketio.autoscaling.enabled }}
   replicas: {{ .Values.socketio.replicaCount }}
   {{- end }}
   selector:
