@@ -13,7 +13,7 @@
 
 image:
   repository: frappe/erpnext
-  tag: v15.81.2
+  tag: v15.81.3
   pullPolicy: IfNotPresent
 
 nginx:
