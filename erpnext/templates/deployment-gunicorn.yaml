@@ -5,7 +5,9 @@ metadata:
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
 spec:
+  {{- if not .Values.worker.gunicorn.autoscaling.enabled }}
   replicas: {{ .Values.worker.gunicorn.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "erpnext.name" . }}-gunicorn
