@@ -5,8 +5,5 @@ dependencies:
 - name: dragonfly
   repository: oci://ghcr.io/dragonflydb/dragonfly/helm
   version: v1.34.2
-- name: postgresql
-  repository: https://charts.bitnami.com/bitnami
-  version: 12.1.6
-digest: sha256:eb1eb582d5d333ef7094e6b74a8fda6b5eaeced26e66d417abf20bf00679e5d7
-generated: "2025-10-15T15:25:06.239210468+05:30"
+digest: sha256:a0ca9971de22903eec95bfd1627f711dc8327843a3fcee1220238a0b2f3b0fb2
+generated: "2025-10-15T15:58:09.145156058+05:30"

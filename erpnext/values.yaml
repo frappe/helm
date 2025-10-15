@@ -210,9 +210,9 @@ worker:
         - wait-for-it {{ .Release.Name }}-dragonfly-queue:6379 -t 1;
         {{- end }}
         {{- if .Values.postgresql.host }}
-        - wait-for-it {{ .Values.postgresql.host }}:{{ .Values.postgresql.primary.service.ports.postgresql }} -t 1;
+        - wait-for-it {{ .Values.postgresql.host }}:5432 -t 1;
         {{- else if .Values.postgresql.enabled }}
-        - wait-for-it {{ .Release.Name }}-postgresql:{{ .Values.postgresql.primary.service.ports.postgresql }} -t 1;
+        - wait-for-it {{ include "erpnext.fullname" . }}-postgresql:5432 -t 1;
         {{- end }}
     initialDelaySeconds: 15
     periodSeconds: 5
@@ -427,13 +427,14 @@ dragonfly-queue:
     # storageClassName: "nfs"
 
 postgresql:
-  # https://github.com/bitnami/charts/tree/master/bitnami/postgresql
   enabled: false
-  # host: ""
-  auth:
-    username: "postgres"
-    postgresPassword: "changeit"
-  primary:
-    service:
-      ports:
-        postgresql: 5432
+  image:
+    repository: postgres
+    tag: "15"
+    pullPolicy: IfNotPresent
+  postgresUser: "postgres"
+  postgresPassword: "changeit"
+  persistence:
+    # storageClass: "nfs"
+    size: 8Gi
+  resources: {}

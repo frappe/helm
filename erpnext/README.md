@@ -63,7 +63,6 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami | postgresql | 12.1.6 |
 | oci://ghcr.io/dragonflydb/dragonfly/helm | dragonfly-cache(dragonfly) | v1.34.2 |
 | oci://ghcr.io/dragonflydb/dragonfly/helm | dragonfly-queue(dragonfly) | v1.34.2 |
 
@@ -196,10 +195,14 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | persistence.worker.enabled | bool | `true` |  |
 | persistence.worker.size | string | `"8Gi"` |  |
 | podSecurityContext.supplementalGroups[0] | int | `1000` |  |
-| postgresql.auth.postgresPassword | string | `"changeit"` |  |
-| postgresql.auth.username | string | `"postgres"` |  |
 | postgresql.enabled | bool | `false` |  |
-| postgresql.primary.service.ports.postgresql | int | `5432` |  |
+| postgresql.image.pullPolicy | string | `"IfNotPresent"` |  |
+| postgresql.image.repository | string | `"postgres"` |  |
+| postgresql.image.tag | string | `"15"` |  |
+| postgresql.persistence.size | string | `"8Gi"` |  |
+| postgresql.postgresPassword | string | `"changeit"` |  |
+| postgresql.postgresUser | string | `"postgres"` |  |
+| postgresql.resources | object | `{}` |  |
 | securityContext.capabilities.add[0] | string | `"CAP_CHOWN"` |  |
 | serviceAccount.create | bool | `true` |  |
 | socketio.affinity | object | `{}` |  |
@@ -265,7 +268,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | worker.gunicorn.service.type | string | `"ClusterIP"` |  |
 | worker.gunicorn.sidecars | list | `[]` |  |
 | worker.gunicorn.tolerations | list | `[]` |  |
-| worker.healthProbe | string | `"exec:\n  command:\n    - bash\n    - -c\n    - echo \"Ping backing services\";\n    {{- if .Values.mariadb.enabled }}\n    - wait-for-it {{ include \"erpnext.fullname\" . }}-mariadb:3306 -t 1;\n    {{- else if .Values.dbHost }}\n    - wait-for-it {{ .Values.dbHost }}:{{ .Values.dbPort | default .Values.mariadb.primary.service.ports.mysql }} -t 1;\n    {{- end }}\n    {{- if (index .Values \"dragonfly-cache\").enabled }}\n    - wait-for-it {{ .Release.Name }}-dragonfly-cache:6379 -t 1;\n    {{- end }}\n    {{- if (index .Values \"dragonfly-queue\").enabled }}\n    - wait-for-it {{ .Release.Name }}-dragonfly-queue:6379 -t 1;\n    {{- end }}\n    {{- if .Values.postgresql.host }}\n    - wait-for-it {{ .Values.postgresql.host }}:{{ .Values.postgresql.primary.service.ports.postgresql }} -t 1;\n    {{- else if .Values.postgresql.enabled }}\n    - wait-for-it {{ .Release.Name }}-postgresql:{{ .Values.postgresql.primary.service.ports.postgresql }} -t 1;\n    {{- end }}\ninitialDelaySeconds: 15\nperiodSeconds: 5\n"` |  |
+| worker.healthProbe | string | `"exec:\n  command:\n    - bash\n    - -c\n    - echo \"Ping backing services\";\n    {{- if .Values.mariadb.enabled }}\n    - wait-for-it {{ include \"erpnext.fullname\" . }}-mariadb:3306 -t 1;\n    {{- else if .Values.dbHost }}\n    - wait-for-it {{ .Values.dbHost }}:{{ .Values.dbPort | default .Values.mariadb.primary.service.ports.mysql }} -t 1;\n    {{- end }}\n    {{- if (index .Values \"dragonfly-cache\").enabled }}\n    - wait-for-it {{ .Release.Name }}-dragonfly-cache:6379 -t 1;\n    {{- end }}\n    {{- if (index .Values \"dragonfly-queue\").enabled }}\n    - wait-for-it {{ .Release.Name }}-dragonfly-queue:6379 -t 1;\n    {{- end }}\n    {{- if .Values.postgresql.host }}\n    - wait-for-it {{ .Values.postgresql.host }}:5432 -t 1;\n    {{- else if .Values.postgresql.enabled }}\n    - wait-for-it {{ include \"erpnext.fullname\" . }}-postgresql:5432 -t 1;\n    {{- end }}\ninitialDelaySeconds: 15\nperiodSeconds: 5\n"` |  |
 | worker.long.affinity | object | `{}` |  |
 | worker.long.autoscaling.enabled | bool | `false` |  |
 | worker.long.autoscaling.maxReplicas | int | `3` |  |

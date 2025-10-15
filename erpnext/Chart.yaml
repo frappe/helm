@@ -17,7 +17,3 @@ dependencies:
   alias: dragonfly-queue
   version: "v1.34.2"
   repository: "oci://ghcr.io/dragonflydb/dragonfly/helm"
-- name: postgresql
-  condition: postgresql.enabled
-  version: "12.1.6"
-  repository: https://charts.bitnami.com/bitnami

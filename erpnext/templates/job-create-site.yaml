@@ -55,7 +55,7 @@ spec:
               {{- if .Values.postgresql.host }}
               value: {{ .Values.postgresql.host }}
               {{- else if .Values.postgresql.enabled }}
-              value: {{ .Release.Name }}-postgresql
+              value: {{ include "erpnext.fullname" . }}-postgresql
               {{- else if .Values.mariadb.enabled }}
               value: {{ include "erpnext.fullname" . }}-mariadb
               {{- else }}
@@ -67,7 +67,7 @@ spec:
               {{- else if .Values.mariadb.enabled }}
               value: "3306"
               {{- else if .Values.postgresql.enabled }}
-              value: {{ .Values.postgresql.primary.service.ports.postgresql | quote }}
+              value: "5432"
               {{- end }}
           resources:
             {{- toYaml .Values.jobs.createSite.resources | nindent 12 }}
@@ -127,7 +127,7 @@ spec:
             {{- if .Values.postgresql.host }}
             value: {{ .Values.postgresql.host }}
             {{- else if .Values.postgresql.enabled }}
-            value: {{ .Release.Name }}-postgresql
+            value: {{ include "erpnext.fullname" . }}-postgresql
             {{- else if .Values.mariadb.enabled }}
             value: {{ include "erpnext.fullname" . }}-mariadb
             {{- else }}
@@ -139,7 +139,7 @@ spec:
             {{- else if .Values.mariadb.enabled }}
             value: "3306"
             {{- else if .Values.postgresql.enabled }}
-            value: {{ .Values.postgresql.primary.service.ports.postgresql | quote }}
+              value: "5432"
             {{- end }}
           - name: "DB_ROOT_USER"
             {{- if .Values.dbRootUser }}
@@ -164,7 +164,7 @@ spec:
             valueFrom:
               secretKeyRef:
                 key: postgres-password
-                name: {{ .Release.Name }}-postgresql
+                name: {{ template "erpnext.fullname" . }}
             {{- else if .Values.mariadb.enabled }}
             valueFrom:
               secretKeyRef:

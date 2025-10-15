@@ -52,16 +52,16 @@ spec:
               secretKeyRef:
                 key: {{ .Values.dbExistingSecretPasswordKey }}
                 name: {{ .Values.dbExistingSecret }}
-            {{- else if .Values.mariadb.enabled }}
-            valueFrom:
-              secretKeyRef:
-                key: mariadb-root-password
-                name: {{ template "erpnext.fullname" . }}
             {{- else if .Values.postgresql.enabled }}
             valueFrom:
               secretKeyRef:
                 key: postgres-password
-                name: {{ .Release.Name }}-postgresql
+                name: {{ template "erpnext.fullname" . }}
+            {{- else if and .Values.mariadb.enabled .Values.mariadb.cluster.rootPasswordSecret }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.mariadb.cluster.rootPasswordSecret }}
+                key: password
             {{- else }}
             valueFrom:
               secretKeyRef:
