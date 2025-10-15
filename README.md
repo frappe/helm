@@ -31,6 +31,9 @@ Ingresses:
 
 - `ingress` with custom name can be dynamically generated using `helm template` and configured values.
 
+HTTPRoutes:
+- Gateway API's `httproute` with custom name can be dynamically generated using `helm template` and configured values.
+
 Jobs:
 
 - `vol-fix` job to fix volume permissions, changes the `uid` and `gid` to `1000:1000`.

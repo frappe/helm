@@ -37,11 +37,12 @@ helm upgrade --install frappe-bench --namespace erpnext frappe/erpnext --set per
 5. [Generate Additional Resources](#generate-additional-resources)
     1. [Create new site](#create-new-site)
     2. [Create Ingress](#create-ingress)
-    3. [Backup site](#backup-site)
-    4. [Migrate site](#migrate-site)
-    5. [Drop Site](#drop-site)
-    6. [Configure service hosts](#configure-service-hosts)
-    7. [Fix volume permission](#fix-volume-permission)
+    3. [Create HTTPRoute](#create-httproute)
+    4. [Backup site](#backup-site)
+    5. [Migrate site](#migrate-site)
+    6. [Drop Site](#drop-site)
+    7. [Configure service hosts](#configure-service-hosts)
+    8. [Fix volume permission](#fix-volume-permission)
 6. [Uninstall the Chart](#uninstall-the-chart)
 7. [Migrate from Helm Chart 3.x.x to 4.x.x](#migrate-from-helm-chart-3xx-to-4xx)
 
@@ -55,7 +56,7 @@ The following table lists the configurable parameters of the ERPNext chart and t
 
 ### erpnext
 
-![Version: 7.0.171](https://img.shields.io/badge/Version-7.0.171-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v15.53.4](https://img.shields.io/badge/AppVersion-v15.53.4-informational?style=flat-square)
+![Version: 7.0.244](https://img.shields.io/badge/Version-7.0.244-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v15.83.0](https://img.shields.io/badge/AppVersion-v15.83.0-informational?style=flat-square)
 
 Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 
@@ -73,9 +74,18 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | fullnameOverride | string | `""` |  |
+| httproute.annotations | object | `{}` |  |
+| httproute.enabled | bool | `false` |  |
+| httproute.hostnames[0] | string | `"erp.example.com"` |  |
+| httproute.name | string | `""` |  |
+| httproute.parentRefs[0].gatewayName | string | `"public-gateway"` |  |
+| httproute.parentRefs[0].gatewayNamespace | string | `"networking"` |  |
+| httproute.parentRefs[0].gatewaySectionName | string | `"http"` |  |
+| httproute.rules[0].matches[0].path | string | `"/"` |  |
+| httproute.rules[0].matches[0].pathType | string | `"PathPrefix"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"frappe/erpnext"` |  |
-| image.tag | string | `"v15.53.4"` |  |
+| image.tag | string | `"v15.83.0"` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.enabled | bool | `false` |  |
@@ -519,6 +529,46 @@ Create Ingress resource
 
 ```shell
 kubectl apply -f ingress.yaml
+```
+
+### Create HTTPRoute
+
+If your cluster is using GatewayAPI, make the following changes to `custom-values.yaml`:
+
+```yaml
+httproute:
+  enabled: true
+  name: "erp-example-com-httproute"
+  annotations: {}
+  parentRefs:
+    - gatewayName: "public-gateway"              # name of your Gateway resource
+      gatewayNamespace: "networking"            # namespace where the Gateway is defined
+      gatewaySectionName: "http"                # listener name (optional), check your gateway requirements
+  hostnames:
+    - "erp.example.com"
+  rules:
+    - matches:
+        - pathType: "PathPrefix"
+          path: "/"
+```
+
+Note:
+
+- A Gateway resource (e.g., `public-gateway`) must already exist in the cluster.
+- `erp.example.com` must be an existing and configured DNS entry.
+- `gatewayNamespace`, `gatewaySectionName`, and other fields can be customized as needed.
+- Change `annotations` as per requirement, if any.
+
+Generate the HTTPRoute YAML
+
+```shell
+helm template frappe-bench -n erpnext frappe/erpnext -f custom-values.yaml -s templates/httproute.yaml > httproute.yaml
+```
+
+Create HTTPRoute resource
+
+```shell
+kubectl apply -f httproute.yaml
 ```
 
 ### Backup site
