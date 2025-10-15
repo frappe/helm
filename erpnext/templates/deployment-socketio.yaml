@@ -5,7 +5,9 @@ metadata:
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
 spec:
+  {{- if not .Values.socketio.autoscaling.enabled }}
   replicas: {{ .Values.socketio.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "erpnext.name" . }}-socketio
