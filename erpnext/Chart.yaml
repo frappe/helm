@@ -7,18 +7,14 @@ type: application
 version: 7.0.244
 appVersion: v15.83.0
 dependencies:
-- name: mariadb
-  condition: mariadb.enabled
-  version: "11.5.7"
-  repository: https://charts.bitnami.com/bitnami
 - name: dragonfly
-  condition: dragonflyCache.enabled
-  alias: dragonflyCache
+  condition: dragonfly-cache.enabled
+  alias: dragonfly-cache
   version: "v1.34.2"
   repository: "oci://ghcr.io/dragonflydb/dragonfly/helm"
 - name: dragonfly
-  condition: dragonflyQueue.enabled
-  alias: dragonflyQueue
+  condition: dragonfly-queue.enabled
+  alias: dragonfly-queue
   version: "v1.34.2"
   repository: "oci://ghcr.io/dragonflydb/dragonfly/helm"
 - name: postgresql

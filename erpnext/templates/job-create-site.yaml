@@ -57,21 +57,17 @@ spec:
               {{- else if .Values.postgresql.enabled }}
               value: {{ .Release.Name }}-postgresql
               {{- else if .Values.mariadb.enabled }}
-              {{- if eq .Values.mariadb.architecture "replication" }}
-              value: {{ .Release.Name }}-mariadb-primary
-              {{- else }}
-              value: {{ .Release.Name }}-mariadb
-              {{- end }}
+              value: {{ include "erpnext.fullname" . }}-mariadb
               {{- else }}
               value: "{{ .Values.dbHost }}"
               {{- end }}
             - name: "DB_PORT"
               {{- if .Values.dbPort }}
               value: {{ .Values.dbPort | quote }}
+              {{- else if .Values.mariadb.enabled }}
+              value: "3306"
               {{- else if .Values.postgresql.enabled }}
               value: {{ .Values.postgresql.primary.service.ports.postgresql | quote }}
-              {{- else }}
-              value: {{ .Values.mariadb.primary.service.ports.mysql | quote }}
               {{- end }}
           resources:
             {{- toYaml .Values.jobs.createSite.resources | nindent 12 }}
@@ -133,21 +129,17 @@ spec:
             {{- else if .Values.postgresql.enabled }}
             value: {{ .Release.Name }}-postgresql
             {{- else if .Values.mariadb.enabled }}
-            {{- if eq .Values.mariadb.architecture "replication" }}
-            value: {{ .Release.Name }}-mariadb-primary
-            {{- else }}
-            value: {{ .Release.Name }}-mariadb
-            {{- end }}
+            value: {{ include "erpnext.fullname" . }}-mariadb
             {{- else }}
             value: "{{ .Values.dbHost }}"
             {{- end }}
           - name: "DB_PORT"
             {{- if .Values.dbPort }}
             value: {{ .Values.dbPort | quote }}
+            {{- else if .Values.mariadb.enabled }}
+            value: "3306"
             {{- else if .Values.postgresql.enabled }}
             value: {{ .Values.postgresql.primary.service.ports.postgresql | quote }}
-            {{- else }}
-            value: {{ .Values.mariadb.primary.service.ports.mysql | quote }}
             {{- end }}
           - name: "DB_ROOT_USER"
             {{- if .Values.dbRootUser }}
@@ -177,7 +169,7 @@ spec:
             valueFrom:
               secretKeyRef:
                 key: mariadb-root-password
-                name: {{ .Release.Name }}-mariadb
+                name: {{ template "erpnext.fullname" . }}
             {{- end }}
           - name: "ADMIN_PASSWORD"
             {{- if .Values.jobs.createSite.adminExistingSecret }}

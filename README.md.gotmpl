@@ -160,13 +160,13 @@ Make sure the db host, db port and credentials are correct.
 
 ### External Redis
 
-Make the following changes to `custom-values.yaml`:
+Make following changes to `custom-values.yaml`:
 
 ```yaml
-dragonflyCache:
+dragonfly-cache:
   enabled: false
   host: "redis://1.1.1.1:6379"
-dragonflyQueue:
+dragonfly-queue:
   enabled: false
   host: "redis://2.2.2.2:6379"
 ```

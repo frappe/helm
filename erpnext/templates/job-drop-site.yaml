@@ -56,7 +56,7 @@ spec:
             valueFrom:
               secretKeyRef:
                 key: mariadb-root-password
-                name: {{ .Release.Name }}-mariadb
+                name: {{ template "erpnext.fullname" . }}
             {{- else if .Values.postgresql.enabled }}
             valueFrom:
               secretKeyRef:

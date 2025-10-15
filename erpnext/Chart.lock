@@ -1,7 +1,4 @@
 dependencies:
-- name: mariadb
-  repository: https://charts.bitnami.com/bitnami
-  version: 11.5.7
 - name: dragonfly
   repository: oci://ghcr.io/dragonflydb/dragonfly/helm
   version: v1.34.2
@@ -11,5 +8,5 @@ dependencies:
 - name: postgresql
   repository: https://charts.bitnami.com/bitnami
   version: 12.1.6
-digest: sha256:f7d2c72400dbe628b6e198111f1a03059d1815359d2c64eb957ab5670bf47ff8
-generated: "2025-10-15T11:37:04.264483999+05:30"
+digest: sha256:eb1eb582d5d333ef7094e6b74a8fda6b5eaeced26e66d417abf20bf00679e5d7
+generated: "2025-10-15T15:25:06.239210468+05:30"

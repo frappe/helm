@@ -199,19 +199,15 @@ worker:
         - -c
         - echo "Ping backing services";
         {{- if .Values.mariadb.enabled }}
-        {{- if eq .Values.mariadb.architecture "replication" }}
-        - wait-for-it {{ .Release.Name }}-mariadb-primary:{{ .Values.mariadb.primary.service.ports.mysql }} -t 1;
-        {{- else }}
-        - wait-for-it {{ .Release.Name }}-mariadb:{{ .Values.mariadb.primary.service.ports.mysql }} -t 1;
-        {{- end }}
+        - wait-for-it {{ include "erpnext.fullname" . }}-mariadb:3306 -t 1;
         {{- else if .Values.dbHost }}
         - wait-for-it {{ .Values.dbHost }}:{{ .Values.dbPort | default .Values.mariadb.primary.service.ports.mysql }} -t 1;
         {{- end }}
-        {{- if .Values.dragonflyCache.enabled }}
-        - wait-for-it {{ .Release.Name }}-dragonflyCache:6379 -t 1;
+        {{- if (index .Values "dragonfly-cache").enabled }}
+        - wait-for-it {{ .Release.Name }}-dragonfly-cache:6379 -t 1;
         {{- end }}
-        {{- if .Values.dragonflyQueue.enabled }}
-        - wait-for-it {{ .Release.Name }}-dragonflyQueue:6379 -t 1;
+        {{- if (index .Values "dragonfly-queue").enabled }}
+        - wait-for-it {{ .Release.Name }}-dragonfly-queue:6379 -t 1;
         {{- end }}
         {{- if .Values.postgresql.host }}
         - wait-for-it {{ .Values.postgresql.host }}:{{ .Values.postgresql.primary.service.ports.postgresql }} -t 1;
@@ -392,31 +388,32 @@ securityContext:
   # runAsUser: 1000
 
 mariadb:
-  # https://github.com/bitnami/charts/tree/master/bitnami/mariadb
   enabled: true
-  auth:
-    rootPassword: "changeit"
-    username: "erpnext"
-    password: "changeit"
-    replicationPassword: "changeit"
-  primary:
-    service:
-      ports:
-        mysql: 3306
-    extraFlags: >-
-      --skip-character-set-client-handshake
-      --skip-innodb-read-only-compressed
-      --character-set-server=utf8mb4
-      --collation-server=utf8mb4_unicode_ci
+  image:
+    repository: mariadb
+    tag: "10.11"
+    pullPolicy: IfNotPresent
+  rootPassword: "changeit"
+  persistence:
+    # storageClass: "nfs"
+    size: 8Gi
+  resources: {}
+  myCnf: |
+    [mysqld]
+    skip-character-set-client-handshake
+    skip-innodb-read-only-compressed
+    character-set-server=utf8mb4
+    collation-server=utf8mb4_unicode_ci
 
-dragonflyCache:
+
+dragonfly-cache:
   # Using DragonflyDB: https://www.dragonflydb.io/
   # https://github.com/dragonflydb/dragonfly/tree/main/helm/dragonfly
   enabled: true
   # host: ""
   # No persistence for cache
 
-dragonflyQueue:
+dragonfly-queue:
   # Using DragonflyDB: https://www.dragonflydb.io/
   # https://github.com/dragonflydb/dragonfly/tree/main/helm/dragonfly
   enabled: true

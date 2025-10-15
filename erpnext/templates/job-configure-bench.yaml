@@ -70,28 +70,20 @@ spec:
         env:
           - name: DB_HOST
             {{- if .Values.mariadb.enabled }}
-            {{- if eq .Values.mariadb.architecture "replication" }}
-            value: {{ .Release.Name }}-mariadb-primary
-            {{- else }}
-            value: {{ .Release.Name }}-mariadb
-            {{- end }}
+            value: {{ include "erpnext.fullname" . }}-mariadb
             {{- else }}
             value: {{ .Values.dbHost }}
             {{- end }}
           - name: DB_PORT
-            {{- if .Values.mariadb.enabled }}
-            value: {{ .Values.mariadb.primary.service.ports.mysql | quote }}
-            {{- else }}
-            value: {{ .Values.dbPort | quote }}
-            {{- end }}
+            value: "3306"
+          {{- if (index .Values "dragonfly-cache").enabled }}
           - name: REDIS_CACHE
-            {{- if .Values.dragonflyCache.enabled }}
-            value: redis://{{ .Release.Name }}-dragonflyCache:6379
-            {{- end }}
+            value: redis://{{ .Release.Name }}-dragonfly-cache:6379
+          {{- end }}
+          {{- if (index .Values "dragonfly-queue").enabled }}
           - name: REDIS_QUEUE
-            {{- if .Values.dragonflyQueue.enabled }}
-            value: redis://{{ .Release.Name }}-dragonflyQueue:6379
-            {{- end }}
+            value: redis://{{ .Release.Name }}-dragonfly-queue:6379
+          {{- end }}
           {{- if .Values.jobs.configure.envVars }}
             {{- toYaml .Values.jobs.configure.envVars | nindent 10 }}
           {{- end }}

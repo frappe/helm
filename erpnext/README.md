@@ -63,19 +63,18 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami | mariadb | 11.5.7 |
 | https://charts.bitnami.com/bitnami | postgresql | 12.1.6 |
-| oci://ghcr.io/dragonflydb/dragonfly/helm | dragonflyCache(dragonfly) | v1.34.2 |
-| oci://ghcr.io/dragonflydb/dragonfly/helm | dragonflyQueue(dragonfly) | v1.34.2 |
+| oci://ghcr.io/dragonflydb/dragonfly/helm | dragonfly-cache(dragonfly) | v1.34.2 |
+| oci://ghcr.io/dragonflydb/dragonfly/helm | dragonfly-queue(dragonfly) | v1.34.2 |
 
 ## Values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| dragonflyCache.enabled | bool | `true` |  |
-| dragonflyQueue.enabled | bool | `true` |  |
-| dragonflyQueue.storage.enabled | bool | `false` |  |
-| dragonflyQueue.storage.size | string | `"8Gi"` |  |
+| dragonfly-cache.enabled | bool | `true` |  |
+| dragonfly-queue.enabled | bool | `true` |  |
+| dragonfly-queue.storage.enabled | bool | `false` |  |
+| dragonfly-queue.storage.size | string | `"8Gi"` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"frappe/erpnext"` |  |
@@ -151,13 +150,14 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | jobs.volumePermissions.nodeSelector | object | `{}` |  |
 | jobs.volumePermissions.resources | object | `{}` |  |
 | jobs.volumePermissions.tolerations | list | `[]` |  |
-| mariadb.auth.password | string | `"changeit"` |  |
-| mariadb.auth.replicationPassword | string | `"changeit"` |  |
-| mariadb.auth.rootPassword | string | `"changeit"` |  |
-| mariadb.auth.username | string | `"erpnext"` |  |
 | mariadb.enabled | bool | `true` |  |
-| mariadb.primary.extraFlags | string | `"--skip-character-set-client-handshake --skip-innodb-read-only-compressed --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci"` |  |
-| mariadb.primary.service.ports.mysql | int | `3306` |  |
+| mariadb.image.pullPolicy | string | `"IfNotPresent"` |  |
+| mariadb.image.repository | string | `"mariadb"` |  |
+| mariadb.image.tag | string | `"10.11"` |  |
+| mariadb.myCnf | string | `"[mysqld]\nskip-character-set-client-handshake\nskip-innodb-read-only-compressed\ncharacter-set-server=utf8mb4\ncollation-server=utf8mb4_unicode_ci\n"` |  |
+| mariadb.persistence.size | string | `"8Gi"` |  |
+| mariadb.resources | object | `{}` |  |
+| mariadb.rootPassword | string | `"changeit"` |  |
 | nameOverride | string | `""` |  |
 | nginx.affinity | object | `{}` |  |
 | nginx.autoscaling.enabled | bool | `false` |  |
@@ -265,7 +265,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | worker.gunicorn.service.type | string | `"ClusterIP"` |  |
 | worker.gunicorn.sidecars | list | `[]` |  |
 | worker.gunicorn.tolerations | list | `[]` |  |
-| worker.healthProbe | string | `"exec:\n  command:\n    - bash\n    - -c\n    - echo \"Ping backing services\";\n    {{- if .Values.mariadb.enabled }}\n    {{- if eq .Values.mariadb.architecture \"replication\" }}\n    - wait-for-it {{ .Release.Name }}-mariadb-primary:{{ .Values.mariadb.primary.service.ports.mysql }} -t 1;\n    {{- else }}\n    - wait-for-it {{ .Release.Name }}-mariadb:{{ .Values.mariadb.primary.service.ports.mysql }} -t 1;\n    {{- end }}\n    {{- else if .Values.dbHost }}\n    - wait-for-it {{ .Values.dbHost }}:{{ .Values.dbPort | default .Values.mariadb.primary.service.ports.mysql }} -t 1;\n    {{- end }}\n    {{- if .Values.dragonflyCache.enabled }}\n    - wait-for-it {{ .Release.Name }}-dragonflyCache:6379 -t 1;\n    {{- end }}\n    {{- if .Values.dragonflyQueue.enabled }}\n    - wait-for-it {{ .Release.Name }}-dragonflyQueue:6379 -t 1;\n    {{- end }}\n    {{- if .Values.postgresql.host }}\n    - wait-for-it {{ .Values.postgresql.host }}:{{ .Values.postgresql.primary.service.ports.postgresql }} -t 1;\n    {{- else if .Values.postgresql.enabled }}\n    - wait-for-it {{ .Release.Name }}-postgresql:{{ .Values.postgresql.primary.service.ports.postgresql }} -t 1;\n    {{- end }}\ninitialDelaySeconds: 15\nperiodSeconds: 5\n"` |  |
+| worker.healthProbe | string | `"exec:\n  command:\n    - bash\n    - -c\n    - echo \"Ping backing services\";\n    {{- if .Values.mariadb.enabled }}\n    - wait-for-it {{ include \"erpnext.fullname\" . }}-mariadb:3306 -t 1;\n    {{- else if .Values.dbHost }}\n    - wait-for-it {{ .Values.dbHost }}:{{ .Values.dbPort | default .Values.mariadb.primary.service.ports.mysql }} -t 1;\n    {{- end }}\n    {{- if (index .Values \"dragonfly-cache\").enabled }}\n    - wait-for-it {{ .Release.Name }}-dragonfly-cache:6379 -t 1;\n    {{- end }}\n    {{- if (index .Values \"dragonfly-queue\").enabled }}\n    - wait-for-it {{ .Release.Name }}-dragonfly-queue:6379 -t 1;\n    {{- end }}\n    {{- if .Values.postgresql.host }}\n    - wait-for-it {{ .Values.postgresql.host }}:{{ .Values.postgresql.primary.service.ports.postgresql }} -t 1;\n    {{- else if .Values.postgresql.enabled }}\n    - wait-for-it {{ .Release.Name }}-postgresql:{{ .Values.postgresql.primary.service.ports.postgresql }} -t 1;\n    {{- end }}\ninitialDelaySeconds: 15\nperiodSeconds: 5\n"` |  |
 | worker.long.affinity | object | `{}` |  |
 | worker.long.autoscaling.enabled | bool | `false` |  |
 | worker.long.autoscaling.maxReplicas | int | `3` |  |
@@ -406,13 +406,13 @@ Make sure the db host, db port and credentials are correct.
 
 ### External Redis
 
-Make the following changes to `custom-values.yaml`:
+Make following changes to `custom-values.yaml`:
 
 ```yaml
-dragonflyCache:
+dragonfly-cache:
   enabled: false
   host: "redis://1.1.1.1:6379"
-dragonflyQueue:
+dragonfly-queue:
   enabled: false
   host: "redis://2.2.2.2:6379"
 ```
