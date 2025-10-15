@@ -55,7 +55,7 @@ The following table lists the configurable parameters of the ERPNext chart and t
 
 ### erpnext
 
-![Version: 7.0.171](https://img.shields.io/badge/Version-7.0.171-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v15.53.4](https://img.shields.io/badge/AppVersion-v15.53.4-informational?style=flat-square)
+![Version: 7.0.244](https://img.shields.io/badge/Version-7.0.244-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v15.83.0](https://img.shields.io/badge/AppVersion-v15.83.0-informational?style=flat-square)
 
 Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 
@@ -64,17 +64,22 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | Repository | Name | Version |
 |------------|------|---------|
 | https://charts.bitnami.com/bitnami | mariadb | 11.5.7 |
-| oci://ghcr.io/dragonflydb/dragonfly/helm | dragonflyCache(dragonfly) | 1.34.2 |
-| oci://ghcr.io/dragonflydb/dragonfly/helm | dragonflyQueue(dragonfly) | 1.34.2 |
 | https://charts.bitnami.com/bitnami | postgresql | 12.1.6 |
+| oci://ghcr.io/dragonflydb/dragonfly/helm | dragonflyCache(dragonfly) | v1.34.2 |
+| oci://ghcr.io/dragonflydb/dragonfly/helm | dragonflyQueue(dragonfly) | v1.34.2 |
 
 ## Values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| dragonflyCache.enabled | bool | `true` |  |
+| dragonflyQueue.enabled | bool | `true` |  |
+| dragonflyQueue.storage.enabled | bool | `false` |  |
+| dragonflyQueue.storage.size | string | `"8Gi"` |  |
+| fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"frappe/erpnext"` |  |
-| image.tag | string | `"v15.53.4"` |  |
+| image.tag | string | `"v15.83.0"` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.enabled | bool | `false` |  |
@@ -146,11 +151,6 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | jobs.volumePermissions.nodeSelector | object | `{}` |  |
 | jobs.volumePermissions.resources | object | `{}` |  |
 | jobs.volumePermissions.tolerations | list | `[]` |  |
-| dragonflyCache.enabled | bool | `true` |  |
-| dragonflyQueue.enabled | bool | `true` |  |
-| dragonflyQueue.storage.enabled | bool | `false` | Enable persistence for the queue instance. |
-| dragonflyQueue.storage.size | string | `"8Gi"` | PVC size for the queue instance. |
-| fullnameOverride | string | `""` |  |
 | mariadb.auth.password | string | `"changeit"` |  |
 | mariadb.auth.replicationPassword | string | `"changeit"` |  |
 | mariadb.auth.rootPassword | string | `"changeit"` |  |
@@ -406,7 +406,7 @@ Make sure the db host, db port and credentials are correct.
 
 ### External Redis
 
-Make following changes to `custom-values.yaml`:
+Make the following changes to `custom-values.yaml`:
 
 ```yaml
 dragonflyCache:

@@ -100,7 +100,9 @@ Recommended alternatives as per priority:
 
 ### Managed Redis
 
-Managed Redis is not recommended. Redis is used as in-memory database and having it in the cluster will have least latency. Any managed Redis service with no auth and no ssl will work. It needs to be under VPC and protected by firewall. Check the [External Redis](#external-redis) section.
+By default, this chart deploys two DragonflyDB instances, one for caching and one for the queue. DragonflyDB is used as an in-memory database, and having it in the cluster provides the lowest latency.
+
+Any managed Redis-compatible service with no auth and no SSL will work. It needs to be under a VPC and protected by a firewall. Check the [External Redis](#external-redis) section.
 
 ## Installation
 
@@ -158,13 +160,13 @@ Make sure the db host, db port and credentials are correct.
 
 ### External Redis
 
-Make following changes to `custom-values.yaml`:
+Make the following changes to `custom-values.yaml`:
 
 ```yaml
-redis-cache:
+dragonflyCache:
   enabled: false
   host: "redis://1.1.1.1:6379"
-redis-queue:
+dragonflyQueue:
   enabled: false
   host: "redis://2.2.2.2:6379"
 ```
