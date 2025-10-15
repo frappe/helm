@@ -290,6 +290,22 @@ ingress:
   #    hosts:
   #      - auth-server.local
 
+httproute:
+  enabled: false
+  name: ""
+  annotations: {}
+  parentRefs:
+    - gatewayName: "public-gateway"
+      gatewayNamespace: "networking"
+      # gatewayKind: "Gateway"
+      gatewaySectionName: "http"
+  hostnames:
+    - "erp.example.com"
+  rules:
+    - matches:
+        - pathType: "PathPrefix"
+          path: "/"
+
 jobs:
   volumePermissions:
     # jobName: ""
