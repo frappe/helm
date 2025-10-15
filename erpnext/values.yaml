@@ -205,17 +205,13 @@ worker:
         - wait-for-it {{ .Release.Name }}-mariadb:{{ .Values.mariadb.primary.service.ports.mysql }} -t 1;
         {{- end }}
         {{- else if .Values.dbHost }}
-        - wait-for-it {{ .Values.dbHost }}:{{ .Values.mariadb.primary.service.ports.mysql }} -t 1;
+        - wait-for-it {{ .Values.dbHost }}:{{ .Values.dbPort | default .Values.mariadb.primary.service.ports.mysql }} -t 1;
         {{- end }}
-        {{- if index .Values "redis-cache" "host" }}
-        - wait-for-it {{ .Release.Name }}-redis-cache-master:{{ index .Values "redis-cache" "master" "containerPorts" "redis" }} -t 1;
-        {{- else if index .Values "redis-cache" "host" }}
-        - wait-for-it {{ index .Values "redis-cache" "host" }} -t 1;
+        {{- if .Values.dragonflyCache.enabled }}
+        - wait-for-it {{ .Release.Name }}-dragonflyCache:6379 -t 1;
         {{- end }}
-        {{- if index .Values "redis-queue" "host" }}
-        - wait-for-it {{ .Release.Name }}-redis-queue-master:{{ index .Values "redis-queue" "master" "containerPorts" "redis" }} -t 1;
-        {{- else if index .Values "redis-queue" "host" }}
-        - wait-for-it {{ index .Values "redis-queue" "host" }} -t 1;
+        {{- if .Values.dragonflyQueue.enabled }}
+        - wait-for-it {{ .Release.Name }}-dragonflyQueue:6379 -t 1;
         {{- end }}
         {{- if .Values.postgresql.host }}
         - wait-for-it {{ .Values.postgresql.host }}:{{ .Values.postgresql.primary.service.ports.postgresql }} -t 1;
@@ -395,34 +391,6 @@ securityContext:
   # runAsNonRoot: true
   # runAsUser: 1000
 
-redis-cache:
-  # https://github.com/bitnami/charts/tree/master/bitnami/redis
-  enabled: true
-  # host: ""
-  architecture: standalone
-  auth:
-    enabled: false
-    sentinel: false
-  master:
-    containerPorts:
-      redis: 6379
-    persistence:
-      enabled: false
-
-redis-queue:
-  # https://github.com/bitnami/charts/tree/master/bitnami/redis
-  enabled: true
-  # host: ""
-  architecture: standalone
-  auth:
-    enabled: false
-    sentinel: false
-  master:
-    containerPorts:
-      redis: 6379
-    persistence:
-      enabled: false
-
 mariadb:
   # https://github.com/bitnami/charts/tree/master/bitnami/mariadb
   enabled: true
@@ -440,6 +408,26 @@ mariadb:
       --skip-innodb-read-only-compressed
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
+
+dragonflyCache:
+  # Using DragonflyDB: https://www.dragonflydb.io/
+  # https://github.com/dragonflydb/dragonfly/tree/main/helm/dragonfly
+  enabled: true
+  # host: ""
+  # No persistence for cache
+
+dragonflyQueue:
+  # Using DragonflyDB: https://www.dragonflydb.io/
+  # https://github.com/dragonflydb/dragonfly/tree/main/helm/dragonfly
+  enabled: true
+  # host: ""
+  # Persistence can be enabled for queue
+  storage:
+    enabled: false
+    # The size of the PersistentVolumeClaim.
+    size: 8Gi
+    # The name of the StorageClass to use. If not specified, the default StorageClass will be used.
+    # storageClassName: "nfs"
 
 postgresql:
   # https://github.com/bitnami/charts/tree/master/bitnami/postgresql

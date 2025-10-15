@@ -85,16 +85,12 @@ spec:
             value: {{ .Values.dbPort | quote }}
             {{- end }}
           - name: REDIS_CACHE
-            {{- if index .Values "redis-cache" "enabled" }}
-            value: redis://{{ .Release.Name }}-redis-cache-master:{{ index .Values "redis-cache" "master" "containerPorts" "redis" }}
-            {{- else }}
-            value: {{ index .Values "redis-cache" "host" }}
+            {{- if .Values.dragonflyCache.enabled }}
+            value: redis://{{ .Release.Name }}-dragonflyCache:6379
             {{- end }}
           - name: REDIS_QUEUE
-            {{- if index .Values "redis-queue" "enabled" }}
-            value: redis://{{ .Release.Name }}-redis-queue-master:{{ index .Values "redis-queue" "master" "containerPorts" "redis" }}
-            {{- else }}
-            value: {{ index .Values "redis-queue" "host" }}
+            {{- if .Values.dragonflyQueue.enabled }}
+            value: redis://{{ .Release.Name }}-dragonflyQueue:6379
             {{- end }}
           {{- if .Values.jobs.configure.envVars }}
             {{- toYaml .Values.jobs.configure.envVars | nindent 10 }}

@@ -64,15 +64,14 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | Repository | Name | Version |
 |------------|------|---------|
 | https://charts.bitnami.com/bitnami | mariadb | 11.5.7 |
+| oci://ghcr.io/dragonflydb/dragonfly/helm | dragonflyCache(dragonfly) | 1.34.2 |
+| oci://ghcr.io/dragonflydb/dragonfly/helm | dragonflyQueue(dragonfly) | 1.34.2 |
 | https://charts.bitnami.com/bitnami | postgresql | 12.1.6 |
-| https://charts.bitnami.com/bitnami | redis-cache(redis) | 17.15.2 |
-| https://charts.bitnami.com/bitnami | redis-queue(redis) | 17.15.2 |
 
 ## Values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"frappe/erpnext"` |  |
 | image.tag | string | `"v15.53.4"` |  |
@@ -147,6 +146,11 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | jobs.volumePermissions.nodeSelector | object | `{}` |  |
 | jobs.volumePermissions.resources | object | `{}` |  |
 | jobs.volumePermissions.tolerations | list | `[]` |  |
+| dragonflyCache.enabled | bool | `true` |  |
+| dragonflyQueue.enabled | bool | `true` |  |
+| dragonflyQueue.storage.enabled | bool | `false` | Enable persistence for the queue instance. |
+| dragonflyQueue.storage.size | string | `"8Gi"` | PVC size for the queue instance. |
+| fullnameOverride | string | `""` |  |
 | mariadb.auth.password | string | `"changeit"` |  |
 | mariadb.auth.replicationPassword | string | `"changeit"` |  |
 | mariadb.auth.rootPassword | string | `"changeit"` |  |
@@ -196,18 +200,6 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | postgresql.auth.username | string | `"postgres"` |  |
 | postgresql.enabled | bool | `false` |  |
 | postgresql.primary.service.ports.postgresql | int | `5432` |  |
-| redis-cache.architecture | string | `"standalone"` |  |
-| redis-cache.auth.enabled | bool | `false` |  |
-| redis-cache.auth.sentinel | bool | `false` |  |
-| redis-cache.enabled | bool | `true` |  |
-| redis-cache.master.containerPorts.redis | int | `6379` |  |
-| redis-cache.master.persistence.enabled | bool | `false` |  |
-| redis-queue.architecture | string | `"standalone"` |  |
-| redis-queue.auth.enabled | bool | `false` |  |
-| redis-queue.auth.sentinel | bool | `false` |  |
-| redis-queue.enabled | bool | `true` |  |
-| redis-queue.master.containerPorts.redis | int | `6379` |  |
-| redis-queue.master.persistence.enabled | bool | `false` |  |
 | securityContext.capabilities.add[0] | string | `"CAP_CHOWN"` |  |
 | serviceAccount.create | bool | `true` |  |
 | socketio.affinity | object | `{}` |  |
@@ -273,7 +265,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | worker.gunicorn.service.type | string | `"ClusterIP"` |  |
 | worker.gunicorn.sidecars | list | `[]` |  |
 | worker.gunicorn.tolerations | list | `[]` |  |
-| worker.healthProbe | string | `"exec:\n  command:\n    - bash\n    - -c\n    - echo \"Ping backing services\";\n    {{- if .Values.mariadb.enabled }}\n    {{- if eq .Values.mariadb.architecture \"replication\" }}\n    - wait-for-it {{ .Release.Name }}-mariadb-primary:{{ .Values.mariadb.primary.service.ports.mysql }} -t 1;\n    {{- else }}\n    - wait-for-it {{ .Release.Name }}-mariadb:{{ .Values.mariadb.primary.service.ports.mysql }} -t 1;\n    {{- end }}\n    {{- else if .Values.dbHost }}\n    - wait-for-it {{ .Values.dbHost }}:{{ .Values.mariadb.primary.service.ports.mysql }} -t 1;\n    {{- end }}\n    {{- if index .Values \"redis-cache\" \"host\" }}\n    - wait-for-it {{ .Release.Name }}-redis-cache-master:{{ index .Values \"redis-cache\" \"master\" \"containerPorts\" \"redis\" }} -t 1;\n    {{- else if index .Values \"redis-cache\" \"host\" }}\n    - wait-for-it {{ index .Values \"redis-cache\" \"host\" }} -t 1;\n    {{- end }}\n    {{- if index .Values \"redis-queue\" \"host\" }}\n    - wait-for-it {{ .Release.Name }}-redis-queue-master:{{ index .Values \"redis-queue\" \"master\" \"containerPorts\" \"redis\" }} -t 1;\n    {{- else if index .Values \"redis-queue\" \"host\" }}\n    - wait-for-it {{ index .Values \"redis-queue\" \"host\" }} -t 1;\n    {{- end }}\n    {{- if .Values.postgresql.host }}\n    - wait-for-it {{ .Values.postgresql.host }}:{{ .Values.postgresql.primary.service.ports.postgresql }} -t 1;\n    {{- else if .Values.postgresql.enabled }}\n    - wait-for-it {{ .Release.Name }}-postgresql:{{ .Values.postgresql.primary.service.ports.postgresql }} -t 1;\n    {{- end }}\ninitialDelaySeconds: 15\nperiodSeconds: 5\n"` |  |
+| worker.healthProbe | string | `"exec:\n  command:\n    - bash\n    - -c\n    - echo \"Ping backing services\";\n    {{- if .Values.mariadb.enabled }}\n    {{- if eq .Values.mariadb.architecture \"replication\" }}\n    - wait-for-it {{ .Release.Name }}-mariadb-primary:{{ .Values.mariadb.primary.service.ports.mysql }} -t 1;\n    {{- else }}\n    - wait-for-it {{ .Release.Name }}-mariadb:{{ .Values.mariadb.primary.service.ports.mysql }} -t 1;\n    {{- end }}\n    {{- else if .Values.dbHost }}\n    - wait-for-it {{ .Values.dbHost }}:{{ .Values.dbPort | default .Values.mariadb.primary.service.ports.mysql }} -t 1;\n    {{- end }}\n    {{- if .Values.dragonflyCache.enabled }}\n    - wait-for-it {{ .Release.Name }}-dragonflyCache:6379 -t 1;\n    {{- end }}\n    {{- if .Values.dragonflyQueue.enabled }}\n    - wait-for-it {{ .Release.Name }}-dragonflyQueue:6379 -t 1;\n    {{- end }}\n    {{- if .Values.postgresql.host }}\n    - wait-for-it {{ .Values.postgresql.host }}:{{ .Values.postgresql.primary.service.ports.postgresql }} -t 1;\n    {{- else if .Values.postgresql.enabled }}\n    - wait-for-it {{ .Release.Name }}-postgresql:{{ .Values.postgresql.primary.service.ports.postgresql }} -t 1;\n    {{- end }}\ninitialDelaySeconds: 15\nperiodSeconds: 5\n"` |  |
 | worker.long.affinity | object | `{}` |  |
 | worker.long.autoscaling.enabled | bool | `false` |  |
 | worker.long.autoscaling.maxReplicas | int | `3` |  |
@@ -354,7 +346,9 @@ Recommended alternatives as per priority:
 
 ### Managed Redis
 
-Managed Redis is not recommended. Redis is used as in-memory database and having it in the cluster will have least latency. Any managed Redis service with no auth and no ssl will work. It needs to be under VPC and protected by firewall. Check the [External Redis](#external-redis) section.
+By default, this chart deploys two DragonflyDB instances, one for caching and one for the queue. DragonflyDB is used as an in-memory database, and having it in the cluster provides the lowest latency.
+
+Any managed Redis-compatible service with no auth and no SSL will work. It needs to be under a VPC and protected by a firewall. Check the [External Redis](#external-redis) section.
 
 ## Installation
 
@@ -415,10 +409,10 @@ Make sure the db host, db port and credentials are correct.
 Make following changes to `custom-values.yaml`:
 
 ```yaml
-redis-cache:
+dragonflyCache:
   enabled: false
   host: "redis://1.1.1.1:6379"
-redis-queue:
+dragonflyQueue:
   enabled: false
   host: "redis://2.2.2.2:6379"
 ```
