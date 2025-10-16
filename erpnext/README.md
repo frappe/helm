@@ -28,13 +28,13 @@ helm upgrade --install frappe-bench --namespace erpnext frappe/erpnext --set per
     1. [Storage Class with ReadWriteMany access mode](#storage-class-with-readwritemany-access-mode)
     2. [Database](#database)
     3. [Managed Redis](#managed-redis)
-4. [Installation](#installation)
+4. [Configuration](#configuration)
     1. [Existing PVC](#existing-pvc)
     2. [Existing Storage Class](#existing-storage-class)
     3. [External Database](#external-database)
-    4. [External Redis](#external-redis)
-    5. [Install Helm Chart](#install-helm-chart)
-5. [Generate Additional Resources](#generate-additional-resources)
+    4. [Using Bitnami Subcharts (Legacy)](#using-bitnami-subcharts-legacy)
+5. [Installation](#installation)
+6. [Generate Additional Resources](#generate-additional-resources)
     1. [Create new site](#create-new-site)
     2. [Create Ingress](#create-ingress)
     3. [Create HTTPRoute](#create-httproute)
@@ -43,12 +43,12 @@ helm upgrade --install frappe-bench --namespace erpnext frappe/erpnext --set per
     6. [Drop Site](#drop-site)
     7. [Configure service hosts](#configure-service-hosts)
     8. [Fix volume permission](#fix-volume-permission)
-6. [Uninstall the Chart](#uninstall-the-chart)
-7. [Migrate from Helm Chart 3.x.x to 4.x.x](#migrate-from-helm-chart-3xx-to-4xx)
+7. [Uninstall the Chart](#uninstall-the-chart)
+8. [Migrating from Bitnami Subcharts](#migrating-from-bitnami-subcharts)
 
 ## Introduction
 
-This chart bootstraps a [Frappe/ERPNext](https://github.com/frappe/frappe_docker) deployment on a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
+This chart bootstraps a Frappe/ERPNext deployment on a Kubernetes cluster using the Helm package manager.
 
 ## Parameters
 
@@ -64,6 +64,10 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 
 | Repository | Name | Version |
 |------------|------|---------|
+| https://charts.bitnami.com/bitnami | mariadb-subchart(mariadb) | 14.x.x |
+| https://charts.bitnami.com/bitnami | postgresql-subchart(postgresql) | 14.x.x |
+| https://charts.bitnami.com/bitnami | redis-cache(redis) | 18.x.x |
+| https://charts.bitnami.com/bitnami | redis-queue(redis) | 18.x.x |
 | oci://ghcr.io/dragonflydb/dragonfly/helm | dragonfly-cache(dragonfly) | v1.34.2 |
 | oci://ghcr.io/dragonflydb/dragonfly/helm | dragonfly-queue(dragonfly) | v1.34.2 |
 
@@ -159,6 +163,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | jobs.volumePermissions.nodeSelector | object | `{}` |  |
 | jobs.volumePermissions.resources | object | `{}` |  |
 | jobs.volumePermissions.tolerations | list | `[]` |  |
+| mariadb-subchart.enabled | bool | `false` |  |
 | mariadb.enabled | bool | `true` |  |
 | mariadb.image.pullPolicy | string | `"IfNotPresent"` |  |
 | mariadb.image.repository | string | `"mariadb"` |  |
@@ -205,6 +210,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | persistence.worker.enabled | bool | `true` |  |
 | persistence.worker.size | string | `"8Gi"` |  |
 | podSecurityContext.supplementalGroups[0] | int | `1000` |  |
+| postgresql-subchart.enabled | bool | `false` |  |
 | postgresql.enabled | bool | `false` |  |
 | postgresql.image.pullPolicy | string | `"IfNotPresent"` |  |
 | postgresql.image.repository | string | `"postgres"` |  |
@@ -213,6 +219,8 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | postgresql.postgresPassword | string | `"changeit"` |  |
 | postgresql.postgresUser | string | `"postgres"` |  |
 | postgresql.resources | object | `{}` |  |
+| redis-cache.enabled | bool | `false` |  |
+| redis-queue.enabled | bool | `false` |  |
 | securityContext.capabilities.add[0] | string | `"CAP_CHOWN"` |  |
 | serviceAccount.create | bool | `true` |  |
 | socketio.affinity | object | `{}` |  |
@@ -278,7 +286,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | worker.gunicorn.service.type | string | `"ClusterIP"` |  |
 | worker.gunicorn.sidecars | list | `[]` |  |
 | worker.gunicorn.tolerations | list | `[]` |  |
-| worker.healthProbe | string | `"exec:\n  command:\n    - bash\n    - -c\n    - echo \"Ping backing services\";\n    {{- if .Values.mariadb.enabled }}\n    - wait-for-it {{ include \"erpnext.fullname\" . }}-mariadb:3306 -t 1;\n    {{- else if .Values.dbHost }}\n    - wait-for-it {{ .Values.dbHost }}:{{ .Values.dbPort | default .Values.mariadb.primary.service.ports.mysql }} -t 1;\n    {{- end }}\n    {{- if (index .Values \"dragonfly-cache\").enabled }}\n    - wait-for-it {{ .Release.Name }}-dragonfly-cache:6379 -t 1;\n    {{- end }}\n    {{- if (index .Values \"dragonfly-queue\").enabled }}\n    - wait-for-it {{ .Release.Name }}-dragonfly-queue:6379 -t 1;\n    {{- end }}\n    {{- if .Values.postgresql.host }}\n    - wait-for-it {{ .Values.postgresql.host }}:5432 -t 1;\n    {{- else if .Values.postgresql.enabled }}\n    - wait-for-it {{ include \"erpnext.fullname\" . }}-postgresql:5432 -t 1;\n    {{- end }}\ninitialDelaySeconds: 15\nperiodSeconds: 5\n"` |  |
+| worker.healthProbe | string | `"exec:\n  command:\n    - bash\n    - -c\n    - >\n      echo \"Pinging backing services\";\n      {{- if .Values.mariadb.enabled }}\n      wait-for-it {{ include \"erpnext.fullname\" . }}-mariadb:3306 -t 1;\n      {{- else if .Values.postgresql.enabled }}\n      wait-for-it {{ include \"erpnext.fullname\" . }}-postgresql:5432 -t 1;\n      {{- else if (index .Values \"mariadb-subchart\").enabled }}\n      wait-for-it {{ .Release.Name }}-mariadb-subchart:3306 -t 1;\n      {{- else if (index .Values \"postgresql-subchart\").enabled }}\n      wait-for-it {{ .Release.Name }}-postgresql-subchart:5432 -t 1;\n      {{- else if .Values.dbHost }}\n      wait-for-it {{ .Values.dbHost }}:{{ .Values.dbPort }} -t 1;\n      {{- end }}\n      {{- if (index .Values \"dragonfly-cache\").enabled }}\n      wait-for-it {{ .Release.Name }}-dragonfly-cache:6379 -t 1;\n      {{- else if (index .Values \"redis-cache\").enabled }}\n      wait-for-it {{ .Release.Name }}-redis-cache-master:6379 -t 1;\n      {{- end }}\n      {{- if (index .Values \"dragonfly-queue\").enabled }}\n      wait-for-it {{ .Release.Name }}-dragonfly-queue:6379 -t 1;\n      {{- else if (index .Values \"redis-queue\").enabled }}\n      wait-for-it {{ .Release.Name }}-redis-queue-master:6379 -t 1;\n      {{- end }}\ninitialDelaySeconds: 15\nperiodSeconds: 5\n"` |  |
 | worker.long.affinity | object | `{}` |  |
 | worker.long.autoscaling.enabled | bool | `false` |  |
 | worker.long.autoscaling.maxReplicas | int | `3` |  |
@@ -328,13 +336,13 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 
 ----------------------------------------------
 
-The above parameters map to the env variables defined in [frappe_docker](http://github.com/frappe/frappe_docker). For more information please refer to the [frappe_docker](http://github.com/frappe/frappe_docker) images documentation.
+The above parameters map to the env variables defined in frappe_docker. For more information please refer to the frappe_docker images documentation.
 
 ## Requirements
 
 ### Storage Class with ReadWriteMany access mode
 
-Frappe framework sites are stored in shared volume that needs to be accessed by multiple pods. Read more about [Storage Classes](https://kubernetes.io/docs/concepts/storage/storage-classes). Here are some alternatives available for RWX volumes.
+Frappe framework sites are stored in shared volume that needs to be accessed by multiple pods. Read more about Storage Classes. Here are some alternatives available for RWX volumes.
 
 - [AWS EFS](https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html): Managed shared filesystem by Amazon.
 - [Google Filestore](https://cloud.google.com/filestore): Managed shared filesystem by Google.
@@ -347,25 +355,27 @@ Frappe framework sites are stored in shared volume that needs to be accessed by 
 
 ### Database
 
-By default it installs pre configured MariaDB that works with Frappe/ERPNext sites.
+By default, this chart deploys a built-in MariaDB `StatefulSet` that works with Frappe/ERPNext sites. A built-in PostgreSQL `StatefulSet` is also available.
 
-PostgreSQL works with custom frappe apps only. ERPNext needs MariaDB.
+**Note:** ERPNext requires MariaDB. PostgreSQL can be used for custom Frappe apps that support it.
 
 Recommended alternatives as per priority:
 
 - [Managed DB](https://github.com/frappe/frappe/wiki/Using-Frappe-with-Amazon-RDS-(or-any-other-DBaaS)): Recommended AWS MariaDB RDS.
 - [Self hosted MariaDB](https://github.com/frappe/frappe/wiki/Setup-MariaDB-Server): Self hosted mariadb server setup for Debian or Ubuntu.
-- [In-cluster MariaDB](https://github.com/bitnami/charts/tree/main/bitnami/mariadb): It is used as sub-chart for this helm chart.
+- [Bitnami Subcharts](https://github.com/bitnami/charts/tree/main/bitnami/mariadb): For backward compatibility, the Bitnami MariaDB and PostgreSQL subcharts can be enabled. See the Using Bitnami Subcharts (Legacy) section.
 
 ### Managed Redis
 
 By default, this chart deploys two DragonflyDB instances, one for caching and one for the queue. DragonflyDB is used as an in-memory database, and having it in the cluster provides the lowest latency.
 
-Any managed Redis-compatible service with no auth and no SSL will work. It needs to be under a VPC and protected by a firewall. Check the [External Redis](#external-redis) section.
+For backward compatibility or other requirements, the Bitnami Redis subchart can be enabled instead. See the Using Bitnami Subcharts (Legacy) section.
 
-## Installation
+Alternatively, any managed Redis-compatible service can be used by providing the connection details in your `values.yaml`.
 
-Customize values for following alternatives.
+## Configuration
+
+Create a `custom-values.yaml` file to override the default settings. Below are examples for common configurations.
 
 ### Existing Storage Class
 
@@ -406,33 +416,57 @@ You can configure this to use ReadWriteOnce (RWO) if you are running a single-no
 
 ### External Database
 
-Make following changes to `custom-values.yaml`:
+To use an external database (like Amazon RDS), disable the built-in and subchart databases and provide the connection details.
 
 ```yaml
+# Disable all in-cluster databases
+mariadb:
+  enabled: false
+postgresql:
+  enabled: false
+mariadb-subchart:
+  enabled: false
+postgresql-subchart:
+  enabled: false
+
 dbHost: "1.2.3.4"
 dbPort: "3306"
 dbRootUser: "admin"
-dbRootPassword: "secret"
+# Use dbExistingSecret for production environments
+dbExistingSecret: "my-external-db-secret"
+dbExistingSecretPasswordKey: "password"
 ```
 
-Make sure the db host, db port and credentials are correct.
+### Using Bitnami Subcharts (Legacy)
 
-### External Redis
-
-Make following changes to `custom-values.yaml`:
+To use the classic Bitnami subcharts for the database or cache/queue, disable the new built-in components and enable the corresponding subcharts.
 
 ```yaml
+# Disable new built-in MariaDB and DragonflyDB
+mariadb:
+  enabled: false
 dragonfly-cache:
   enabled: false
-  host: "redis://1.1.1.1:6379"
 dragonfly-queue:
   enabled: false
-  host: "redis://2.2.2.2:6379"
+# Enable and configure classic Bitnami subcharts
+mariadb-subchart:
+  enabled: true
+  # Pass values to the bitnami/mariadb subchart here
+  # primary:
+  #   persistence:
+  #     size: 10Gi
+
+redis-cache:
+  enabled: true
+  # Pass values to the bitnami/redis subchart here
+
+redis-queue:
+  enabled: true
+  # Pass values to the bitnami/redis subchart here
 ```
 
-Make sure the redis hosts are correct.
-
-### Install Helm Chart
+## Installation
 
 Create namespace for erpnext
 
@@ -505,9 +539,9 @@ ingress:
     - path: /
       pathType: ImplementationSpecific
   tls:
-   - secretName: erp-example-com-tls
-     hosts:
-       - erp.example.com
+  - secretName: erp-example-com-tls
+    hosts:
+    - erp.example.com
 ```
 
 Note:
@@ -731,67 +765,6 @@ helm --namespace erpnext delete frappe-bench
 
 The command removes all the Kubernetes components installed by the chart and deletes the release.
 
-## Migrate from Helm Chart 3.x.x to 4.x.x
+## Migrating from Bitnami Subcharts
 
-Before you begin make sure you have taken backups to restore from fresh install.
-
-Make following changes along with additional changes as per requirement to `custom-values.yaml`:
-
-```yaml
-mariadb:
-  enabled: false
-
-dbHost: "mariadb.mariadb.svc.cluster.local"
-dbPort: 3306
-dbRootUser: root
-dbRootPassword: admin
-
-jobs:
-  configure:
-    enabled: true
-
-persistence:
-  worker:
-    storageClass: nfs
-```
-
-Note:
-
-- Make sure your storage class is same as the one set in previous release. It will not re-create any PVC and use the old one instead.
-- If the `dbRootPassword` is set it will create secret.
-
-Delete old deployments
-
-```shell
-kubectl get deploy -n erpnext | grep frappe-bench | awk '{print $1}' | xargs kubectl delete deploy -n erpnext
-```
-
-Delete old serviceaccounts
-
-```shell
-kubectl get sa -n erpnext | grep frappe-bench | awk '{print $1}' | xargs kubectl delete sa -n erpnext
-```
-
-Delete old services
-
-```shell
-kubectl get svc -n erpnext | grep frappe-bench | awk '{print $1}' | xargs kubectl delete svc -n erpnext
-```
-
-Delete old secret if it exists
-
-```shell
-kubectl delete secret -n erpnext frappe-bench
-```
-
-Delete old configmaps if they exists, new configmaps will be based on `custom-values.yaml`
-
-```shell
-kubectl get cm -n erpnext | grep frappe-bench | awk '{print $1}' | xargs kubectl delete cm -n erpnext
-```
-
-Upgrade
-
-```shell
-helm upgrade frappe-bench -n erpnext frappe/erpnext -f custom-values.yaml
-```
+If you are an existing user of this chart (version 7.x or older) and wish to migrate from the Bitnami subcharts to the new built-in StatefulSets for MariaDB, PostgreSQL, or DragonflyDB, please follow the detailed instructions in MIGRATION.md.

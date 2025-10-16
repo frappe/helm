@@ -197,23 +197,29 @@ worker:
       command:
         - bash
         - -c
-        - echo "Ping backing services";
-        {{- if .Values.mariadb.enabled }}
-        - wait-for-it {{ include "erpnext.fullname" . }}-mariadb:3306 -t 1;
-        {{- else if .Values.dbHost }}
-        - wait-for-it {{ .Values.dbHost }}:{{ .Values.dbPort | default .Values.mariadb.primary.service.ports.mysql }} -t 1;
-        {{- end }}
-        {{- if (index .Values "dragonfly-cache").enabled }}
-        - wait-for-it {{ .Release.Name }}-dragonfly-cache:6379 -t 1;
-        {{- end }}
-        {{- if (index .Values "dragonfly-queue").enabled }}
-        - wait-for-it {{ .Release.Name }}-dragonfly-queue:6379 -t 1;
-        {{- end }}
-        {{- if .Values.postgresql.host }}
-        - wait-for-it {{ .Values.postgresql.host }}:5432 -t 1;
-        {{- else if .Values.postgresql.enabled }}
-        - wait-for-it {{ include "erpnext.fullname" . }}-postgresql:5432 -t 1;
-        {{- end }}
+        - >
+          echo "Pinging backing services";
+          {{- if .Values.mariadb.enabled }}
+          wait-for-it {{ include "erpnext.fullname" . }}-mariadb:3306 -t 1;
+          {{- else if .Values.postgresql.enabled }}
+          wait-for-it {{ include "erpnext.fullname" . }}-postgresql:5432 -t 1;
+          {{- else if (index .Values "mariadb-subchart").enabled }}
+          wait-for-it {{ .Release.Name }}-mariadb-subchart:3306 -t 1;
+          {{- else if (index .Values "postgresql-subchart").enabled }}
+          wait-for-it {{ .Release.Name }}-postgresql-subchart:5432 -t 1;
+          {{- else if .Values.dbHost }}
+          wait-for-it {{ .Values.dbHost }}:{{ .Values.dbPort }} -t 1;
+          {{- end }}
+          {{- if (index .Values "dragonfly-cache").enabled }}
+          wait-for-it {{ .Release.Name }}-dragonfly-cache:6379 -t 1;
+          {{- else if (index .Values "redis-cache").enabled }}
+          wait-for-it {{ .Release.Name }}-redis-cache-master:6379 -t 1;
+          {{- end }}
+          {{- if (index .Values "dragonfly-queue").enabled }}
+          wait-for-it {{ .Release.Name }}-dragonfly-queue:6379 -t 1;
+          {{- else if (index .Values "redis-queue").enabled }}
+          wait-for-it {{ .Release.Name }}-redis-queue-master:6379 -t 1;
+          {{- end }}
     initialDelaySeconds: 15
     periodSeconds: 5
 
@@ -422,6 +428,12 @@ mariadb:
     collation-server=utf8mb4_unicode_ci
 
 
+mariadb-subchart:
+  # To enable the classic Bitnami MariaDB subchart, set enabled to true
+  # and set mariadb.enabled to false.
+  enabled: false
+  # Values passed to the bitnami/mariadb subchart can be defined here.
+
 dragonfly-cache:
   # Using DragonflyDB: https://www.dragonflydb.io/
   # https://github.com/dragonflydb/dragonfly/tree/main/helm/dragonfly
@@ -454,3 +466,21 @@ postgresql:
     # storageClass: "nfs"
     size: 8Gi
   resources: {}
+
+postgresql-subchart:
+  # To enable the classic Bitnami PostgreSQL subchart, set enabled to true
+  # and set postgresql.enabled to false.
+  enabled: false
+  # Values passed to the bitnami/postgresql subchart can be defined here.
+
+redis-cache:
+  # To enable the classic Bitnami Redis subchart for cache, set enabled to true
+  # and set dragonfly-cache.enabled to false.
+  enabled: false
+  # Values passed to the bitnami/redis subchart can be defined here.
+
+redis-queue:
+  # To enable the classic Bitnami Redis subchart for queue, set enabled to true
+  # and set dragonfly-queue.enabled to false.
+  enabled: false
+  # Values passed to the bitnami/redis subchart can be defined here.

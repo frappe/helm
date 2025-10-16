@@ -71,18 +71,40 @@ spec:
           - name: DB_HOST
             {{- if .Values.mariadb.enabled }}
             value: {{ include "erpnext.fullname" . }}-mariadb
+            {{- else if .Values.postgresql.enabled }}
+            value: {{ include "erpnext.fullname" . }}-postgresql
+            {{- else if (index .Values "mariadb-subchart").enabled }}
+            value: {{ .Release.Name }}-mariadb-subchart
+            {{- else if (index .Values "postgresql-subchart").enabled }}
+            value: {{ .Release.Name }}-postgresql-subchart
             {{- else }}
-            value: {{ .Values.dbHost }}
+            value: "{{ .Values.dbHost }}"
             {{- end }}
           - name: DB_PORT
+            {{- if .Values.mariadb.enabled }}
             value: "3306"
+            {{- else if .Values.postgresql.enabled }}
+            value: "5432"
+            {{- else if (index .Values "mariadb-subchart").enabled }}
+            value: "3306"
+            {{- else if (index .Values "postgresql-subchart").enabled }}
+            value: "5432"
+            {{- else if .Values.dbPort }}
+            value: {{ .Values.dbPort | quote }}
+            {{- end }}
           {{- if (index .Values "dragonfly-cache").enabled }}
           - name: REDIS_CACHE
             value: redis://{{ .Release.Name }}-dragonfly-cache:6379
+          {{- else if (index .Values "redis-cache").enabled }}
+          - name: REDIS_CACHE
+            value: redis://{{ .Release.Name }}-redis-cache-master:6379
           {{- end }}
           {{- if (index .Values "dragonfly-queue").enabled }}
           - name: REDIS_QUEUE
             value: redis://{{ .Release.Name }}-dragonfly-queue:6379
+          {{- else if (index .Values "redis-queue").enabled }}
+          - name: REDIS_QUEUE
+            value: redis://{{ .Release.Name }}-redis-queue-master:6379
           {{- end }}
           {{- if .Values.jobs.configure.envVars }}
             {{- toYaml .Values.jobs.configure.envVars | nindent 10 }}
