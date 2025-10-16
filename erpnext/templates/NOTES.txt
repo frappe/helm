@@ -3,8 +3,13 @@ Frappe/ERPNext Release deployed
 Release Name: {{ include "erpnext.fullname" . }}
 
 Wait for the pods to start.
-To create sites and other resources, refer:
+
+To create sites and other resources, refer to the main README:
 https://github.com/frappe/helm/blob/main/erpnext/README.md
+
+If you are upgrading and wish to migrate from the Bitnami subcharts
+to the new built-in components, please see the migration guide:
+https://github.com/frappe/helm/blob/main/erpnext/MIGRATION.md
 
 Frequently Asked Questions:
 https://helm.erpnext.com/faq

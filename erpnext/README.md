@@ -164,6 +164,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | jobs.volumePermissions.resources | object | `{}` |  |
 | jobs.volumePermissions.tolerations | list | `[]` |  |
 | mariadb-subchart.enabled | bool | `false` |  |
+| mariadb-subchart.image.repository | string | `"bitnamilegacy/mariadb"` |  |
 | mariadb.enabled | bool | `true` |  |
 | mariadb.image.pullPolicy | string | `"IfNotPresent"` |  |
 | mariadb.image.repository | string | `"mariadb"` |  |
@@ -211,6 +212,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | persistence.worker.size | string | `"8Gi"` |  |
 | podSecurityContext.supplementalGroups[0] | int | `1000` |  |
 | postgresql-subchart.enabled | bool | `false` |  |
+| postgresql-subchart.image.repository | string | `"bitnamilegacy/postgresql"` |  |
 | postgresql.enabled | bool | `false` |  |
 | postgresql.image.pullPolicy | string | `"IfNotPresent"` |  |
 | postgresql.image.repository | string | `"postgres"` |  |
@@ -220,7 +222,9 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | postgresql.postgresUser | string | `"postgres"` |  |
 | postgresql.resources | object | `{}` |  |
 | redis-cache.enabled | bool | `false` |  |
+| redis-cache.image.repository | string | `"bitnamilegacy/redis"` |  |
 | redis-queue.enabled | bool | `false` |  |
+| redis-queue.image.repository | string | `"bitnamilegacy/redis"` |  |
 | securityContext.capabilities.add[0] | string | `"CAP_CHOWN"` |  |
 | serviceAccount.create | bool | `true` |  |
 | socketio.affinity | object | `{}` |  |

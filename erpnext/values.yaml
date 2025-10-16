@@ -432,6 +432,8 @@ mariadb-subchart:
   # To enable the classic Bitnami MariaDB subchart, set enabled to true
   # and set mariadb.enabled to false.
   enabled: false
+  image:
+    repository: bitnamilegacy/mariadb
   # Values passed to the bitnami/mariadb subchart can be defined here.
 
 dragonfly-cache:
@@ -471,16 +473,22 @@ postgresql-subchart:
   # To enable the classic Bitnami PostgreSQL subchart, set enabled to true
   # and set postgresql.enabled to false.
   enabled: false
+  image:
+    repository: bitnamilegacy/postgresql
   # Values passed to the bitnami/postgresql subchart can be defined here.
 
 redis-cache:
   # To enable the classic Bitnami Redis subchart for cache, set enabled to true
   # and set dragonfly-cache.enabled to false.
   enabled: false
+  image:
+    repository: bitnamilegacy/redis
   # Values passed to the bitnami/redis subchart can be defined here.
 
 redis-queue:
   # To enable the classic Bitnami Redis subchart for queue, set enabled to true
   # and set dragonfly-queue.enabled to false.
   enabled: false
+  image:
+    repository: bitnamilegacy/redis
   # Values passed to the bitnami/redis subchart can be defined here.
