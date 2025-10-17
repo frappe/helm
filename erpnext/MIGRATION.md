@@ -1,167 +1,113 @@
 # Guide: Migrating from Bitnami Subcharts to Built-in Components
 
-This guide is for users who are running an older version of this chart (e.g., v7.x) with the Bitnami subcharts for MariaDB, PostgreSQL, or Redis, and wish to migrate to the new built-in StatefulSets.
+This guide is for users who are running an older version of this chart with the Bitnami subcharts for MariaDB or PostgreSQL and wish to migrate to the new built-in StatefulSets.
 
-With the new transitional architecture, you can continue using the Bitnami subcharts by simply running `helm upgrade`. This guide is only for those who want to perform the migration.
+With the new architecture, a simple `helm upgrade` is designed to be non-disruptive. Your application will continue to use the existing Bitnami subchart, and a new, empty built-in database StatefulSet will be provisioned alongside it.
+
+This guide outlines the **manual, two-stage process** to complete the migration to the new database.
 
 ## The Migration Process
 
-**IMPORTANT:** The migration process involves a brief period of downtime and will replace your existing database instance. When you disable the Bitnami subchart and enable the built-in StatefulSet during the `helm upgrade`, Helm will delete the old database resources.
+**IMPORTANT:** The final step of the migration process involves a brief period of downtime as you switch the application's database connection.
 
-Therefore, you **must** take a complete backup before starting.
+You **must** take a complete backup before starting.
 
 ## Migration Strategy
 
-The safest migration strategy is to back up your data, reconfigure Helm to use the new components, perform the upgrade (which creates a new empty database), and then restore your backup into the new instance.
+The migration is a two-stage process:
 
-1.  **Backup Site:** Create a full backup of your site (database + files).
-2.  **Update `values.yaml`:** Disable the Bitnami subchart (e.g., `mariadb-subchart.enabled: false`) and enable the corresponding built-in component (e.g., `mariadb.enabled: true`).
-3.  **Upgrade Helm Chart:** Run `helm upgrade`. This will delete the old Bitnami database and create the new, empty built-in database.
-4.  **Restore Site:** Use a Kubernetes Job to restore your site from the backup created in Step 1.
-5.  **Run `bench migrate`:** Apply any necessary database schema changes.
+1.  **Stage 1: Provision New Database.**
+    You will upgrade your Helm release, which will create the new built-in database StatefulSet. Your application will continue to run, connected to the old Bitnami database.
+
+2.  **Stage 2: Data Migration and Switchover.**
+    You will manually back up your site data from the old database and restore it into the new one. Finally, you will reconfigure the chart to point the application to the new database and decommission the old one.
 
 ---
 
 ## Step-by-Step Guide (Example: MariaDB)
 
-### Step 1: (CRITICAL) Create a Full Backup
+### Stage 1: Upgrade and Provision New Database
 
-Before starting, ensure you have a complete and verified backup of your site(s). You can generate a backup job using `helm template`.
+1.  **(CRITICAL) Create a Full Backup**
 
-```bash
-# Replace <release-name> and <your-site-name> with your current values
-helm template <release-name> frappe/erpnext \
-  -f your-values.yaml \
-  --set jobs.backup.enabled=true \
-  --set jobs.backup.siteName=<your-site-name> \
-  -s templates/job-backup.yaml | kubectl apply -f -
-```
+    Before starting, ensure you have a complete and verified backup of your site(s).
 
-Wait for the backup job to complete and verify the backup files are created in your sites volume.
+    ```bash
+    # Replace <release-name> and <your-site-name> with your current values
+    helm template <release-name> frappe/erpnext \
+      -f your-values.yaml \
+      --set jobs.backup.enabled=true \
+      --set jobs.backup.siteName=<your-site-name> \
+      -s templates/job-backup.yaml | kubectl apply -f -
+    ```
 
-### Step 2: Update `values.yaml` for Migration
+    Wait for the backup job to complete and verify the backup files are created in your sites volume.
 
-Modify your `values.yaml` to disable the old Bitnami subchart and enable the new built-in StatefulSet.
+2.  **Update `values.yaml` for Upgrade**
 
-```yaml
-# your-values.yaml
+    Modify your `values.yaml` to enable the new built-in StatefulSet. Your existing `mariadb.enabled: true` (or `mariadb-subchart.enabled: true`) should remain, which keeps the old database running.
 
-# Disable the classic Bitnami subchart
-mariadb-subchart:
-  enabled: false
+    ```yaml
+    # your-values.yaml
 
-# Enable the new built-in StatefulSet and configure it
-mariadb:
-  enabled: true
-  persistence:
-    storageClass: "nfs" # or your preferred storage class
-    size: 8Gi
-```
+    # Keep the classic Bitnami subchart enabled
+    mariadb:
+      enabled: true # Or mariadb-subchart.enabled: true
 
-### Step 3: Upgrade the Helm Chart
+    # Enable the new built-in StatefulSet and configure it
+    mariadb-sts:
+      enabled: true
+      persistence:
+        # storageClass: "default" # or your preferred storage class
+        size: 8Gi
+    ```
 
-Now, perform the upgrade. **This is the step that will delete the old Bitnami database and create the new, empty one.** Your site will be down until the restore is complete.
+3.  **Upgrade the Helm Chart**
+
+    Now, perform the upgrade. This will create the new, empty `mariadb-sts` StatefulSet. Your site will remain operational and connected to the old Bitnami database.
+
+    ```bash
+    helm upgrade <release-name> frappe/erpnext --version <new-chart-version> -f your-values.yaml
+    ```
+
+### Stage 2: Migrate Data and Switch Over
+
+At this point, you have two databases running. Now you will move the data and switch the application. This stage will involve downtime.
+
+1.  **Backup and Restore Data**
+
+    The most reliable method is to use `bench backup` and `bench restore`. You will need to `exec` into a pod to get the database credentials and run the commands. A detailed guide on this is outside the scope of this document, but it involves:
+    *   Taking a fresh backup from the old database.
+    *   Restoring that backup into the new database (`<release-name>-mariadb`).
+
+2.  **Update `values.yaml` for Switchover**
+
+    Modify your `values.yaml` to disable the old Bitnami subchart. This tells Helm to re-run the `configure` job, which will now point `common_site_config.json` to the new database.
+
+    ```yaml
+    # your-values.yaml
+
+    # Disable the classic Bitnami subchart
+    mariadb:
+      enabled: false
+    mariadb-subchart:
+      enabled: false
+
+    # Keep the new built-in StatefulSet enabled
+    mariadb-sts:
+      enabled: true
+      persistence:
+        # storageClass: "default"
+        size: 8Gi
+    ```
+
+3.  **Final Helm Upgrade (The Switchover)**
+
+    This is the final step. This upgrade will:
+    *   Delete the old Bitnami MariaDB deployment.
+    *   Re-run the `configure` job, which updates `db_host` to point to the new `mariadb-sts` service.
+    *   Restart your application pods, which will now connect to the new database containing your restored data.
 
 ```bash
 helm upgrade <release-name> frappe/erpnext --version <new-chart-version> -f your-values.yaml
-```
-
-### Step 4: Restore Your Site
-
-Create a Kubernetes `Job` to restore your site from the backup taken in Step 1. You will need to find the name of your backup file.
-
-```yaml
-# Example restore job definition (save as restore-job.yaml)
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: restore-from-backup
-spec:
-  template:
-    spec:
-      containers:
-      - name: restore
-        image: frappe/erpnext:v15.83.0 # Use your image version
-        command: ["bench", "restore", "/path/to/your/backup.sql.gz", "--with-private-files", "/path/to/your/private-files.tar.gz"]
-        volumeMounts:
-        - name: sites-dir
-          mountPath: /home/frappe/frappe-bench/sites
-      restartPolicy: Never
-      volumes:
-      - name: sites-dir
-        persistentVolumeClaim:
-          claimName: <your-pvc-name> # e.g., "frappe-bench-erpnext"
-```
-
-Apply the job to start the restore process: `kubectl apply -f restore-job.yaml`.
-
-### Step 5: Run Migration
-
-After the restore is complete, run `bench migrate` to ensure the database schema is up-to-date with the application version. You can do this with another Kubernetes Job or by executing the command in a running pod.
-
-Your migration is now complete. Your ERPNext instance is running with the new, self-contained database.
-
-# Migrate from Helm Chart 3.x.x to 4.x.x
-
-Before you begin make sure you have taken backups to restore from fresh install.
-
-Make following changes along with additional changes as per requirement to `custom-values.yaml`:
-
-```yaml
-mariadb:
-  enabled: false
-
-dbHost: "mariadb.mariadb.svc.cluster.local"
-dbPort: 3306
-dbRootUser: root
-dbRootPassword: admin
-
-jobs:
-  configure:
-    enabled: true
-
-persistence:
-  worker:
-    storageClass: nfs
-```
-
-Note:
-
-- Make sure your storage class is same as the one set in previous release. It will not re-create any PVC and use the old one instead.
-- If the `dbRootPassword` is set it will create secret.
-
-Delete old deployments
-
-```shell
-kubectl get deploy -n erpnext | grep frappe-bench | awk '{print $1}' | xargs kubectl delete deploy -n erpnext
-```
-
-Delete old serviceaccounts
-
-```shell
-kubectl get sa -n erpnext | grep frappe-bench | awk '{print $1}' | xargs kubectl delete sa -n erpnext
-```
-
-Delete old services
-
-```shell
-kubectl get svc -n erpnext | grep frappe-bench | awk '{print $1}' | xargs kubectl delete svc -n erpnext
-```
-
-Delete old secret if it exists
-
-```shell
-kubectl delete secret -n erpnext frappe-bench
-```
-
-Delete old configmaps if they exists, new configmaps will be based on `custom-values.yaml`
-
-```shell
-kubectl get cm -n erpnext | grep frappe-bench | awk '{print $1}' | xargs kubectl delete cm -n erpnext
-```
-
-Upgrade
-
-```shell
-helm upgrade frappe-bench -n erpnext frappe/erpnext -f custom-values.yaml
 ```

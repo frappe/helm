@@ -1,21 +1,21 @@
-{{- if .Values.postgresql.enabled }}
+{{- if (index .Values "postgresql-sts").enabled }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "erpnext.fullname" . }}-postgresql
+  name: {{ include "erpnext.fullname" . }}-postgresql-sts
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "erpnext.name" . }}-postgresql
+      app.kubernetes.io/name: {{ include "erpnext.name" . }}-postgresql-sts
       app.kubernetes.io/instance: {{ .Release.Name }}
-  serviceName: {{ include "erpnext.fullname" . }}-postgresql
+  serviceName: {{ include "erpnext.fullname" . }}-postgresql-sts
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "erpnext.name" . }}-postgresql
+        app.kubernetes.io/name: {{ include "erpnext.name" . }}-postgresql-sts
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       {{- with .Values.imagePullSecrets }}
@@ -26,8 +26,8 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: postgresql
-          image: "{{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}"
-          imagePullPolicy: {{ .Values.postgresql.image.pullPolicy }}
+          image: "{{ (index .Values "postgresql-sts").image.repository }}:{{ (index .Values "postgresql-sts").image.tag }}"
+          imagePullPolicy: {{ (index .Values "postgresql-sts").image.pullPolicy }}
           env:
             - name: POSTGRES_PASSWORD
               valueFrom:
@@ -51,7 +51,7 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 10
           resources:
-            {{- toYaml .Values.postgresql.resources | nindent 12 }}
+            {{- toYaml (index .Values "postgresql-sts").resources | nindent 12 }}
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql/data
@@ -60,8 +60,8 @@ spec:
         name: data
       spec:
         accessModes: [ "ReadWriteOnce" ]
-        storageClassName: {{ .Values.postgresql.persistence.storageClass }}
+        storageClassName: {{ (index .Values "postgresql-sts").persistence.storageClass }}
         resources:
           requests:
-            storage: {{ .Values.postgresql.persistence.size }}
+            storage: {{ (index .Values "postgresql-sts").persistence.size }}
 {{- end }}

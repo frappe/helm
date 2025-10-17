@@ -17,7 +17,7 @@ Install ERPNext using the `nfs` storage class.
 ```shell
 kubectl create namespace erpnext
 helm repo add frappe https://helm.erpnext.com
-helm upgrade --install frappe-bench --namespace erpnext frappe/erpnext --set persistence.worker.storageClass=nfs
+helm upgrade --install frappe-bench --namespace erpnext frappe/erpnext --set persistence.worker.storageClass=nfs --set mariadb-sts.enabled=true
 ```
 
 # Contents
@@ -79,6 +79,8 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | dragonfly-queue.enabled | bool | `true` |  |
 | dragonfly-queue.storage.enabled | bool | `false` |  |
 | dragonfly-queue.storage.size | string | `"8Gi"` |  |
+| externalRedis.cache | string | `""` |  |
+| externalRedis.queue | string | `""` |  |
 | fullnameOverride | string | `""` |  |
 | httproute.annotations | object | `{}` |  |
 | httproute.enabled | bool | `false` |  |
@@ -163,16 +165,18 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | jobs.volumePermissions.nodeSelector | object | `{}` |  |
 | jobs.volumePermissions.resources | object | `{}` |  |
 | jobs.volumePermissions.tolerations | list | `[]` |  |
+| mariadb-sts.enabled | bool | `false` |  |
+| mariadb-sts.image.pullPolicy | string | `"IfNotPresent"` |  |
+| mariadb-sts.image.repository | string | `"mariadb"` |  |
+| mariadb-sts.image.tag | string | `"10.6"` |  |
+| mariadb-sts.myCnf | string | `"[mysqld]\nskip-character-set-client-handshake\nskip-innodb-read-only-compressed\ncharacter-set-server=utf8mb4\ncollation-server=utf8mb4_unicode_ci\n"` |  |
+| mariadb-sts.persistence.size | string | `"8Gi"` |  |
+| mariadb-sts.resources | object | `{}` |  |
+| mariadb-sts.rootPassword | string | `"changeit"` |  |
 | mariadb-subchart.enabled | bool | `false` |  |
 | mariadb-subchart.image.repository | string | `"bitnamilegacy/mariadb"` |  |
-| mariadb.enabled | bool | `true` |  |
-| mariadb.image.pullPolicy | string | `"IfNotPresent"` |  |
-| mariadb.image.repository | string | `"mariadb"` |  |
-| mariadb.image.tag | string | `"10.11"` |  |
-| mariadb.myCnf | string | `"[mysqld]\nskip-character-set-client-handshake\nskip-innodb-read-only-compressed\ncharacter-set-server=utf8mb4\ncollation-server=utf8mb4_unicode_ci\n"` |  |
-| mariadb.persistence.size | string | `"8Gi"` |  |
-| mariadb.resources | object | `{}` |  |
-| mariadb.rootPassword | string | `"changeit"` |  |
+| mariadb-subchart.image.tag | string | `"10.6.17-debian-11-r10"` |  |
+| mariadb.enabled | bool | `false` |  |
 | nameOverride | string | `""` |  |
 | nginx.affinity | object | `{}` |  |
 | nginx.autoscaling.enabled | bool | `false` |  |
@@ -211,20 +215,24 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | persistence.worker.enabled | bool | `true` |  |
 | persistence.worker.size | string | `"8Gi"` |  |
 | podSecurityContext.supplementalGroups[0] | int | `1000` |  |
+| postgresql-sts.enabled | bool | `false` |  |
+| postgresql-sts.image.pullPolicy | string | `"IfNotPresent"` |  |
+| postgresql-sts.image.repository | string | `"postgres"` |  |
+| postgresql-sts.image.tag | string | `"15"` |  |
+| postgresql-sts.persistence.size | string | `"8Gi"` |  |
+| postgresql-sts.postgresPassword | string | `"changeit"` |  |
+| postgresql-sts.postgresUser | string | `"postgres"` |  |
+| postgresql-sts.resources | object | `{}` |  |
 | postgresql-subchart.enabled | bool | `false` |  |
 | postgresql-subchart.image.repository | string | `"bitnamilegacy/postgresql"` |  |
+| postgresql-subchart.image.tag | string | `"14"` |  |
 | postgresql.enabled | bool | `false` |  |
-| postgresql.image.pullPolicy | string | `"IfNotPresent"` |  |
-| postgresql.image.repository | string | `"postgres"` |  |
-| postgresql.image.tag | string | `"15"` |  |
-| postgresql.persistence.size | string | `"8Gi"` |  |
-| postgresql.postgresPassword | string | `"changeit"` |  |
-| postgresql.postgresUser | string | `"postgres"` |  |
-| postgresql.resources | object | `{}` |  |
 | redis-cache.enabled | bool | `false` |  |
 | redis-cache.image.repository | string | `"bitnamilegacy/redis"` |  |
+| redis-cache.image.tag | string | `"7.0"` |  |
 | redis-queue.enabled | bool | `false` |  |
 | redis-queue.image.repository | string | `"bitnamilegacy/redis"` |  |
+| redis-queue.image.tag | string | `"7.0"` |  |
 | securityContext.capabilities.add[0] | string | `"CAP_CHOWN"` |  |
 | serviceAccount.create | bool | `true` |  |
 | socketio.affinity | object | `{}` |  |
@@ -290,7 +298,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | worker.gunicorn.service.type | string | `"ClusterIP"` |  |
 | worker.gunicorn.sidecars | list | `[]` |  |
 | worker.gunicorn.tolerations | list | `[]` |  |
-| worker.healthProbe | string | `"exec:\n  command:\n    - bash\n    - -c\n    - >\n      echo \"Pinging backing services\";\n      {{- if .Values.mariadb.enabled }}\n      wait-for-it {{ include \"erpnext.fullname\" . }}-mariadb:3306 -t 1;\n      {{- else if .Values.postgresql.enabled }}\n      wait-for-it {{ include \"erpnext.fullname\" . }}-postgresql:5432 -t 1;\n      {{- else if (index .Values \"mariadb-subchart\").enabled }}\n      wait-for-it {{ .Release.Name }}-mariadb-subchart:3306 -t 1;\n      {{- else if (index .Values \"postgresql-subchart\").enabled }}\n      wait-for-it {{ .Release.Name }}-postgresql-subchart:5432 -t 1;\n      {{- else if .Values.dbHost }}\n      wait-for-it {{ .Values.dbHost }}:{{ .Values.dbPort }} -t 1;\n      {{- end }}\n      {{- if (index .Values \"dragonfly-cache\").enabled }}\n      wait-for-it {{ .Release.Name }}-dragonfly-cache:6379 -t 1;\n      {{- else if (index .Values \"redis-cache\").enabled }}\n      wait-for-it {{ .Release.Name }}-redis-cache-master:6379 -t 1;\n      {{- end }}\n      {{- if (index .Values \"dragonfly-queue\").enabled }}\n      wait-for-it {{ .Release.Name }}-dragonfly-queue:6379 -t 1;\n      {{- else if (index .Values \"redis-queue\").enabled }}\n      wait-for-it {{ .Release.Name }}-redis-queue-master:6379 -t 1;\n      {{- end }}\ninitialDelaySeconds: 15\nperiodSeconds: 5\n"` |  |
+| worker.healthProbe | string | `"exec:\n  command:\n    - bash\n    - -c\n    - |-\n      echo \"Pinging backing services\";\n      {{- if (index .Values \"mariadb-sts\").enabled }}\n      wait-for-it {{ include \"erpnext.fullname\" . }}-mariadb-sts:3306 -t 1;\n      {{- else if (index .Values \"postgresql-sts\").enabled }}\n      wait-for-it {{ include \"erpnext.fullname\" . }}-postgresql-sts:5432 -t 1;\n      {{- else if or .Values.mariadb.enabled (get .Values \"mariadb-subchart\").enabled }}\n      (\n        wait-for-it {{ .Release.Name }}-mariadb-subchart:3306 -t 0 || \\\n        wait-for-it {{ .Release.Name }}-mariadb:3306 -t 0 || \\\n        wait-for-it {{ .Release.Name }}-mariadb-subchart-primary:3306 -t 0 || \\\n        wait-for-it {{ .Release.Name }}-mariadb-primary:3306 -t 1\n      )\n      {{- else if or .Values.postgresql.enabled (get .Values \"postgresql-subchart\").enabled }}\n      (\n        wait-for-it {{ .Release.Name }}-postgresql-subchart:5432 -t 0 || \\\n        wait-for-it {{ .Release.Name }}-postgresql:5432 -t 1\n      )\n      {{- else if or .Values.postgresql.enabled (index .Values \"postgresql-subchart\").enabled }}\n      wait-for-it {{ .Release.Name }}-postgresql-subchart:5432 -t 1;\n      {{- else if .Values.dbHost }}\n      wait-for-it {{ .Values.dbHost }}:{{ .Values.dbPort }} -t 1;\n      {{- end }}\n      {{- if .Values.externalRedis.cache }}\n      wait-for-it $(echo {{ .Values.externalRedis.cache }} | sed 's,redis://,,') -t 1;\n      {{- else if (index .Values \"dragonfly-cache\").enabled }}\n      wait-for-it {{ .Release.Name }}-dragonfly-cache:6379 -t 1;\n      {{- else if (index .Values \"redis-cache\").enabled }}\n      wait-for-it {{ .Release.Name }}-redis-cache-master:6379 -t 1;\n      {{- end }}\n      {{- if .Values.externalRedis.queue }}\n      wait-for-it $(echo {{ .Values.externalRedis.queue }} | sed 's,redis://,,') -t 1;\n      {{- else if (index .Values \"dragonfly-queue\").enabled }}\n      wait-for-it {{ .Release.Name }}-dragonfly-queue:6379 -t 1;\n      {{- else if (index .Values \"redis-queue\").enabled }}\n      wait-for-it {{ .Release.Name }}-redis-queue-master:6379 -t 1;\n      {{- end }}\ninitialDelaySeconds: 15\nperiodSeconds: 5\ntimeoutSeconds: 5\n"` |  |
 | worker.long.affinity | object | `{}` |  |
 | worker.long.autoscaling.enabled | bool | `false` |  |
 | worker.long.autoscaling.maxReplicas | int | `3` |  |
@@ -359,7 +367,7 @@ Frappe framework sites are stored in shared volume that needs to be accessed by 
 
 ### Database
 
-By default, this chart deploys a built-in MariaDB `StatefulSet` that works with Frappe/ERPNext sites. A built-in PostgreSQL `StatefulSet` is also available.
+Database is not deployed by default and must be explicitly enabled.
 
 **Note:** ERPNext requires MariaDB. PostgreSQL can be used for custom Frappe apps that support it.
 
@@ -424,9 +432,9 @@ To use an external database (like Amazon RDS), disable the built-in and subchart
 
 ```yaml
 # Disable all in-cluster databases
-mariadb:
+mariadb-sts:
   enabled: false
-postgresql:
+postgresql-sts:
   enabled: false
 mariadb-subchart:
   enabled: false
@@ -447,7 +455,7 @@ To use the classic Bitnami subcharts for the database or cache/queue, disable th
 
 ```yaml
 # Disable new built-in MariaDB and DragonflyDB
-mariadb:
+mariadb-sts:
   enabled: false
 dragonfly-cache:
   enabled: false
@@ -699,25 +707,25 @@ By default this job configures service hosts automatically as per name of the he
 To manually set hosts make following changes to `custom-values.yaml`:
 
 ```yaml
-mariadb:
+# Disable in-cluster databases and caches
+mariadb-sts:
+  enabled: false
+dragonfly-cache:
+  enabled: false
+dragonfly-queue:
   enabled: false
 
+# Configure external services
 dbHost: "db-instance.123456789012.us-east-1.rds.amazonaws.com"
-
 dbPort: 3306
 
-redis-cache:
-  enabled: false
-  host: redis://redis-cache.7abc2d.0001.usw2.cache.amazonaws.com:6379
-
-redis-queue:
-  enabled: false
-  host: redis://redis-queue.7abc2d.0001.usw2.cache.amazonaws.com:6379
+externalRedis:
+  cache: "redis://redis-cache.7abc2d.0001.usw2.cache.amazonaws.com:6379"
+  queue: "redis://redis-queue.7abc2d.0001.usw2.cache.amazonaws.com:6379"
 
 jobs:
   configure:
     enabled: true
-    fixVolume: true
 ```
 
 Notes:

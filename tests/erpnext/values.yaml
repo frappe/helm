@@ -1,4 +1,4 @@
-mariadb:
+mariadb-sts:
   enabled: true
 
 persistence:

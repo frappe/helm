@@ -17,7 +17,7 @@ Install ERPNext using the `nfs` storage class.
 ```shell
 kubectl create namespace erpnext
 helm repo add frappe https://helm.erpnext.com
-helm upgrade --install frappe-bench --namespace erpnext frappe/erpnext --set persistence.worker.storageClass=nfs
+helm upgrade --install frappe-bench --namespace erpnext frappe/erpnext --set persistence.worker.storageClass=nfs --set mariadb-sts.enabled=true
 ```
 
 # Contents
@@ -89,7 +89,7 @@ Frappe framework sites are stored in shared volume that needs to be accessed by 
 
 ### Database
 
-By default, this chart deploys a built-in MariaDB `StatefulSet` that works with Frappe/ERPNext sites. A built-in PostgreSQL `StatefulSet` is also available.
+Database is not deployed by default and must be explicitly enabled.
 
 **Note:** ERPNext requires MariaDB. PostgreSQL can be used for custom Frappe apps that support it.
 
@@ -154,9 +154,9 @@ To use an external database (like Amazon RDS), disable the built-in and subchart
 
 ```yaml
 # Disable all in-cluster databases
-mariadb:
+mariadb-sts:
   enabled: false
-postgresql:
+postgresql-sts:
   enabled: false
 mariadb-subchart:
   enabled: false
@@ -177,7 +177,7 @@ To use the classic Bitnami subcharts for the database or cache/queue, disable th
 
 ```yaml
 # Disable new built-in MariaDB and DragonflyDB
-mariadb:
+mariadb-sts:
   enabled: false
 dragonfly-cache:
   enabled: false
@@ -429,25 +429,25 @@ By default this job configures service hosts automatically as per name of the he
 To manually set hosts make following changes to `custom-values.yaml`:
 
 ```yaml
-mariadb:
+# Disable in-cluster databases and caches
+mariadb-sts:
+  enabled: false
+dragonfly-cache:
+  enabled: false
+dragonfly-queue:
   enabled: false
 
+# Configure external services
 dbHost: "db-instance.123456789012.us-east-1.rds.amazonaws.com"
-
 dbPort: 3306
 
-redis-cache:
-  enabled: false
-  host: redis://redis-cache.7abc2d.0001.usw2.cache.amazonaws.com:6379
-
-redis-queue:
-  enabled: false
-  host: redis://redis-queue.7abc2d.0001.usw2.cache.amazonaws.com:6379
+externalRedis:
+  cache: "redis://redis-cache.7abc2d.0001.usw2.cache.amazonaws.com:6379"
+  queue: "redis://redis-queue.7abc2d.0001.usw2.cache.amazonaws.com:6379"
 
 jobs:
   configure:
     enabled: true
-    fixVolume: true
 ```
 
 Notes:

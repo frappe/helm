@@ -1,21 +1,21 @@
-{{- if .Values.mariadb.enabled }}
+{{- if (index .Values "mariadb-sts").enabled }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "erpnext.fullname" . }}-mariadb
+  name: {{ include "erpnext.fullname" . }}-mariadb-sts
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "erpnext.name" . }}-mariadb
+      app.kubernetes.io/name: {{ include "erpnext.name" . }}-mariadb-sts
       app.kubernetes.io/instance: {{ .Release.Name }}
-  serviceName: {{ include "erpnext.fullname" . }}-mariadb
+  serviceName: {{ include "erpnext.fullname" . }}-mariadb-sts
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "erpnext.name" . }}-mariadb
+        app.kubernetes.io/name: {{ include "erpnext.name" . }}-mariadb-sts
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       {{- with .Values.imagePullSecrets }}
@@ -26,8 +26,8 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: mariadb
-          image: "{{ .Values.mariadb.image.repository }}:{{ .Values.mariadb.image.tag }}"
-          imagePullPolicy: {{ .Values.mariadb.image.pullPolicy }}
+          image: "{{ (index .Values "mariadb-sts").image.repository }}:{{ (index .Values "mariadb-sts").image.tag }}"
+          imagePullPolicy: {{ (index .Values "mariadb-sts").image.pullPolicy }}
           env:
             - name: MARIADB_ROOT_PASSWORD
               valueFrom:
@@ -49,28 +49,28 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 10
           resources:
-            {{- toYaml .Values.mariadb.resources | nindent 12 }}
+            {{- toYaml (index .Values "mariadb-sts").resources | nindent 12 }}
           volumeMounts:
             - name: data
               mountPath: /var/lib/mysql
-            {{- if .Values.mariadb.myCnf }}
+            {{- if (index .Values "mariadb-sts").myCnf }}
             - name: config
               mountPath: /etc/mysql/conf.d/my.cnf
               subPath: my.cnf
             {{- end }}
       volumes:
-        {{- if .Values.mariadb.myCnf }}
+        {{- if (index .Values "mariadb-sts").myCnf }}
         - name: config
           configMap:
-            name: {{ include "erpnext.fullname" . }}-mariadb
+            name: {{ include "erpnext.fullname" . }}-mariadb-sts
         {{- end }}
   volumeClaimTemplates:
     - metadata:
         name: data
       spec:
         accessModes: [ "ReadWriteOnce" ]
-        storageClassName: {{ .Values.mariadb.persistence.storageClass }}
+        storageClassName: {{ (index .Values "mariadb-sts").persistence.storageClass }}
         resources:
           requests:
-            storage: {{ .Values.mariadb.persistence.size }}
+            storage: {{ (index .Values "mariadb-sts").persistence.size }}
 {{- end }}

@@ -8,12 +8,12 @@ version: 7.0.244
 appVersion: v15.83.0
 dependencies:
   - name: mariadb
-    condition: mariadb-subchart.enabled
+    condition: mariadb.enabled,mariadb-subchart.enabled
     alias: mariadb-subchart
     version: "14.x.x"
     repository: "https://charts.bitnami.com/bitnami"
   - name: postgresql
-    condition: postgresql-subchart.enabled
+    condition: postgresql.enabled,postgresql-subchart.enabled
     alias: postgresql-subchart
     version: "14.x.x"
     repository: "https://charts.bitnami.com/bitnami"

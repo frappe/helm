@@ -1,8 +1,8 @@
-{{- if .Values.mariadb.enabled }}
+{{- if (index .Values "mariadb-sts").enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "erpnext.fullname" . }}-mariadb
+  name: {{ include "erpnext.fullname" . }}-mariadb-sts
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
 spec:
@@ -14,14 +14,14 @@ spec:
       protocol: TCP
       name: mysql
   selector:
-    app.kubernetes.io/name: {{ include "erpnext.name" . }}-mariadb
+    app.kubernetes.io/name: {{ include "erpnext.name" . }}-mariadb-sts
     app.kubernetes.io/instance: {{ .Release.Name }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "erpnext.fullname" . }}-mariadb
+  name: {{ include "erpnext.fullname" . }}-mariadb-sts
 data:
   my.cnf: |
-{{ .Values.mariadb.myCnf | indent 4 }}
+{{ (index .Values "mariadb-sts").myCnf | indent 4 }}
 {{- end }}
