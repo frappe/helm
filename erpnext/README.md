@@ -56,7 +56,7 @@ The following table lists the configurable parameters of the ERPNext chart and t
 
 ### erpnext
 
-![Version: 7.0.244](https://img.shields.io/badge/Version-7.0.244-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v15.83.0](https://img.shields.io/badge/AppVersion-v15.83.0-informational?style=flat-square)
+![Version: 7.0.245](https://img.shields.io/badge/Version-7.0.245-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v15.83.1](https://img.shields.io/badge/AppVersion-v15.83.1-informational?style=flat-square)
 
 Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 
@@ -93,7 +93,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | httproute.rules[0].matches[0].pathType | string | `"PathPrefix"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"frappe/erpnext"` |  |
-| image.tag | string | `"v15.83.0"` |  |
+| image.tag | string | `"v15.83.1"` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.enabled | bool | `false` |  |
