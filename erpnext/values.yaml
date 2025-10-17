@@ -13,7 +13,7 @@
 
 image:
   repository: frappe/erpnext
-  tag: v15.83.0
+  tag: v15.83.1
   pullPolicy: IfNotPresent
 
 nginx:
@@ -295,16 +295,16 @@ httproute:
   name: ""
   annotations: {}
   parentRefs:
-    - gatewayName: "public-gateway"
-      gatewayNamespace: "networking"
+  - gatewayName: "public-gateway"
+    gatewayNamespace: "networking"
       # gatewayKind: "Gateway"
-      gatewaySectionName: "http"
+    gatewaySectionName: "http"
   hostnames:
-    - "erp.example.com"
+  - "erp.example.com"
   rules:
-    - matches:
-        - pathType: "PathPrefix"
-          path: "/"
+  - matches:
+    - pathType: "PathPrefix"
+      path: "/"
 
 jobs:
   volumePermissions:
