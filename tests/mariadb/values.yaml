@@ -1,5 +1,3 @@
-image:
-  repository: bitnamilegacy/mariadb
 architecture: standalone
 auth:
   rootPassword: "admin"

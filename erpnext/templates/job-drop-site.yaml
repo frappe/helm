@@ -26,47 +26,73 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["bash", "-c"]
         args:
-          - bench drop-site
-            --root-login=$DB_ROOT_USER
-            --root-password=$DB_ROOT_PASSWORD
-            --archived-sites-path=archived_sites
-            --no-backup
-          {{- if .Values.jobs.dropSite.forced }}
-            --force
-          {{- end }}
-            $(SITE_NAME)
+          - >
+            bench drop-site $(SITE_NAME)
+              --db-host=$DB_HOST
+              --root-login=$DB_ROOT_USER
+              --root-password=$DB_ROOT_PASSWORD
+              --archived-sites-path=archived_sites
+              --no-backup
+              {{- if .Values.jobs.dropSite.forced }} --force{{- end }}
         env:
           - name: "SITE_NAME"
             value: "{{ .Values.jobs.dropSite.siteName }}"
+          - name: DB_HOST
+            {{- if or .Values.mariadb.enabled (get .Values "mariadb-subchart").enabled }}
+            value: {{ .Release.Name }}-mariadb-subchart
+            {{- else if or .Values.postgresql.enabled (get .Values "postgresql-subchart").enabled }}
+            value: {{ .Release.Name }}-postgresql-subchart
+            {{- else if (get .Values "mariadb-sts").enabled }}
+            value: {{ include "erpnext.fullname" . }}-mariadb-sts
+            {{- else if (get .Values "postgresql-sts").enabled }}
+            value: {{ include "erpnext.fullname" . }}-postgresql-sts
+            {{- else }}
+            value: "{{ .Values.dbHost }}"
+            {{- end }}
           - name: "DB_ROOT_USER"
-            {{- if .Values.mariadb.enabled }}
+            {{- if or .Values.mariadb.enabled (get .Values "mariadb-subchart").enabled }}
             value: "root"
-            {{- else if .Values.postgresql.enabled }}
+            {{- else if or .Values.postgresql.enabled (get .Values "postgresql-subchart").enabled }}
             value: "postgres"
             {{- else }}
             value: "{{ .Values.dbRootUser }}"
             {{- end }}
           - name: "DB_ROOT_PASSWORD"
-            {{- if .Values.dbExistingSecret }}
+            {{- if (get .Values "mariadb-sts").enabled }}
+            valueFrom:
+              secretKeyRef:
+                key: mariadb-root-password
+                name: {{ template "erpnext.fullname" . }}
+            {{- else if (get .Values "postgresql-sts").enabled }}
+            valueFrom:
+              secretKeyRef:
+                key: postgres-password
+                name: {{ template "erpnext.fullname" . }}
+            {{- else if or .Values.mariadb.enabled (get .Values "mariadb-subchart").enabled }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-mariadb-subchart
+                key: mariadb-root-password
+            {{- else if or .Values.postgresql.enabled (get .Values "postgresql-subchart").enabled }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-postgresql-subchart
+                key: postgres-password
+            {{- else if .Values.dbExistingSecret }}
             valueFrom:
               secretKeyRef:
                 key: {{ .Values.dbExistingSecretPasswordKey }}
                 name: {{ .Values.dbExistingSecret }}
-            {{- else if .Values.mariadb.enabled }}
+            {{- else if .Values.dbRootPassword }}
             valueFrom:
               secretKeyRef:
-                key: mariadb-root-password
-                name: {{ .Release.Name }}-mariadb
-            {{- else if .Values.postgresql.enabled }}
-            valueFrom:
-              secretKeyRef:
-                key: postgres-password
-                name: {{ .Release.Name }}-postgresql
+                key: db-root-password
+                name: {{ template "erpnext.fullname" . }}
             {{- else }}
             valueFrom:
               secretKeyRef:
                 key:  db-root-password
-                name: {{ .Release.Name }}
+                name: {{ template "erpnext.fullname" . }}
             {{- end }}
         resources:
           {{- toYaml .Values.jobs.dropSite.resources | nindent 12 }}

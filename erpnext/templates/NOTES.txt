@@ -1,9 +1,21 @@
 Frappe/ERPNext Release deployed
 
+{{- if or .Values.mariadb.enabled (get .Values "mariadb-subchart").enabled .Values.postgresql.enabled (get .Values "postgresql-subchart").enabled (get .Values "redis-cache").enabled (get .Values "redis-queue").enabled }}
+
+DEPRECATION WARNING:
+You are using one or more of the legacy Bitnami subcharts (MariaDB, PostgreSQL, or Redis).
+Support for these subcharts is deprecated and will be removed in a future major release.
+
+We strongly recommend migrating to the new built-in components for database and caching.
+Please follow the migration guide to update your deployment:
+https://github.com/frappe/helm/blob/main/erpnext/MIGRATION.md
+{{- end }}
+
 Release Name: {{ include "erpnext.fullname" . }}
 
 Wait for the pods to start.
-To create sites and other resources, refer:
+
+To create sites and other resources, refer to the main README:
 https://github.com/frappe/helm/blob/main/erpnext/README.md
 
 Frequently Asked Questions:
