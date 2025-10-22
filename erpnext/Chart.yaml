@@ -10,22 +10,22 @@ dependencies:
   - name: mariadb
     condition: mariadb.enabled,mariadb-subchart.enabled
     alias: mariadb-subchart
-    version: "14.x.x"
+    version: "11.5.7"
     repository: "https://charts.bitnami.com/bitnami"
   - name: postgresql
     condition: postgresql.enabled,postgresql-subchart.enabled
     alias: postgresql-subchart
-    version: "14.x.x"
+    version: "12.1.6"
     repository: "https://charts.bitnami.com/bitnami"
   - name: redis
     condition: redis-cache.enabled
     alias: redis-cache
-    version: "18.x.x"
+    version: "17.15.2"
     repository: "https://charts.bitnami.com/bitnami"
   - name: redis
     condition: redis-queue.enabled
     alias: redis-queue
-    version: "18.x.x"
+    version: "17.15.2"
     repository: "https://charts.bitnami.com/bitnami"
   - name: dragonfly
     condition: dragonfly-cache.enabled
