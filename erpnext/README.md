@@ -451,6 +451,8 @@ dbExistingSecretPasswordKey: "password"
 
 ### Using Bitnami Subcharts (Legacy)
 
+> **Note for Upgrading Users**: If you are upgrading from a previous version where you used the default Bitnami subchart, you must now explicitly set `mariadb-subchart: true` (or `mariadb.enabled: true` for backward compatibility) in your `custom-values.yaml` to prevent Helm from disabling it during the upgrade.
+
 To use the classic Bitnami subcharts for the database or cache/queue, disable the new built-in components and enable the corresponding subcharts.
 
 ```yaml
@@ -779,4 +781,4 @@ The command removes all the Kubernetes components installed by the chart and del
 
 ## Migrating from Bitnami Subcharts
 
-If you are an existing user of this chart (version 7.x or older) and wish to migrate from the Bitnami subcharts to the new built-in StatefulSets for MariaDB, PostgreSQL, or DragonflyDB, please follow the detailed instructions in MIGRATION.md.
+> **IMPORTANT:** If you are upgrading from a previous version (7.x or older) and relied on the default in-cluster database (Bitnami MariaDB or PostgreSQL), you **must** read this section and the [MIGRATION.md](https://github.com/frappe/helm/blob/main/erpnext/MIGRATION.md) guide before performing `helm upgrade`. The new chart version changes the default behavior, and failing to update your `custom-values.yaml` can lead to the accidental uninstallation of your database and potential data loss.

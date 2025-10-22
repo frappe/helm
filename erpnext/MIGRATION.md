@@ -8,7 +8,7 @@ This guide outlines the **manual, two-stage process** to complete the migration 
 
 ## The Migration Process
 
-**IMPORTANT:** The final step of the migration process involves a brief period of downtime as you switch the application's database connection.
+**IMPORTANT:** The data migration and switchover process (**Stage 2**) requires application downtime. Please schedule a maintenance window before proceeding.
 
 You **must** take a complete backup before starting.
 
@@ -20,7 +20,7 @@ The migration is a two-stage process:
     You will upgrade your Helm release, which will create the new built-in database StatefulSet. Your application will continue to run, connected to the old Bitnami database.
 
 2.  **Stage 2: Data Migration and Switchover.**
-    You will manually back up your site data from the old database and restore it into the new one. Finally, you will reconfigure the chart to point the application to the new database and decommission the old one.
+    During a planned maintenance window, you will manually back up your site data from the old database and restore it into the new one. Finally, you will reconfigure the chart to point the application to the new database and decommission the old one.
 
 ---
 
@@ -45,7 +45,9 @@ The migration is a two-stage process:
 
 2.  **Update `values.yaml` for Upgrade**
 
-    Modify your `values.yaml` to enable the new built-in StatefulSet. Your existing `mariadb.enabled: true` (or `mariadb-subchart.enabled: true`) should remain, which keeps the old database running.
+    Modify your `values.yaml` to enable the new built-in StatefulSet.
+    **IMPORTANT:** If you previously relied on the default behavior for the Bitnami MariaDB subchart (i.e., you did not explicitly set `mariadb.enabled: true` in your `values.yaml`), you **must** now add `mariadb.enabled: true` to your `values.yaml` *before* upgrading. This ensures the old database remains active during the migration.
+    Your existing `mariadb.enabled: true` (or `mariadb-subchart.enabled: true`) should remain, which keeps the old database running.
 
     ```yaml
     # your-values.yaml
@@ -72,13 +74,30 @@ The migration is a two-stage process:
 
 ### Stage 2: Migrate Data and Switch Over
 
-At this point, you have two databases running. Now you will move the data and switch the application. This stage will involve downtime.
+At this point, you have two databases running. Now you will move the data and switch the application. **This entire stage will involve downtime and should be performed during a planned maintenance window.**
 
 1.  **Backup and Restore Data**
 
-    The most reliable method is to use `bench backup` and `bench restore`. You will need to `exec` into a pod to get the database credentials and run the commands. A detailed guide on this is outside the scope of this document, but it involves:
-    *   Taking a fresh backup from the old database.
-    *   Restoring that backup into the new database (`<release-name>-mariadb`).
+    The most reliable method is to use `bench backup` and `bench restore`. You will need to `exec` into a pod to run the commands.
+
+    1.  **Take a fresh backup** from your site, which is connected to the old database.
+
+    2.  **Get credentials for the new database.** The root password for the new `mariadb-sts` is stored in a Kubernetes secret. You can retrieve it with:
+        ```bash
+        kubectl get secret <release-name>-mariadb-sts -o jsonpath='{.data.mariadb-root-password}' | base64 -d
+        ```
+
+    3.  **Restore the backup into the new database.** From within a pod, run the `bench restore` command, pointing it to the new database service (`<release-name>-mariadb-sts`).
+        ```bash
+        # Example conceptual command from within a pod
+        bench --site <your-site-name> restore /path/to/your/backup.sql \
+          --with-private-files /path/to/your/private-files.tar \
+          --with-public-files /path/to/your/public-files.tar \
+          --db-host <release-name>-mariadb-sts \
+          --db-port 3306 \
+          --db-root-username root \
+          --db-root-password <password-from-secret>
+        ```
 
 2.  **Update `values.yaml` for Switchover**
 
