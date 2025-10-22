@@ -56,7 +56,7 @@ The following table lists the configurable parameters of the ERPNext chart and t
 
 ### erpnext
 
-![Version: 7.0.245](https://img.shields.io/badge/Version-7.0.245-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v15.83.1](https://img.shields.io/badge/AppVersion-v15.83.1-informational?style=flat-square)
+![Version: 7.0.247](https://img.shields.io/badge/Version-7.0.247-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v15.84.0](https://img.shields.io/badge/AppVersion-v15.84.0-informational?style=flat-square)
 
 Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 
@@ -64,10 +64,10 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami | mariadb-subchart(mariadb) | 14.x.x |
-| https://charts.bitnami.com/bitnami | postgresql-subchart(postgresql) | 14.x.x |
-| https://charts.bitnami.com/bitnami | redis-cache(redis) | 18.x.x |
-| https://charts.bitnami.com/bitnami | redis-queue(redis) | 18.x.x |
+| https://charts.bitnami.com/bitnami | mariadb-subchart(mariadb) | 11.5.7 |
+| https://charts.bitnami.com/bitnami | postgresql-subchart(postgresql) | 12.1.6 |
+| https://charts.bitnami.com/bitnami | redis-cache(redis) | 17.15.2 |
+| https://charts.bitnami.com/bitnami | redis-queue(redis) | 17.15.2 |
 | oci://ghcr.io/dragonflydb/dragonfly/helm | dragonfly-cache(dragonfly) | v1.34.2 |
 | oci://ghcr.io/dragonflydb/dragonfly/helm | dragonfly-queue(dragonfly) | v1.34.2 |
 
@@ -93,7 +93,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | httproute.rules[0].matches[0].pathType | string | `"PathPrefix"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"frappe/erpnext"` |  |
-| image.tag | string | `"v15.83.1"` |  |
+| image.tag | string | `"v15.84.0"` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.enabled | bool | `false` |  |
