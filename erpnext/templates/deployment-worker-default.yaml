@@ -5,7 +5,9 @@ metadata:
   labels:
     {{- include "erpnext.labels" . | nindent 4 }}
 spec:
+  {{- if not .Values.worker.default.autoscaling.enabled }}
   replicas: {{ .Values.worker.default.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "erpnext.name" . }}-worker-d

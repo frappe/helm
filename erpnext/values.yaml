@@ -13,7 +13,7 @@
 
 image:
   repository: frappe/erpnext
-  tag: v15.83.0
+  tag: v15.84.0
   pullPolicy: IfNotPresent
 
 nginx:
@@ -289,6 +289,22 @@ ingress:
   #  - secretName: auth-server-tls
   #    hosts:
   #      - auth-server.local
+
+httproute:
+  enabled: false
+  name: ""
+  annotations: {}
+  parentRefs:
+  - gatewayName: "public-gateway"
+    gatewayNamespace: "networking"
+      # gatewayKind: "Gateway"
+    gatewaySectionName: "http"
+  hostnames:
+  - "erp.example.com"
+  rules:
+  - matches:
+    - pathType: "PathPrefix"
+      path: "/"
 
 jobs:
   volumePermissions:
