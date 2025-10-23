@@ -31,19 +31,23 @@ You MUST explicitly set one of the following in your values.yaml:
 
 1.  RECOMMENDED FUTURE OPTION (New StatefulSet-based MariaDB):
     Use the new dedicated chart option. This is the long-term replacement.
+    New installations use this for in cluster MariaDB.
 
     mariadb-sts.enabled: true
 
-2.  EXTERNAL MARIA DB:
+2.  TEMPORARY SUPPORT OPTION (Deprecated Bitnami Subchart):
+    Only use this if you are currently using bitnami subcharts and need time to transition.
+    This WILL be removed later.
+
+    mariadb.enabled: true
+    # or
+    mariadb-subchart.enabled: true
+
+3.  EXTERNAL MARIA DB:
     If connecting to a cloud or externally managed MariaDB instance.
 
     mariadb.enabled: false
-    # Configure your external connection details below...
-
-3.  TEMPORARY SUPPORT OPTION (Deprecated Bitnami Subchart):
-    Only use this if you need time to transition. This WILL be removed later.
-
-    mariadb-subchart.enabled: true
+    # Configure your external connection details in README...
 
 -----------------------------------------------------------------------------
 
