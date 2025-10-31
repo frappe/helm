@@ -1,15 +1,21 @@
 dependencies:
-- name: redis
-  repository: https://charts.bitnami.com/bitnami
-  version: 17.15.2
-- name: redis
-  repository: https://charts.bitnami.com/bitnami
-  version: 17.15.2
 - name: mariadb
   repository: https://charts.bitnami.com/bitnami
   version: 11.5.7
 - name: postgresql
   repository: https://charts.bitnami.com/bitnami
   version: 12.1.6
-digest: sha256:dd2dee114ecbe398e50b9a83b85e865acc72a012205a41eeb990607c6bff89c0
-generated: "2023-08-12T18:17:09.911725002+05:30"
+- name: redis
+  repository: https://charts.bitnami.com/bitnami
+  version: 17.15.2
+- name: redis
+  repository: https://charts.bitnami.com/bitnami
+  version: 17.15.2
+- name: dragonfly
+  repository: oci://ghcr.io/dragonflydb/dragonfly/helm
+  version: v1.34.2
+- name: dragonfly
+  repository: oci://ghcr.io/dragonflydb/dragonfly/helm
+  version: v1.34.2
+digest: sha256:ac43ee0a6dfa267b8895e431f2a53355b75abe46e633655e1ee3f767a2a2c62a
+generated: "2025-10-22T09:04:01.739100642+05:30"
