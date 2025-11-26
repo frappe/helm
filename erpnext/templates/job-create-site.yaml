@@ -52,26 +52,28 @@ spec:
               echo "Database is reachable.";
           env:
             - name: "DB_HOST"
-              {{- if .Values.postgresql.host }}
-              value: {{ .Values.postgresql.host }}
-              {{- else if .Values.postgresql.enabled }}
-              value: {{ .Release.Name }}-postgresql
-              {{- else if .Values.mariadb.enabled }}
-              {{- if eq .Values.mariadb.architecture "replication" }}
-              value: {{ .Release.Name }}-mariadb-primary
-              {{- else }}
-              value: {{ .Release.Name }}-mariadb
-              {{- end }}
+              {{- if or .Values.mariadb.enabled (get .Values "mariadb-subchart").enabled }}
+              value: {{ .Release.Name }}-mariadb-subchart
+              {{- else if or .Values.postgresql.enabled (get .Values "postgresql-subchart").enabled }}
+              value: {{ .Release.Name }}-postgresql-subchart
+              {{- else if (get .Values "mariadb-sts").enabled }}
+              value: {{ include "erpnext.fullname" . }}-mariadb-sts
+              {{- else if (get .Values "postgresql-sts").enabled }}
+              value: {{ include "erpnext.fullname" . }}-postgresql-sts
               {{- else }}
               value: "{{ .Values.dbHost }}"
               {{- end }}
             - name: "DB_PORT"
-              {{- if .Values.dbPort }}
+              {{- if or .Values.mariadb.enabled (get .Values "mariadb-subchart").enabled }}
+              value: "3306"
+              {{- else if or .Values.postgresql.enabled (get .Values "postgresql-subchart").enabled }}
+              value: "5432"
+              {{- else if .Values.dbPort }}
               value: {{ .Values.dbPort | quote }}
-              {{- else if .Values.postgresql.enabled }}
-              value: {{ .Values.postgresql.primary.service.ports.postgresql | quote }}
-              {{- else }}
-              value: {{ .Values.mariadb.primary.service.ports.mysql | quote }}
+              {{- else if eq .Values.jobs.createSite.dbType "mariadb" }}
+              value: "3306"
+              {{- else if eq .Values.jobs.createSite.dbType "postgres" }}
+              value: "5432"
               {{- end }}
           resources:
             {{- toYaml .Values.jobs.createSite.resources | nindent 12 }}
@@ -127,57 +129,69 @@ spec:
             value: "{{ .Values.jobs.createSite.siteName }}"
           - name: "DB_TYPE"
             value: {{ .Values.jobs.createSite.dbType }}
-          - name: "DB_HOST"
-            {{- if .Values.postgresql.host }}
-            value: {{ .Values.postgresql.host }}
-            {{- else if .Values.postgresql.enabled }}
-            value: {{ .Release.Name }}-postgresql
-            {{- else if .Values.mariadb.enabled }}
-            {{- if eq .Values.mariadb.architecture "replication" }}
-            value: {{ .Release.Name }}-mariadb-primary
-            {{- else }}
-            value: {{ .Release.Name }}-mariadb
-            {{- end }}
+          - name: DB_HOST
+            {{- if or .Values.mariadb.enabled (get .Values "mariadb-subchart").enabled }}
+            value: {{ .Release.Name }}-mariadb-subchart
+            {{- else if or .Values.postgresql.enabled (get .Values "postgresql-subchart").enabled }}
+            value: {{ .Release.Name }}-postgresql-subchart
+            {{- else if (get .Values "mariadb-sts").enabled }}
+            value: {{ include "erpnext.fullname" . }}-mariadb-sts
+            {{- else if (get .Values "postgresql-sts").enabled }}
+            value: {{ include "erpnext.fullname" . }}-postgresql-sts
             {{- else }}
             value: "{{ .Values.dbHost }}"
             {{- end }}
           - name: "DB_PORT"
-            {{- if .Values.dbPort }}
+            {{- if or .Values.mariadb.enabled (get .Values "mariadb-subchart").enabled }}
+            value: "3306"
+            {{- else if or .Values.postgresql.enabled (get .Values "postgresql-subchart").enabled }}
+            value: "5432"
+            {{- else if .Values.dbPort }}
             value: {{ .Values.dbPort | quote }}
-            {{- else if .Values.postgresql.enabled }}
-            value: {{ .Values.postgresql.primary.service.ports.postgresql | quote }}
-            {{- else }}
-            value: {{ .Values.mariadb.primary.service.ports.mysql | quote }}
+            {{- else if eq .Values.jobs.createSite.dbType "mariadb" }}
+            value: "3306"
+            {{- else if eq .Values.jobs.createSite.dbType "postgresql" }}
+            value: "5432"
             {{- end }}
           - name: "DB_ROOT_USER"
-            {{- if .Values.dbRootUser }}
-            value: "{{ .Values.dbRootUser }}"
-            {{- else if .Values.postgresql.enabled }}
-            value: "postgres"
-            {{- else if .Values.mariadb.enabled }}
+            {{- if or .Values.mariadb.enabled (get .Values "mariadb-subchart").enabled }}
             value: "root"
+            {{- else if or .Values.postgresql.enabled (get .Values "postgresql-subchart").enabled }}
+            value: "postgres"
+            {{- else }}
+            value: "{{ .Values.dbRootUser }}"
             {{- end }}
           - name: "DB_ROOT_PASSWORD"
-            {{- if .Values.dbRootPassword }}
+            {{- if (get .Values "mariadb-sts").enabled }}
             valueFrom:
               secretKeyRef:
-                key:  db-root-password
-                name: {{ .Release.Name }}
+                key: mariadb-root-password
+                name: {{ template "erpnext.fullname" . }}
+            {{- else if (index .Values "postgresql-sts").enabled }}
+            valueFrom:
+              secretKeyRef:
+                key: postgresql-password
+                name: {{ template "erpnext.fullname" . }}
+            {{- else if or .Values.mariadb.enabled (get .Values "mariadb-subchart").enabled }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-mariadb-subchart
+                key: mariadb-root-password
+            {{- else if or .Values.postgresql.enabled (get .Values "postgresql-subchart").enabled }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-postgresql-subchart
+                key: postgres-password
             {{- else if .Values.dbExistingSecret }}
             valueFrom:
               secretKeyRef:
                 key: {{ .Values.dbExistingSecretPasswordKey }}
                 name: {{ .Values.dbExistingSecret }}
-            {{- else if .Values.postgresql.enabled }}
+            {{- else if .Values.dbRootPassword }}
             valueFrom:
               secretKeyRef:
-                key: postgres-password
-                name: {{ .Release.Name }}-postgresql
-            {{- else if .Values.mariadb.enabled }}
-            valueFrom:
-              secretKeyRef:
-                key: mariadb-root-password
-                name: {{ .Release.Name }}-mariadb
+                key: db-root-password
+                name: {{ template "erpnext.fullname" . }}
             {{- end }}
           - name: "ADMIN_PASSWORD"
             {{- if .Values.jobs.createSite.adminExistingSecret }}
