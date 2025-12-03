@@ -1,16 +1,5 @@
-mariadb:
-  enabled: false
-redis-cache:
-  image:
-      repository: bitnamilegacy/redis
-redis-queue:
-  image:
-      repository: bitnamilegacy/redis
-dbHost: mariadb.mariadb.svc.cluster.local
-dbRootUser: root
-dbRootPassword: admin
-# For backward compatibility only, use dbHost
-mariadbHost: mariadb.mariadb.svc.cluster.local
+mariadb-sts:
+  enabled: true
 
 persistence:
   worker:
