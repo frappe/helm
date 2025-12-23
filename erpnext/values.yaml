@@ -18,7 +18,7 @@ externalRedis:
 
 image:
   repository: frappe/erpnext
-  tag: v15.92.5
+  tag: v15.93.0
   pullPolicy: IfNotPresent
 
 nginx:
