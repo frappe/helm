@@ -2,6 +2,48 @@ apiVersion: v1
 entries:
   erpnext:
   - apiVersion: v2
+    appVersion: v15.94.0
+    created: "2026-01-07T05:24:39.928928091Z"
+    dependencies:
+    - alias: mariadb-subchart
+      condition: mariadb.enabled,mariadb-subchart.enabled
+      name: mariadb
+      repository: https://charts.bitnami.com/bitnami
+      version: 11.5.7
+    - alias: postgresql-subchart
+      condition: postgresql.enabled,postgresql-subchart.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 12.1.6
+    - alias: redis-cache
+      condition: redis-cache.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.15.2
+    - alias: redis-queue
+      condition: redis-queue.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.15.2
+    - alias: dragonfly-cache
+      condition: dragonfly-cache.enabled
+      name: dragonfly
+      repository: oci://ghcr.io/dragonflydb/dragonfly/helm
+      version: v1.34.2
+    - alias: dragonfly-queue
+      condition: dragonfly-queue.enabled
+      name: dragonfly
+      repository: oci://ghcr.io/dragonflydb/dragonfly/helm
+      version: v1.34.2
+    description: Kubernetes Helm Chart for the latest stable ERPNext branch
+    digest: b91831056f5873d8ffe06ad469f64950b7074ebd2a425e4996a4c72c2046d645
+    icon: https://raw.githubusercontent.com/frappe/erpnext/develop/erpnext/public/images/erpnext-logo.png
+    name: erpnext
+    type: application
+    urls:
+    - https://helm.erpnext.com/erpnext-8.0.13.tgz
+    version: 8.0.13
+  - apiVersion: v2
     appVersion: v15.93.2
     created: "2026-01-03T10:58:03.33153178Z"
     dependencies:
@@ -16746,4 +16788,4 @@ entries:
     urls:
     - https://helm.erpnext.com/erpnext-1.0.0.tgz
     version: 1.0.0
-generated: "2026-01-03T10:58:03.319078963Z"
+generated: "2026-01-07T05:24:39.916005524Z"
