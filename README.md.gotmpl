@@ -101,9 +101,9 @@ Recommended alternatives as per priority:
 
 ### Managed Redis
 
-By default, this chart deploys two DragonflyDB instances, one for caching and one for the queue. DragonflyDB is used as an in-memory database, and having it in the cluster provides the lowest latency.
+By default, this chart deploys two Valkey instances, one for caching and one for the queue. Valkey is used as an in-memory database, and having it in the cluster provides the lowest latency.
 
-For backward compatibility or other requirements, the Bitnami Redis subchart can be enabled instead. See the Using Bitnami Subcharts (Legacy) section.
+For backward compatibility or other requirements, DragonflyDB or the Bitnami Redis subchart can be enabled instead. See the Using Bitnami Subcharts (Legacy) section.
 
 Alternatively, any managed Redis-compatible service can be used by providing the connection details in your `values.yaml`.
 
@@ -178,12 +178,12 @@ dbExistingSecretPasswordKey: "password"
 To use the classic Bitnami subcharts for the database or cache/queue, disable the new built-in components and enable the corresponding subcharts.
 
 ```yaml
-# Disable new built-in MariaDB and DragonflyDB
+# Disable new built-in MariaDB and Valkey
 mariadb-sts:
   enabled: false
-dragonfly-cache:
+valkey-cache:
   enabled: false
-dragonfly-queue:
+valkey-queue:
   enabled: false
 # Enable and configure classic Bitnami subcharts
 mariadb-subchart:
@@ -434,9 +434,9 @@ To manually set hosts make following changes to `custom-values.yaml`:
 # Disable in-cluster databases and caches
 mariadb-sts:
   enabled: false
-dragonfly-cache:
+valkey-cache:
   enabled: false
-dragonfly-queue:
+valkey-queue:
   enabled: false
 
 # Configure external services

@@ -17,5 +17,11 @@ dependencies:
 - name: dragonfly
   repository: oci://ghcr.io/dragonflydb/dragonfly/helm
   version: v1.34.2
-digest: sha256:ac43ee0a6dfa267b8895e431f2a53355b75abe46e633655e1ee3f767a2a2c62a
-generated: "2025-10-22T09:04:01.739100642+05:30"
+- name: valkey
+  repository: https://valkey-io.github.io/valkey-helm
+  version: 0.9.3
+- name: valkey
+  repository: https://valkey-io.github.io/valkey-helm
+  version: 0.9.3
+digest: sha256:385ed6a17002451098bf5843447ae3ae92fc171473fe53bd8159e0d3db3f0280
+generated: "2026-01-25T10:46:54.985349932+05:30"
