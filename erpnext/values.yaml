@@ -228,7 +228,7 @@ worker:
           {{- if .Values.externalRedis.cache }}
           wait-for-it $(echo {{ .Values.externalRedis.cache }} | sed 's,redis://,,') -t 1;
           {{- else if (index .Values "valkey-cache").enabled }}
-          wait-for-it {{ .Release.Name }}-valkey-cache-master:6379 -t 1;
+          wait-for-it {{ .Release.Name }}-valkey-cache:6379 -t 1;
           {{- else if (index .Values "dragonfly-cache").enabled }}
           wait-for-it {{ .Release.Name }}-dragonfly-cache:6379 -t 1;
           {{- else if (index .Values "redis-cache").enabled }}
@@ -237,7 +237,7 @@ worker:
           {{- if .Values.externalRedis.queue }}
           wait-for-it $(echo {{ .Values.externalRedis.queue }} | sed 's,redis://,,') -t 1;
           {{- else if (index .Values "valkey-queue").enabled }}
-          wait-for-it {{ .Release.Name }}-valkey-queue-master:6379 -t 1;
+          wait-for-it {{ .Release.Name }}-valkey-queue:6379 -t 1;
           {{- else if (index .Values "dragonfly-queue").enabled }}
           wait-for-it {{ .Release.Name }}-dragonfly-queue:6379 -t 1;
           {{- else if (index .Values "redis-queue").enabled }}
