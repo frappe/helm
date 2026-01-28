@@ -17,6 +17,7 @@ spec:
       labels:
         app.kubernetes.io/name: {{ include "erpnext.name" . }}-worker-d
         app.kubernetes.io/instance: {{ .Release.Name }}-worker-d
+        app.kubernetes.io/app: frappe
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
