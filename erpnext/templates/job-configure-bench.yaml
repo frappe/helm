@@ -91,6 +91,9 @@ spec:
           {{- if .Values.externalRedis.cache }}
           - name: REDIS_CACHE
             value: {{ .Values.externalRedis.cache | quote }}
+          {{- else if (get .Values "valkey-cache").enabled }}
+          - name: REDIS_CACHE
+            value: redis://{{ .Release.Name }}-valkey-cache:6379
           {{- else if (get .Values "dragonfly-cache").enabled }}
           - name: REDIS_CACHE
             value: redis://{{ .Release.Name }}-dragonfly-cache:6379
@@ -101,6 +104,9 @@ spec:
           {{- if .Values.externalRedis.queue }}
           - name: REDIS_QUEUE
             value: {{ .Values.externalRedis.queue | quote }}
+          {{- else if (get .Values "valkey-queue").enabled }}
+          - name: REDIS_QUEUE
+            value: redis://{{ .Release.Name }}-valkey-queue:6379
           {{- else if (get .Values "dragonfly-queue").enabled }}
           - name: REDIS_QUEUE
             value: redis://{{ .Release.Name }}-dragonfly-queue:6379

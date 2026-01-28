@@ -56,7 +56,7 @@ The following table lists the configurable parameters of the ERPNext chart and t
 
 ### erpnext
 
-![Version: 7.0.261](https://img.shields.io/badge/Version-7.0.261-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v15.91.0](https://img.shields.io/badge/AppVersion-v15.91.0-informational?style=flat-square)
+![Version: 8.0.17](https://img.shields.io/badge/Version-8.0.17-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v16.1.0](https://img.shields.io/badge/AppVersion-v16.1.0-informational?style=flat-square)
 
 Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 
@@ -68,6 +68,8 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | https://charts.bitnami.com/bitnami | postgresql-subchart(postgresql) | 12.1.6 |
 | https://charts.bitnami.com/bitnami | redis-cache(redis) | 17.15.2 |
 | https://charts.bitnami.com/bitnami | redis-queue(redis) | 17.15.2 |
+| https://valkey-io.github.io/valkey-helm | valkey-cache(valkey) | 0.9.3 |
+| https://valkey-io.github.io/valkey-helm | valkey-queue(valkey) | 0.9.3 |
 | oci://ghcr.io/dragonflydb/dragonfly/helm | dragonfly-cache(dragonfly) | v1.34.2 |
 | oci://ghcr.io/dragonflydb/dragonfly/helm | dragonfly-queue(dragonfly) | v1.34.2 |
 
@@ -75,8 +77,8 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| dragonfly-cache.enabled | bool | `true` |  |
-| dragonfly-queue.enabled | bool | `true` |  |
+| dragonfly-cache.enabled | bool | `false` |  |
+| dragonfly-queue.enabled | bool | `false` |  |
 | dragonfly-queue.storage.enabled | bool | `false` |  |
 | dragonfly-queue.storage.size | string | `"8Gi"` |  |
 | externalRedis.cache | string | `""` |  |
@@ -93,7 +95,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | httproute.rules[0].matches[0].pathType | string | `"PathPrefix"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"frappe/erpnext"` |  |
-| image.tag | string | `"v15.91.0"` |  |
+| image.tag | string | `"v16.1.0"` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.enabled | bool | `false` |  |
@@ -256,6 +258,12 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | socketio.service.type | string | `"ClusterIP"` |  |
 | socketio.sidecars | list | `[]` |  |
 | socketio.tolerations | list | `[]` |  |
+| valkey-cache.enabled | bool | `true` |  |
+| valkey-cache.image.repository | string | `"valkey/valkey"` |  |
+| valkey-cache.image.tag | string | `"7.2"` |  |
+| valkey-queue.enabled | bool | `true` |  |
+| valkey-queue.image.repository | string | `"valkey/valkey"` |  |
+| valkey-queue.image.tag | string | `"7.2"` |  |
 | worker.default.affinity | object | `{}` |  |
 | worker.default.autoscaling.enabled | bool | `false` |  |
 | worker.default.autoscaling.maxReplicas | int | `3` |  |
@@ -298,7 +306,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | worker.gunicorn.service.type | string | `"ClusterIP"` |  |
 | worker.gunicorn.sidecars | list | `[]` |  |
 | worker.gunicorn.tolerations | list | `[]` |  |
-| worker.healthProbe | string | `"exec:\n  command:\n    - bash\n    - -c\n    - |-\n      echo \"Pinging backing services\";\n      {{- if (index .Values \"mariadb-sts\").enabled }}\n      wait-for-it {{ include \"erpnext.fullname\" . }}-mariadb-sts:3306 -t 1;\n      {{- else if (index .Values \"postgresql-sts\").enabled }}\n      wait-for-it {{ include \"erpnext.fullname\" . }}-postgresql-sts:5432 -t 1;\n      {{- else if or .Values.mariadb.enabled (get .Values \"mariadb-subchart\").enabled }}\n      (\n        wait-for-it {{ .Release.Name }}-mariadb-subchart:3306 -t 0 || \\\n        wait-for-it {{ .Release.Name }}-mariadb:3306 -t 0 || \\\n        wait-for-it {{ .Release.Name }}-mariadb-subchart-primary:3306 -t 0 || \\\n        wait-for-it {{ .Release.Name }}-mariadb-primary:3306 -t 1\n      )\n      {{- else if or .Values.postgresql.enabled (get .Values \"postgresql-subchart\").enabled }}\n      (\n        wait-for-it {{ .Release.Name }}-postgresql-subchart:5432 -t 0 || \\\n        wait-for-it {{ .Release.Name }}-postgresql:5432 -t 1\n      )\n      {{- else if or .Values.postgresql.enabled (index .Values \"postgresql-subchart\").enabled }}\n      wait-for-it {{ .Release.Name }}-postgresql-subchart:5432 -t 1;\n      {{- else if .Values.dbHost }}\n      wait-for-it {{ .Values.dbHost }}:{{ .Values.dbPort }} -t 1;\n      {{- end }}\n      {{- if .Values.externalRedis.cache }}\n      wait-for-it $(echo {{ .Values.externalRedis.cache }} | sed 's,redis://,,') -t 1;\n      {{- else if (index .Values \"dragonfly-cache\").enabled }}\n      wait-for-it {{ .Release.Name }}-dragonfly-cache:6379 -t 1;\n      {{- else if (index .Values \"redis-cache\").enabled }}\n      wait-for-it {{ .Release.Name }}-redis-cache-master:6379 -t 1;\n      {{- end }}\n      {{- if .Values.externalRedis.queue }}\n      wait-for-it $(echo {{ .Values.externalRedis.queue }} | sed 's,redis://,,') -t 1;\n      {{- else if (index .Values \"dragonfly-queue\").enabled }}\n      wait-for-it {{ .Release.Name }}-dragonfly-queue:6379 -t 1;\n      {{- else if (index .Values \"redis-queue\").enabled }}\n      wait-for-it {{ .Release.Name }}-redis-queue-master:6379 -t 1;\n      {{- end }}\ninitialDelaySeconds: 15\nperiodSeconds: 5\ntimeoutSeconds: 5\n"` |  |
+| worker.healthProbe | string | `"exec:\n  command:\n    - bash\n    - -c\n    - |-\n      echo \"Pinging backing services\";\n      {{- if (index .Values \"mariadb-sts\").enabled }}\n      wait-for-it {{ include \"erpnext.fullname\" . }}-mariadb-sts:3306 -t 1;\n      {{- else if (index .Values \"postgresql-sts\").enabled }}\n      wait-for-it {{ include \"erpnext.fullname\" . }}-postgresql-sts:5432 -t 1;\n      {{- else if or .Values.mariadb.enabled (get .Values \"mariadb-subchart\").enabled }}\n      (\n        wait-for-it {{ .Release.Name }}-mariadb-subchart:3306 -t 0 || \\\n        wait-for-it {{ .Release.Name }}-mariadb:3306 -t 0 || \\\n        wait-for-it {{ .Release.Name }}-mariadb-subchart-primary:3306 -t 0 || \\\n        wait-for-it {{ .Release.Name }}-mariadb-primary:3306 -t 1\n      )\n      {{- else if or .Values.postgresql.enabled (get .Values \"postgresql-subchart\").enabled }}\n      (\n        wait-for-it {{ .Release.Name }}-postgresql-subchart:5432 -t 0 || \\\n        wait-for-it {{ .Release.Name }}-postgresql:5432 -t 1\n      )\n      {{- else if or .Values.postgresql.enabled (index .Values \"postgresql-subchart\").enabled }}\n      wait-for-it {{ .Release.Name }}-postgresql-subchart:5432 -t 1;\n      {{- else if .Values.dbHost }}\n      wait-for-it {{ .Values.dbHost }}:{{ .Values.dbPort }} -t 1;\n      {{- end }}\n      {{- if .Values.externalRedis.cache }}\n      wait-for-it $(echo {{ .Values.externalRedis.cache }} | sed 's,redis://,,') -t 1;\n      {{- else if (index .Values \"valkey-cache\").enabled }}\n      wait-for-it {{ .Release.Name }}-valkey-cache:6379 -t 1;\n      {{- else if (index .Values \"dragonfly-cache\").enabled }}\n      wait-for-it {{ .Release.Name }}-dragonfly-cache:6379 -t 1;\n      {{- else if (index .Values \"redis-cache\").enabled }}\n      wait-for-it {{ .Release.Name }}-redis-cache-master:6379 -t 1;\n      {{- end }}\n      {{- if .Values.externalRedis.queue }}\n      wait-for-it $(echo {{ .Values.externalRedis.queue }} | sed 's,redis://,,') -t 1;\n      {{- else if (index .Values \"valkey-queue\").enabled }}\n      wait-for-it {{ .Release.Name }}-valkey-queue:6379 -t 1;\n      {{- else if (index .Values \"dragonfly-queue\").enabled }}\n      wait-for-it {{ .Release.Name }}-dragonfly-queue:6379 -t 1;\n      {{- else if (index .Values \"redis-queue\").enabled }}\n      wait-for-it {{ .Release.Name }}-redis-queue-master:6379 -t 1;\n      {{- end }}\ninitialDelaySeconds: 15\nperiodSeconds: 5\ntimeoutSeconds: 5\n"` |  |
 | worker.long.affinity | object | `{}` |  |
 | worker.long.autoscaling.enabled | bool | `false` |  |
 | worker.long.autoscaling.maxReplicas | int | `3` |  |
@@ -379,9 +387,9 @@ Recommended alternatives as per priority:
 
 ### Managed Redis
 
-By default, this chart deploys two DragonflyDB instances, one for caching and one for the queue. DragonflyDB is used as an in-memory database, and having it in the cluster provides the lowest latency.
+By default, this chart deploys two Valkey instances, one for caching and one for the queue. Valkey is used as an in-memory database, and having it in the cluster provides the lowest latency.
 
-For backward compatibility or other requirements, the Bitnami Redis subchart can be enabled instead. See the Using Bitnami Subcharts (Legacy) section.
+For backward compatibility or other requirements, DragonflyDB or the Bitnami Redis subchart can be enabled instead. See the Using Bitnami Subcharts (Legacy) section.
 
 Alternatively, any managed Redis-compatible service can be used by providing the connection details in your `values.yaml`.
 
@@ -456,12 +464,12 @@ dbExistingSecretPasswordKey: "password"
 To use the classic Bitnami subcharts for the database or cache/queue, disable the new built-in components and enable the corresponding subcharts.
 
 ```yaml
-# Disable new built-in MariaDB and DragonflyDB
+# Disable new built-in MariaDB and Valkey
 mariadb-sts:
   enabled: false
-dragonfly-cache:
+valkey-cache:
   enabled: false
-dragonfly-queue:
+valkey-queue:
   enabled: false
 # Enable and configure classic Bitnami subcharts
 mariadb-subchart:
@@ -712,9 +720,9 @@ To manually set hosts make following changes to `custom-values.yaml`:
 # Disable in-cluster databases and caches
 mariadb-sts:
   enabled: false
-dragonfly-cache:
+valkey-cache:
   enabled: false
-dragonfly-queue:
+valkey-queue:
   enabled: false
 
 # Configure external services
