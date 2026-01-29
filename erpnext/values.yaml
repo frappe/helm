@@ -18,7 +18,7 @@ externalRedis:
 
 image:
   repository: frappe/erpnext
-  tag: v16.1.0
+  tag: v16.3.0
   pullPolicy: IfNotPresent
 
 nginx:
@@ -227,6 +227,8 @@ worker:
           {{- end }}
           {{- if .Values.externalRedis.cache }}
           wait-for-it $(echo {{ .Values.externalRedis.cache }} | sed 's,redis://,,') -t 1;
+          {{- else if (index .Values "valkey-cache").enabled }}
+          wait-for-it {{ .Release.Name }}-valkey-cache:6379 -t 1;
           {{- else if (index .Values "dragonfly-cache").enabled }}
           wait-for-it {{ .Release.Name }}-dragonfly-cache:6379 -t 1;
           {{- else if (index .Values "redis-cache").enabled }}
@@ -234,6 +236,8 @@ worker:
           {{- end }}
           {{- if .Values.externalRedis.queue }}
           wait-for-it $(echo {{ .Values.externalRedis.queue }} | sed 's,redis://,,') -t 1;
+          {{- else if (index .Values "valkey-queue").enabled }}
+          wait-for-it {{ .Release.Name }}-valkey-queue:6379 -t 1;
           {{- else if (index .Values "dragonfly-queue").enabled }}
           wait-for-it {{ .Release.Name }}-dragonfly-queue:6379 -t 1;
           {{- else if (index .Values "redis-queue").enabled }}
@@ -464,14 +468,18 @@ mariadb:
 dragonfly-cache:
   # Using DragonflyDB: https://www.dragonflydb.io/
   # https://github.com/dragonflydb/dragonfly/tree/main/helm/dragonfly
-  enabled: true
+  # To enable DragonflyDB for cache, set enabled to true
+  # and set valkey-cache.enabled to false.
+  enabled: false
   # host: ""
   # No persistence for cache
 
 dragonfly-queue:
   # Using DragonflyDB: https://www.dragonflydb.io/
   # https://github.com/dragonflydb/dragonfly/tree/main/helm/dragonfly
-  enabled: true
+  # To enable DragonflyDB for queue, set enabled to true
+  # and set valkey-queue.enabled to false.
+  enabled: false
   # host: ""
   # Persistence can be enabled for queue
   storage:
@@ -523,3 +531,21 @@ redis-queue:
     repository: bitnamilegacy/redis
     tag: "7.0"
   # Values passed to the bitnami/redis subchart can be defined here.
+
+valkey-cache:
+  # To enable the official Valkey subchart for cache, set enabled to true
+  # and set dragonfly-cache.enabled and redis-cache.enabled to false.
+  enabled: true
+  image:
+    repository: valkey/valkey
+    tag: "7.2" # check for latest version
+  # Values passed to the valkey/valkey subchart can be defined here.
+
+valkey-queue:
+  # To enable the official Valkey subchart for queue, set enabled to true
+  # and set dragonfly-queue.enabled and redis-queue.enabled to false.
+  enabled: true
+  image:
+    repository: valkey/valkey
+    tag: "7.2" # check for latest version
+  # Values passed to the valkey/valkey subchart can be defined here.

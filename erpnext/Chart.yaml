@@ -4,8 +4,8 @@ description: Kubernetes Helm Chart for the latest stable ERPNext branch
 icon: 
   https://raw.githubusercontent.com/frappe/erpnext/develop/erpnext/public/images/erpnext-logo.png
 type: application
-version: 8.0.17
-appVersion: v16.1.0
+version: 8.0.19
+appVersion: v16.3.0
 dependencies:
 - name: mariadb
   condition: mariadb.enabled,mariadb-subchart.enabled
@@ -37,3 +37,13 @@ dependencies:
   alias: dragonfly-queue
   version: "v1.34.2"
   repository: "oci://ghcr.io/dragonflydb/dragonfly/helm"
+- name: valkey
+  condition: valkey-cache.enabled
+  alias: valkey-cache
+  version: "0.9.3"
+  repository: "https://valkey-io.github.io/valkey-helm"
+- name: valkey
+  condition: valkey-queue.enabled
+  alias: valkey-queue
+  version: "0.9.3"
+  repository: "https://valkey-io.github.io/valkey-helm"
