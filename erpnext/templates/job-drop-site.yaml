@@ -27,13 +27,7 @@ spec:
         command: ["bash", "-c"]
         args:
           - >
-            bench drop-site $(SITE_NAME)
-              --db-host=$DB_HOST
-              --root-login=$DB_ROOT_USER
-              --root-password=$DB_ROOT_PASSWORD
-              --archived-sites-path=archived_sites
-              --no-backup
-              {{- if .Values.jobs.dropSite.forced }} --force{{- end }}
+            bench drop-site $(SITE_NAME) --root-login=$DB_ROOT_USER --root-password=$DB_ROOT_PASSWORD --archived-sites-path=archived_sites --no-backup {{- if .Values.jobs.dropSite.forced }} --force{{- end }}
         env:
           - name: "SITE_NAME"
             value: "{{ .Values.jobs.dropSite.siteName }}"

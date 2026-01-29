@@ -27,12 +27,7 @@ spec:
         command: ["bash", "-c"]
         args:
           - >
-            bench --site=$(SITE_NAME)
-          {{- if .Values.jobs.backup.withFiles }}
-            backup --with-files;
-          {{- else }}
-            backup;
-          {{- end }}
+            bench --site=$(SITE_NAME) {{- if .Values.jobs.backup.withFiles }} backup --with-files; {{- else }} backup; {{- end }}
         env:
           - name: "SITE_NAME"
             value: "{{ .Values.jobs.backup.siteName }}"
