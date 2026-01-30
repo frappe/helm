@@ -350,10 +350,21 @@ jobs:
     envVars: []
     command: []
     args: []
+  # ------------------------------------------------------------------------------
+  # Site creation jobs
+  #
+  # IMPORTANT:
+  # - Only ONE site-creation job should be enabled at a time.
+  # - If BOTH `createSite.enabled` and `createMultipleSite.enabled` are set to true,
+  #   then `createSite` will take precedence and `createMultipleSite` will be ignored.
+  #
+  # Backward compatibility:
+  # - `createSite` is enabled by default to preserve existing behavior.
+  # ------------------------------------------------------------------------------
 
   createSite:
     # jobName: ""
-    enabled: false
+    enabled: true
     forceCreate: false
     siteName: "erp.cluster.local"
     adminPassword: "changeit"
@@ -361,6 +372,28 @@ jobs:
     adminExistingSecretKey: "password"
     installApps:
     - "erpnext"
+    dbType: "mariadb"
+    backoffLimit: 0
+    resources: {}
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+
+  createMultipleSites:
+    # jobName: ""
+    enabled: false
+    forceCreate: false
+    sites:
+      - name: "erp.cluster.local"
+        installApps:
+          - "erpnext"
+      # - name: "accounts.cluster.local"
+      #   installApps:
+      #     - "erpnext"
+      #     - "payments"
+    adminPassword: "changeit"
+    adminExistingSecret: ""
+    adminExistingSecretKey: "password"
     dbType: "mariadb"
     backoffLimit: 0
     resources: {}

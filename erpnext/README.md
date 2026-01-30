@@ -36,13 +36,14 @@ helm upgrade --install frappe-bench --namespace erpnext frappe/erpnext --set per
 5. [Installation](#installation)
 6. [Generate Additional Resources](#generate-additional-resources)
     1. [Create new site](#create-new-site)
-    2. [Create Ingress](#create-ingress)
-    3. [Create HTTPRoute](#create-httproute)
-    4. [Backup site](#backup-site)
-    5. [Migrate site](#migrate-site)
-    6. [Drop Site](#drop-site)
-    7. [Configure service hosts](#configure-service-hosts)
-    8. [Fix volume permission](#fix-volume-permission)
+    2. [Create multiple new site](#create-multiple-sites)
+    3. [Create Ingress](#create-ingress)
+    4. [Create HTTPRoute](#create-httproute)
+    5. [Backup site](#backup-site)
+    6. [Migrate site](#migrate-site)
+    7. [Drop Site](#drop-site)
+    8. [Configure service hosts](#configure-service-hosts)
+    9. [Fix volume permission](#fix-volume-permission)
 7. [Uninstall the Chart](#uninstall-the-chart)
 8. [Migrating from Bitnami Subcharts](#migrating-from-bitnami-subcharts)
 
@@ -56,7 +57,7 @@ The following table lists the configurable parameters of the ERPNext chart and t
 
 ### erpnext
 
-![Version: 8.0.17](https://img.shields.io/badge/Version-8.0.17-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v16.1.0](https://img.shields.io/badge/AppVersion-v16.1.0-informational?style=flat-square)
+![Version: 8.0.19](https://img.shields.io/badge/Version-8.0.19-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v16.3.0](https://img.shields.io/badge/AppVersion-v16.3.0-informational?style=flat-square)
 
 Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 
@@ -95,7 +96,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | httproute.rules[0].matches[0].pathType | string | `"PathPrefix"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"frappe/erpnext"` |  |
-| image.tag | string | `"v16.1.0"` |  |
+| image.tag | string | `"v16.3.0"` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.enabled | bool | `false` |  |
@@ -121,13 +122,26 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | jobs.configure.nodeSelector | object | `{}` |  |
 | jobs.configure.resources | object | `{}` |  |
 | jobs.configure.tolerations | list | `[]` |  |
+| jobs.createMultipleSites.adminExistingSecret | string | `""` |  |
+| jobs.createMultipleSites.adminExistingSecretKey | string | `"password"` |  |
+| jobs.createMultipleSites.adminPassword | string | `"changeit"` |  |
+| jobs.createMultipleSites.affinity | object | `{}` |  |
+| jobs.createMultipleSites.backoffLimit | int | `0` |  |
+| jobs.createMultipleSites.dbType | string | `"mariadb"` |  |
+| jobs.createMultipleSites.enabled | bool | `false` |  |
+| jobs.createMultipleSites.forceCreate | bool | `false` |  |
+| jobs.createMultipleSites.nodeSelector | object | `{}` |  |
+| jobs.createMultipleSites.resources | object | `{}` |  |
+| jobs.createMultipleSites.sites[0].installApps[0] | string | `"erpnext"` |  |
+| jobs.createMultipleSites.sites[0].name | string | `"erp.cluster.local"` |  |
+| jobs.createMultipleSites.tolerations | list | `[]` |  |
 | jobs.createSite.adminExistingSecret | string | `""` |  |
 | jobs.createSite.adminExistingSecretKey | string | `"password"` |  |
 | jobs.createSite.adminPassword | string | `"changeit"` |  |
 | jobs.createSite.affinity | object | `{}` |  |
 | jobs.createSite.backoffLimit | int | `0` |  |
 | jobs.createSite.dbType | string | `"mariadb"` |  |
-| jobs.createSite.enabled | bool | `false` |  |
+| jobs.createSite.enabled | bool | `true` |  |
 | jobs.createSite.forceCreate | bool | `false` |  |
 | jobs.createSite.installApps[0] | string | `"erpnext"` |  |
 | jobs.createSite.nodeSelector | object | `{}` |  |

@@ -39,6 +39,7 @@ Jobs:
 - `vol-fix` job to fix volume permissions, changes the `uid` and `gid` to `1000:1000`.
 - `bench-conf` job to configure db host, redis hosts and socketio port.
 - `create-site` job to create new site.
+- `create-multiple-sites` job to create multiple new sites.
 - `drop-site` job to drop existing site.
 - `backup-push` job to backup and optionally push backup to S3 for existing site.
 - `migrate` job to migrate existing site.
