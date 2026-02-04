@@ -364,7 +364,7 @@ jobs:
 
   createSite:
     # jobName: ""
-    enabled: true
+    enabled: false
     forceCreate: false
     siteName: "erp.cluster.local"
     adminPassword: "changeit"

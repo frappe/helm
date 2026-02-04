@@ -152,7 +152,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | jobs.createSite.affinity | object | `{}` |  |
 | jobs.createSite.backoffLimit | int | `0` |  |
 | jobs.createSite.dbType | string | `"mariadb"` |  |
-| jobs.createSite.enabled | bool | `true` |  |
+| jobs.createSite.enabled | bool | `false` |  |
 | jobs.createSite.forceCreate | bool | `false` |  |
 | jobs.createSite.installApps[0] | string | `"erpnext"` |  |
 | jobs.createSite.nodeSelector | object | `{}` |  |
