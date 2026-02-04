@@ -40,12 +40,12 @@ Jobs:
 - `bench-conf` job to configure db host, redis hosts and socketio port.
 - `create-site` job to create new site.
 - `create-multiple-sites` job to create multiple new sites.
-- `drop-multiple-sites` job to create multiple new sites.
-- `backup-multiple-sites` job to create multiple new sites.
-- `migrate-multiple-sites` job to create multiple new sites.
 - `drop-site` job to drop existing site.
+- `drop-multiple-sites` job to create multiple new sites.
 - `backup-push` job to backup and optionally push backup to S3 for existing site.
+- `backup-multiple-sites` job to create multiple new sites.
 - `migrate` job to migrate existing site.
+- `migrate-multiple-sites` job to create multiple new sites.
 - `custom` job to run custom additional commands and configuration.
 
 PVC:
