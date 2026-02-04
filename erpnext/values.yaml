@@ -410,6 +410,7 @@ jobs:
   #
   # Backward compatibility:
   # - `dropSite` remains the default behavior.
+  # - `dropMultipleSites` is an additive, non-breaking feature.
   # ------------------------------------------------------------------------------
 
   dropSite:
@@ -493,10 +494,9 @@ jobs:
   #
   # Backward compatibility:
   # - `migrate` remains unchanged for existing users.
-  # - `migrateMultipleSites` is additive.
+  # - `migrateMultipleSites` is additive, non-breaking feature.
   #
   # This applies to both `migrate` and `migrateMultipleSites`,
-  # including during migration from single-site to multi-site workflows.
   # ------------------------------------------------------------------------------
 
   migrate:
