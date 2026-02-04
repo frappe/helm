@@ -91,23 +91,7 @@ spec:
           - >
             set -x;
 
-            bench_output=$(bench new-site ${SITE_NAME} \
-              --no-mariadb-socket \
-              --db-type=${DB_TYPE} \
-              --db-host=${DB_HOST} \
-              --db-port=${DB_PORT} \
-              --admin-password=${ADMIN_PASSWORD} \
-              --mariadb-root-username=${DB_ROOT_USER} \
-              --mariadb-root-password=${DB_ROOT_PASSWORD} \
-            {{- if .Values.jobs.createSite.installApps }}
-              {{- range .Values.jobs.createSite.installApps }}
-              --install-app={{ . }} \
-              {{- end }}
-            {{- end }}
-            {{- if .Values.jobs.createSite.forceCreate }}
-              --force \
-            {{- end }}
-             | tee /dev/stderr);
+            bench_output=$(bench new-site ${SITE_NAME} --no-mariadb-socket --db-type=${DB_TYPE} --db-host=${DB_HOST} --db-port=${DB_PORT} --admin-password=${ADMIN_PASSWORD} --mariadb-root-username=${DB_ROOT_USER} --mariadb-root-password=${DB_ROOT_PASSWORD} {{- if .Values.jobs.createSite.installApps }} {{- range .Values.jobs.createSite.installApps }} --install-app={{ . }} {{- end }} {{- end }} {{- if .Values.jobs.createSite.forceCreate }} --force {{- end }} | tee /dev/stderr);
 
             bench_exit_status=$?;
 
