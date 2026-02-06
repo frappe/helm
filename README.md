@@ -42,6 +42,7 @@ Jobs:
 - `drop-site` job to drop existing site.
 - `backup-push` job to backup and optionally push backup to S3 for existing site.
 - `migrate` job to migrate existing site.
+- `clear-cache` job to clear cache after upgrade.
 - `custom` job to run custom additional commands and configuration.
 
 PVC:
