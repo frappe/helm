@@ -36,14 +36,18 @@ helm upgrade --install frappe-bench --namespace erpnext frappe/erpnext --set per
 5. [Installation](#installation)
 6. [Generate Additional Resources](#generate-additional-resources)
     1. [Create new site](#create-new-site)
-    2. [Create Ingress](#create-ingress)
-    3. [Create HTTPRoute](#create-httproute)
-    4. [Backup site](#backup-site)
-    5. [Migrate site](#migrate-site)
-    6. [Drop Site](#drop-site)
-    7. [Configure service hosts](#configure-service-hosts)
-    8. [Fix volume permission](#fix-volume-permission)
-    9. [Clear cache](#clear-cache)
+    2. [Create multiple new site](#create-multiple-sites)
+    3. [Create Ingress](#create-ingress)
+    4. [Create HTTPRoute](#create-httproute)
+    5. [Backup site](#backup-site)
+    6. [Backup multiple sites](#backup-multiple-sites)
+    7. [Migrate site](#migrate-site)
+    8. [Migrate multiple sites](#migrate-multiple-sites)
+    9. [Drop Site](#drop-site)
+    10.[Drop Multiple sites](#drop-multiple-sites)
+    11. [Configure service hosts](#configure-service-hosts)
+    12. [Fix volume permission](#fix-volume-permission)
+    13. [Clear cache](#clear-cache)
 7. [Uninstall the Chart](#uninstall-the-chart)
 8. [Migrating from Bitnami Subcharts](#migrating-from-bitnami-subcharts)
 
@@ -57,7 +61,7 @@ The following table lists the configurable parameters of the ERPNext chart and t
 
 ### erpnext
 
-![Version: 8.0.20](https://img.shields.io/badge/Version-8.0.20-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v16.4.0](https://img.shields.io/badge/AppVersion-v16.4.0-informational?style=flat-square)
+![Version: 8.0.22](https://img.shields.io/badge/Version-8.0.22-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v16.5.0](https://img.shields.io/badge/AppVersion-v16.5.0-informational?style=flat-square)
 
 Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 
@@ -96,7 +100,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | httproute.rules[0].matches[0].pathType | string | `"PathPrefix"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"frappe/erpnext"` |  |
-| image.tag | string | `"v16.4.0"` |  |
+| image.tag | string | `"v16.5.0"` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.enabled | bool | `false` |  |
@@ -112,14 +116,22 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | jobs.backup.siteName | string | `"erp.cluster.local"` |  |
 | jobs.backup.tolerations | list | `[]` |  |
 | jobs.backup.withFiles | bool | `true` |  |
+| jobs.backupMultipleSites.affinity | object | `{}` |  |
+| jobs.backupMultipleSites.backoffLimit | int | `0` |  |
+| jobs.backupMultipleSites.enabled | bool | `false` |  |
+| jobs.backupMultipleSites.nodeSelector | object | `{}` |  |
+| jobs.backupMultipleSites.resources | object | `{}` |  |
+| jobs.backupMultipleSites.sites[0].name | string | `"erp.cluster.local"` |  |
+| jobs.backupMultipleSites.tolerations | list | `[]` |  |
+| jobs.backupMultipleSites.withFiles | bool | `true` |  |
 | jobs.clearCache.affinity | object | `{}` |  |
-| jobs.clearCache.backoffLimit | int | `0` |  |
 | jobs.clearCache.enabled | bool | `false` |  |
 | jobs.clearCache.initContainer.deployment.name | string | `""` |  |
 | jobs.clearCache.initContainer.enabled | bool | `false` |  |
 | jobs.clearCache.initContainer.image | string | `"alpine/kubectl:1.35.0"` |  |
 | jobs.clearCache.initContainer.timeout | string | `"600s"` |  |
 | jobs.clearCache.nodeSelector | object | `{}` |  |
+| jobs.clearCache.redisFlush.backoffLimit | int | `0` |  |
 | jobs.clearCache.redisFlush.enabled | bool | `false` |  |
 | jobs.clearCache.resources | object | `{}` |  |
 | jobs.clearCache.serviceAccountName | string | `""` |  |
@@ -134,6 +146,19 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | jobs.configure.nodeSelector | object | `{}` |  |
 | jobs.configure.resources | object | `{}` |  |
 | jobs.configure.tolerations | list | `[]` |  |
+| jobs.createMultipleSites.adminExistingSecret | string | `""` |  |
+| jobs.createMultipleSites.adminExistingSecretKey | string | `"password"` |  |
+| jobs.createMultipleSites.adminPassword | string | `"changeit"` |  |
+| jobs.createMultipleSites.affinity | object | `{}` |  |
+| jobs.createMultipleSites.backoffLimit | int | `0` |  |
+| jobs.createMultipleSites.dbType | string | `"mariadb"` |  |
+| jobs.createMultipleSites.enabled | bool | `false` |  |
+| jobs.createMultipleSites.forceCreate | bool | `false` |  |
+| jobs.createMultipleSites.nodeSelector | object | `{}` |  |
+| jobs.createMultipleSites.resources | object | `{}` |  |
+| jobs.createMultipleSites.sites[0].installApps[0] | string | `"erpnext"` |  |
+| jobs.createMultipleSites.sites[0].name | string | `"erp.cluster.local"` |  |
+| jobs.createMultipleSites.tolerations | list | `[]` |  |
 | jobs.createSite.adminExistingSecret | string | `""` |  |
 | jobs.createSite.adminExistingSecretKey | string | `"password"` |  |
 | jobs.createSite.adminPassword | string | `"changeit"` |  |
@@ -158,6 +183,15 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | jobs.custom.restartPolicy | string | `"Never"` |  |
 | jobs.custom.tolerations | list | `[]` |  |
 | jobs.custom.volumes | list | `[]` |  |
+| jobs.dropMultipleSites.affinity | object | `{}` |  |
+| jobs.dropMultipleSites.backoffLimit | int | `0` |  |
+| jobs.dropMultipleSites.enabled | bool | `false` |  |
+| jobs.dropMultipleSites.forced | bool | `false` |  |
+| jobs.dropMultipleSites.nodeSelector | object | `{}` |  |
+| jobs.dropMultipleSites.resources | object | `{}` |  |
+| jobs.dropMultipleSites.sites[0].name | string | `"site1.example.com"` |  |
+| jobs.dropMultipleSites.sites[1].name | string | `"site2.example.com"` |  |
+| jobs.dropMultipleSites.tolerations | list | `[]` |  |
 | jobs.dropSite.affinity | object | `{}` |  |
 | jobs.dropSite.backoffLimit | int | `0` |  |
 | jobs.dropSite.enabled | bool | `false` |  |
@@ -174,6 +208,14 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | jobs.migrate.siteName | string | `"erp.cluster.local"` |  |
 | jobs.migrate.skipFailing | bool | `false` |  |
 | jobs.migrate.tolerations | list | `[]` |  |
+| jobs.migrateMultipleSites.affinity | object | `{}` |  |
+| jobs.migrateMultipleSites.backoffLimit | int | `0` |  |
+| jobs.migrateMultipleSites.enabled | bool | `false` |  |
+| jobs.migrateMultipleSites.nodeSelector | object | `{}` |  |
+| jobs.migrateMultipleSites.resources | object | `{}` |  |
+| jobs.migrateMultipleSites.sites[0].name | string | `"erp.cluster.local"` |  |
+| jobs.migrateMultipleSites.skipFailing | bool | `false` |  |
+| jobs.migrateMultipleSites.tolerations | list | `[]` |  |
 | jobs.volumePermissions.affinity | object | `{}` |  |
 | jobs.volumePermissions.backoffLimit | int | `0` |  |
 | jobs.volumePermissions.enabled | bool | `false` |  |

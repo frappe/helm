@@ -18,7 +18,7 @@ externalRedis:
 
 image:
   repository: frappe/erpnext
-  tag: v16.4.0
+  tag: v16.5.0
   pullPolicy: IfNotPresent
 
 nginx:
@@ -350,6 +350,17 @@ jobs:
     envVars: []
     command: []
     args: []
+  # ------------------------------------------------------------------------------
+  # Site creation jobs
+  #
+  # IMPORTANT:
+  # - Only ONE site-creation job should be enabled at a time.
+  # - If BOTH `createSite.enabled` and `createMultipleSite.enabled` are set to true,
+  #   then `createSite` will take precedence and `createMultipleSite` will be ignored.
+  #
+  # Backward compatibility:
+  # - `createSite` is enabled by default to preserve existing behavior.
+  # ------------------------------------------------------------------------------
 
   createSite:
     # jobName: ""
@@ -368,6 +379,40 @@ jobs:
     tolerations: []
     affinity: {}
 
+  createMultipleSites:
+    # jobName: ""
+    enabled: false
+    forceCreate: false
+    sites:
+      - name: "erp.cluster.local"
+        installApps:
+          - "erpnext"
+      # - name: "accounts.cluster.local"
+      #   installApps:
+      #     - "erpnext"
+      #     - "payments"
+    adminPassword: "changeit"
+    adminExistingSecret: ""
+    adminExistingSecretKey: "password"
+    dbType: "mariadb"
+    backoffLimit: 0
+    resources: {}
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+  # ------------------------------------------------------------------------------
+  # Site deletion jobs
+  #
+  # IMPORTANT:
+  # - Only ONE site-deletion job should be enabled at a time.
+  # - If BOTH `dropSite.enabled` and `dropMultipleSites.enabled` are set to true,
+  #   then `dropSite` will take precedence and `dropMultipleSites` will be ignored.
+  #
+  # Backward compatibility:
+  # - `dropSite` remains the default behavior.
+  # - `dropMultipleSites` is an additive, non-breaking feature.
+  # ------------------------------------------------------------------------------
+
   dropSite:
     # jobName: ""
     enabled: false
@@ -378,6 +423,38 @@ jobs:
     nodeSelector: {}
     tolerations: []
     affinity: {}
+
+  dropMultipleSites:
+    # jobName: ""
+    enabled: false
+
+    # Force deletion of sites without confirmation
+    forced: false
+
+    # List of sites to be dropped
+    sites:
+      - name: "site1.example.com"
+      - name: "site2.example.com"
+
+    backoffLimit: 0
+    resources: {}
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+  # ------------------------------------------------------------------------------
+  # Backup jobs
+  #
+  # IMPORTANT:
+  # - Only ONE backup job should be enabled at a time.
+  # - If BOTH `backup.enabled` and `backupMultipleSites.enabled` are true,
+  #   then `backup` takes precedence and `backupMultipleSites` is ignored.
+  #
+  # Backward compatibility:
+  # - `backup` remains the default behavior for existing users.
+  # - `backupMultipleSites` is an additive, non-breaking feature.
+  #
+  # This applies to both `backup` and `backupMultipleSites`.
+  # ------------------------------------------------------------------------------
 
   backup:
     # jobName: ""
@@ -390,11 +467,61 @@ jobs:
     tolerations: []
     affinity: {}
 
+  backupMultipleSites:
+    # jobName: ""
+    enabled: false
+
+    # Include files directory in the backup
+    withFiles: true
+
+    # List of sites to back up
+    sites:
+      - name: "erp.cluster.local"
+      # - name: "accounts.cluster.local"
+
+    backoffLimit: 0
+    resources: {}
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+  # ------------------------------------------------------------------------------
+  # Migrate jobs
+  #
+  # IMPORTANT:
+  # - Only ONE migrate job should be enabled at a time.
+  # - If BOTH `migrate.enabled` and `migrateMultipleSites.enabled` are true,
+  #   then `migrate` takes precedence and `migrateMultipleSites` is ignored.
+  #
+  # Backward compatibility:
+  # - `migrate` remains unchanged for existing users.
+  # - `migrateMultipleSites` is additive, non-breaking feature.
+  #
+  # This applies to both `migrate` and `migrateMultipleSites`,
+  # ------------------------------------------------------------------------------
+
   migrate:
     # jobName: ""
     enabled: false
     siteName: "erp.cluster.local"
     skipFailing: false
+    backoffLimit: 0
+    resources: {}
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+
+  migrateMultipleSites:
+    # jobName: ""
+    enabled: false
+
+    # Skip failing patches during migration
+    skipFailing: false
+
+    # List of sites to migrate (processed sequentially)
+    sites:
+      - name: "erp.cluster.local"
+      # - name: "accounts.cluster.local"
+
     backoffLimit: 0
     resources: {}
     nodeSelector: {}
@@ -416,7 +543,7 @@ jobs:
       timeout: 600s
     redisFlush:
       enabled: false
-    backoffLimit: 0
+      backoffLimit: 0
     resources: {}
     nodeSelector: {}
     tolerations: []
