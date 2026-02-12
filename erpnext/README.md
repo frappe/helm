@@ -125,13 +125,13 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | jobs.backupMultipleSites.tolerations | list | `[]` |  |
 | jobs.backupMultipleSites.withFiles | bool | `true` |  |
 | jobs.clearCache.affinity | object | `{}` |  |
+| jobs.clearCache.backoffLimit | int | `0` |  |
 | jobs.clearCache.enabled | bool | `false` |  |
 | jobs.clearCache.initContainer.deployment.name | string | `""` |  |
 | jobs.clearCache.initContainer.enabled | bool | `false` |  |
 | jobs.clearCache.initContainer.image | string | `"alpine/kubectl:1.35.0"` |  |
 | jobs.clearCache.initContainer.timeout | string | `"600s"` |  |
 | jobs.clearCache.nodeSelector | object | `{}` |  |
-| jobs.clearCache.redisFlush.backoffLimit | int | `0` |  |
 | jobs.clearCache.redisFlush.enabled | bool | `false` |  |
 | jobs.clearCache.resources | object | `{}` |  |
 | jobs.clearCache.serviceAccountName | string | `""` |  |

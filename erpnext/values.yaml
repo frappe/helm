@@ -543,7 +543,7 @@ jobs:
       timeout: 600s
     redisFlush:
       enabled: false
-      backoffLimit: 0
+    backoffLimit: 0
     resources: {}
     nodeSelector: {}
     tolerations: []
