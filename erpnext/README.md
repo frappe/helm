@@ -66,16 +66,23 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 
 ## Requirements
 
-| Repository | Name | Version |
-|------------|------|---------|
-| https://charts.bitnami.com/bitnami | mariadb-subchart(mariadb) | 11.5.7 |
-| https://charts.bitnami.com/bitnami | postgresql-subchart(postgresql) | 12.1.6 |
-| https://charts.bitnami.com/bitnami | redis-cache(redis) | 17.15.2 |
-| https://charts.bitnami.com/bitnami | redis-queue(redis) | 17.15.2 |
-| https://valkey-io.github.io/valkey-helm | valkey-cache(valkey) | 0.9.3 |
-| https://valkey-io.github.io/valkey-helm | valkey-queue(valkey) | 0.9.3 |
-| oci://ghcr.io/dragonflydb/dragonfly/helm | dragonfly-cache(dragonfly) | v1.34.2 |
-| oci://ghcr.io/dragonflydb/dragonfly/helm | dragonfly-queue(dragonfly) | v1.34.2 |
+> **Note on Bitnami dependencies**:
+>
+> This Chart historically utilized Bitnami subcharts. Following Bitnami's catalog announcement, alternatives have been introduced.
+>
+> As of 2025-10-30, this Chart can be installed without relying on Bitnami. The Bitnami repository remains the default to ensure backward compatibility with existing deployments.
+
+
+| Repository | Name | Version | Options|
+|------------|------|---------|---------|
+| https://charts.bitnami.com/bitnami | mariadb-subchart(mariadb) | 11.5.7 | Deprecated: Use `mariadb-sts` for new installs or read [MIGRATION.md](MIGRATION.md) |
+| https://charts.bitnami.com/bitnami | postgresql-subchart(postgresql) | 12.1.6 | Deprecated: Use `postgresql-sts` for new installs or read [MIGRATION.md](MIGRATION.md) |
+| https://charts.bitnami.com/bitnami | redis-cache(redis) | 17.15.2 | Deprecated: Use `dragonfly-cache` or `valkey-cache` for new installs. |
+| https://charts.bitnami.com/bitnami | redis-queue(redis) | 17.15.2 | Deprecated: Use `dragonfly-queue` or `valkey-queue` for new installs. |
+| https://valkey-io.github.io/valkey-helm | valkey-cache(valkey) | 0.9.3 | |
+| https://valkey-io.github.io/valkey-helm | valkey-queue(valkey) | 0.9.3 | |
+| oci://ghcr.io/dragonflydb/dragonfly/helm | dragonfly-cache(dragonfly) | v1.34.2 | |
+| oci://ghcr.io/dragonflydb/dragonfly/helm | dragonfly-queue(dragonfly) | v1.34.2 | |
 
 ## Values
 
@@ -832,3 +839,4 @@ The command removes all the Kubernetes components installed by the chart and del
 ## Migrating from Bitnami Subcharts
 
 > **IMPORTANT:** If you are upgrading from a previous version (7.x or older) and relied on the default in-cluster database (Bitnami MariaDB or PostgreSQL), you **must** read this section and the [MIGRATION.md](https://github.com/frappe/helm/blob/main/erpnext/MIGRATION.md) guide before performing `helm upgrade`. The new chart version changes the default behavior, and failing to update your `custom-values.yaml` can lead to the accidental uninstallation of your database and potential data loss.
+
