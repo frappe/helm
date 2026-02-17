@@ -18,7 +18,7 @@ externalRedis:
 
 image:
   repository: frappe/erpnext
-  tag: v16.5.0
+  tag: v16.6.0
   pullPolicy: IfNotPresent
 
 nginx:
@@ -384,9 +384,9 @@ jobs:
     enabled: false
     forceCreate: false
     sites:
-      - name: "erp.cluster.local"
-        installApps:
-          - "erpnext"
+    - name: "erp.cluster.local"
+      installApps:
+      - "erpnext"
       # - name: "accounts.cluster.local"
       #   installApps:
       #     - "erpnext"
@@ -433,8 +433,8 @@ jobs:
 
     # List of sites to be dropped
     sites:
-      - name: "site1.example.com"
-      - name: "site2.example.com"
+    - name: "site1.example.com"
+    - name: "site2.example.com"
 
     backoffLimit: 0
     resources: {}
@@ -476,7 +476,7 @@ jobs:
 
     # List of sites to back up
     sites:
-      - name: "erp.cluster.local"
+    - name: "erp.cluster.local"
       # - name: "accounts.cluster.local"
 
     backoffLimit: 0
@@ -519,7 +519,7 @@ jobs:
 
     # List of sites to migrate (processed sequentially)
     sites:
-      - name: "erp.cluster.local"
+    - name: "erp.cluster.local"
       # - name: "accounts.cluster.local"
 
     backoffLimit: 0
