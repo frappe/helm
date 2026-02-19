@@ -47,6 +47,7 @@ helm upgrade --install frappe-bench --namespace erpnext frappe/erpnext --set per
     10.[Drop Multiple sites](#drop-multiple-sites)
     11. [Configure service hosts](#configure-service-hosts)
     12. [Fix volume permission](#fix-volume-permission)
+    13. [Clear cache](#clear-cache)
 7. [Uninstall the Chart](#uninstall-the-chart)
 8. [Migrating from Bitnami Subcharts](#migrating-from-bitnami-subcharts)
 
@@ -493,6 +494,35 @@ Create Job resource
 
 ```shell
 kubectl apply -f job-fix-volume-permission.yaml
+```
+
+### Clear cache
+
+Make following changes to `custom-values.yaml`:
+
+```yaml
+jobs:
+  clearCache:
+    enabled: true
+  # Configure initContainer to wait for rollout
+  initContainer:
+    enabled: true
+    image: alpine/kubectl:1.35.0
+    deployment:
+      name: "gunicorn"
+    timeout: 600s
+```
+
+Generate Job YAML
+
+```shell
+helm template frappe-bench -n erpnext frappe/erpnext -f custom-values.yaml -s templates/job-clear-cache.yaml > job-clear-cache.yaml
+```
+
+Create Job resource
+
+```shell
+kubectl apply -f job-clear-cache.yaml
 ```
 
 ## Uninstall the Chart

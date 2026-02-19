@@ -46,6 +46,7 @@ Jobs:
 - `backup-multiple-sites` job to create multiple new sites.
 - `migrate` job to migrate existing site.
 - `migrate-multiple-sites` job to create multiple new sites.
+- `clear-cache` job to clear cache after upgrade.
 - `custom` job to run custom additional commands and configuration.
 
 PVC:
