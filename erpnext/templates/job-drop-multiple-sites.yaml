@@ -28,7 +28,7 @@ spec:
         args:
           - >
             {{- range $site := .Values.jobs.dropMultipleSites.sites }}
-              bench drop-site {{ $site }} --root-login=$DB_ROOT_USER --root-password=$DB_ROOT_PASSWORD --archived-sites-path=archived_sites --no-backup {{- if $.Values.jobs.dropMultipleSites.forced }} --force{{- end }};
+              bench drop-site {{ $site.name }} --root-login=$DB_ROOT_USER --root-password=$DB_ROOT_PASSWORD --archived-sites-path=archived_sites --no-backup {{- if $.Values.jobs.dropMultipleSites.forced }} --force{{- end }};
             {{- end }}
 
         env:
