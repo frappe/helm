@@ -18,6 +18,7 @@ spec:
         app.kubernetes.io/name: {{ include "erpnext.name" . }}-nginx
         app.kubernetes.io/instance: {{ .Release.Name }}-nginx
         app.kubernetes.io/app: frappe
+        {{- include "erpnext.commonPodLabels" . | nindent 8 }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
