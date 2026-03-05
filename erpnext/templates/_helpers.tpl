@@ -96,3 +96,12 @@ Gets the redis cache host name
 {{- define "erpnext.redisCacheHost" -}}
 {{ .Values.redisCacheHost }}
 {{- end -}}
+
+{{/*
+Common pod labels - only user-defined common pod labels
+*/}}
+{{- define "erpnext.commonPodLabels" -}}
+{{- if .Values.commonPodLabels }}
+{{- toYaml .Values.commonPodLabels }}
+{{- end }}
+{{- end -}}
