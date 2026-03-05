@@ -2,6 +2,58 @@ apiVersion: v1
 entries:
   erpnext:
   - apiVersion: v2
+    appVersion: v16.8.1
+    created: "2026-03-05T12:27:39.122419703Z"
+    dependencies:
+    - alias: mariadb-subchart
+      condition: mariadb.enabled,mariadb-subchart.enabled
+      name: mariadb
+      repository: https://charts.bitnami.com/bitnami
+      version: 11.5.7
+    - alias: postgresql-subchart
+      condition: postgresql.enabled,postgresql-subchart.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 12.1.6
+    - alias: redis-cache
+      condition: redis-cache.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.15.2
+    - alias: redis-queue
+      condition: redis-queue.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.15.2
+    - alias: dragonfly-cache
+      condition: dragonfly-cache.enabled
+      name: dragonfly
+      repository: oci://ghcr.io/dragonflydb/dragonfly/helm
+      version: v1.34.2
+    - alias: dragonfly-queue
+      condition: dragonfly-queue.enabled
+      name: dragonfly
+      repository: oci://ghcr.io/dragonflydb/dragonfly/helm
+      version: v1.34.2
+    - alias: valkey-cache
+      condition: valkey-cache.enabled
+      name: valkey
+      repository: https://valkey-io.github.io/valkey-helm
+      version: 0.9.3
+    - alias: valkey-queue
+      condition: valkey-queue.enabled
+      name: valkey
+      repository: https://valkey-io.github.io/valkey-helm
+      version: 0.9.3
+    description: Kubernetes Helm Chart for the latest stable ERPNext branch
+    digest: 147ebb7954437a46c42e179a8419cb706eaaf37ab32c478d32cd8b7e32058e96
+    icon: https://raw.githubusercontent.com/frappe/erpnext/develop/erpnext/public/images/erpnext-logo.png
+    name: erpnext
+    type: application
+    urls:
+    - https://helm.erpnext.com/erpnext-8.0.30.tgz
+    version: 8.0.30
+  - apiVersion: v2
     appVersion: v16.8.0
     created: "2026-03-03T18:25:09.18723385Z"
     dependencies:
@@ -17580,4 +17632,4 @@ entries:
     urls:
     - https://helm.erpnext.com/erpnext-1.0.0.tgz
     version: 1.0.0
-generated: "2026-03-03T18:25:09.172471676Z"
+generated: "2026-03-05T12:27:39.107682224Z"
