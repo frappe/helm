@@ -47,6 +47,7 @@ helm upgrade --install frappe-bench --namespace erpnext frappe/erpnext --set per
     10.[Drop Multiple sites](#drop-multiple-sites)
     11. [Configure service hosts](#configure-service-hosts)
     12. [Fix volume permission](#fix-volume-permission)
+    13. [Clear cache](#clear-cache)
 7. [Uninstall the Chart](#uninstall-the-chart)
 8. [Migrating from Bitnami Subcharts](#migrating-from-bitnami-subcharts)
 
@@ -60,7 +61,7 @@ The following table lists the configurable parameters of the ERPNext chart and t
 
 ### erpnext
 
-![Version: 8.0.20](https://img.shields.io/badge/Version-8.0.20-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v16.4.0](https://img.shields.io/badge/AppVersion-v16.4.0-informational?style=flat-square)
+![Version: 8.0.22](https://img.shields.io/badge/Version-8.0.22-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v16.5.0](https://img.shields.io/badge/AppVersion-v16.5.0-informational?style=flat-square)
 
 Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 
@@ -99,7 +100,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | httproute.rules[0].matches[0].pathType | string | `"PathPrefix"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"frappe/erpnext"` |  |
-| image.tag | string | `"v16.4.0"` |  |
+| image.tag | string | `"v16.5.0"` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.enabled | bool | `false` |  |
@@ -123,6 +124,18 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | jobs.backupMultipleSites.sites[0].name | string | `"erp.cluster.local"` |  |
 | jobs.backupMultipleSites.tolerations | list | `[]` |  |
 | jobs.backupMultipleSites.withFiles | bool | `true` |  |
+| jobs.clearCache.affinity | object | `{}` |  |
+| jobs.clearCache.backoffLimit | int | `0` |  |
+| jobs.clearCache.enabled | bool | `false` |  |
+| jobs.clearCache.initContainer.deployment.name | string | `""` |  |
+| jobs.clearCache.initContainer.enabled | bool | `false` |  |
+| jobs.clearCache.initContainer.image | string | `"alpine/kubectl:1.35.0"` |  |
+| jobs.clearCache.initContainer.timeout | string | `"600s"` |  |
+| jobs.clearCache.nodeSelector | object | `{}` |  |
+| jobs.clearCache.redisFlush.enabled | bool | `false` |  |
+| jobs.clearCache.resources | object | `{}` |  |
+| jobs.clearCache.serviceAccountName | string | `""` |  |
+| jobs.clearCache.tolerations | list | `[]` |  |
 | jobs.configure.affinity | object | `{}` |  |
 | jobs.configure.args | list | `[]` |  |
 | jobs.configure.backoffLimit | int | `0` |  |
@@ -817,6 +830,35 @@ Create Job resource
 
 ```shell
 kubectl apply -f job-fix-volume-permission.yaml
+```
+
+### Clear cache
+
+Make following changes to `custom-values.yaml`:
+
+```yaml
+jobs:
+  clearCache:
+    enabled: true
+  # Configure initContainer to wait for rollout
+  initContainer:
+    enabled: true
+    image: alpine/kubectl:1.35.0
+    deployment:
+      name: "gunicorn"
+    timeout: 600s
+```
+
+Generate Job YAML
+
+```shell
+helm template frappe-bench -n erpnext frappe/erpnext -f custom-values.yaml -s templates/job-clear-cache.yaml > job-clear-cache.yaml
+```
+
+Create Job resource
+
+```shell
+kubectl apply -f job-clear-cache.yaml
 ```
 
 ## Uninstall the Chart
