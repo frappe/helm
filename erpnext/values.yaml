@@ -18,7 +18,7 @@ externalRedis:
 
 image:
   repository: frappe/erpnext
-  tag: v16.6.1
+  tag: v16.13.1
   pullPolicy: IfNotPresent
 
 nginx:
@@ -528,6 +528,26 @@ jobs:
     tolerations: []
     affinity: {}
 
+  clearCache:
+    enabled: false
+    # jobName: ""
+    # If empty, falls back to erpnext.serviceAccountName helper
+    serviceAccountName: ""
+    initContainer:
+      enabled: false
+      image: alpine/kubectl:1.35.0
+      deployment:
+        # If empty → <fullname>-gunicorn
+        name: ""
+      # Rollout wait timeout
+      timeout: 600s
+    redisFlush:
+      enabled: false
+    backoffLimit: 0
+    resources: {}
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
 
   custom:
     enabled: false
