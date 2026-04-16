@@ -28,7 +28,7 @@ spec:
         args:
           - >
             {{- range $site := .Values.jobs.backupMultipleSites.sites }}
-            bench --site={{ $site }} {{- if $.Values.jobs.backupMultipleSites.withFiles }} backup --with-files; {{- else }} backup; {{- end }}
+              bench --site={{ $site.name }} {{- if $.Values.jobs.backupMultipleSites.withFiles }} backup --with-files; {{- else }} backup; {{- end }}
             {{- end }}
         resources:
           {{- toYaml .Values.jobs.backupMultipleSites.resources | nindent 10 }}
