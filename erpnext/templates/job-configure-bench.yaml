@@ -81,7 +81,7 @@ spec:
             value: "{{ .Values.dbHost }}"
             {{- end }}
           - name: DB_PORT
-            {{- if or .Values.mariadb.enabled (get .Values "mariadb-subchart").enabled }}
+            {{- if or .Values.mariadb.enabled (get .Values "mariadb-subchart").enabled (get .Values "mariadb-sts").enabled }}
             value: "3306"
             {{- else if or .Values.postgresql.enabled (get .Values "postgresql-subchart").enabled }}
             value: "5432"
