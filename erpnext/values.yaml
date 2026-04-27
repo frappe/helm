@@ -16,6 +16,16 @@ externalRedis:
   cache: ""
   queue: ""
 
+# Common pod labels that will be applied to all deployments
+# These labels are in addition to the standard Kubernetes recommended labels
+# Example:
+# commonPodLabels:
+#   environment: production
+#   team: platform
+#   cost-center: engineering
+#   monitoring: enabled
+commonPodLabels: {}
+
 image:
   repository: frappe/erpnext
   tag: v16.15.1

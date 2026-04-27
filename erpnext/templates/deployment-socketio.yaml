@@ -18,6 +18,7 @@ spec:
         app.kubernetes.io/name: {{ include "erpnext.name" . }}-socketio
         app.kubernetes.io/instance: {{ .Release.Name }}-socketio
         app.kubernetes.io/app: frappe
+        {{- include "erpnext.commonPodLabels" . | nindent 8 }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
