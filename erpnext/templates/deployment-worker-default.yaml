@@ -18,6 +18,7 @@ spec:
         app.kubernetes.io/name: {{ include "erpnext.name" . }}-worker-d
         app.kubernetes.io/instance: {{ .Release.Name }}-worker-d
         app.kubernetes.io/app: frappe
+        {{- include "erpnext.commonPodLabels" . | nindent 8 }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
