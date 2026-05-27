@@ -22,6 +22,7 @@ image:
   pullPolicy: IfNotPresent
 
 nginx:
+  podAnnotations: {}
   replicaCount: 1
   autoscaling:
     enabled: false
@@ -72,6 +73,7 @@ nginx:
 
 worker:
   gunicorn:
+    podAnnotations: {}
     replicaCount: 1
     autoscaling:
       enabled: false
@@ -102,6 +104,7 @@ worker:
     sidecars: []
 
   default:
+    podAnnotations: {}
     replicaCount: 1
     autoscaling:
       enabled: false
@@ -124,6 +127,7 @@ worker:
     sidecars: []
 
   short:
+    podAnnotations: {}
     replicaCount: 1
     autoscaling:
       enabled: false
@@ -146,6 +150,7 @@ worker:
     sidecars: []
 
   long:
+    podAnnotations: {}
     replicaCount: 1
     autoscaling:
       enabled: false
@@ -168,6 +173,7 @@ worker:
     sidecars: []
 
   scheduler:
+    podAnnotations: {}
     replicaCount: 1
     resources: {}
     nodeSelector: {}
@@ -248,6 +254,7 @@ worker:
     timeoutSeconds: 5
 
 socketio:
+  podAnnotations: {}
   replicaCount: 1
   autoscaling:
     enabled: false
