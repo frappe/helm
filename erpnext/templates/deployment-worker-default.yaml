@@ -14,6 +14,10 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}-worker-d
   template:
     metadata:
+      {{- with .Values.worker.default.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
         app.kubernetes.io/name: {{ include "erpnext.name" . }}-worker-d
         app.kubernetes.io/instance: {{ .Release.Name }}-worker-d
