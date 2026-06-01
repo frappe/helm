@@ -61,7 +61,7 @@ The following table lists the configurable parameters of the ERPNext chart and t
 
 ### erpnext
 
-![Version: 8.0.54](https://img.shields.io/badge/Version-8.0.54-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v16.20.0](https://img.shields.io/badge/AppVersion-v16.20.0-informational?style=flat-square)
+![Version: 8.0.55](https://img.shields.io/badge/Version-8.0.55-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v16.20.1](https://img.shields.io/badge/AppVersion-v16.20.1-informational?style=flat-square)
 
 Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 
@@ -100,7 +100,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | httproute.rules[0].matches[0].pathType | string | `"PathPrefix"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"frappe/erpnext"` |  |
-| image.tag | string | `"v16.20.0"` |  |
+| image.tag | string | `"v16.20.1"` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.enabled | bool | `false` |  |
@@ -256,6 +256,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | nginx.livenessProbe.periodSeconds | int | `10` |  |
 | nginx.livenessProbe.tcpSocket.port | int | `8080` |  |
 | nginx.nodeSelector | object | `{}` |  |
+| nginx.podAnnotations | object | `{}` |  |
 | nginx.readinessProbe.initialDelaySeconds | int | `5` |  |
 | nginx.readinessProbe.periodSeconds | int | `10` |  |
 | nginx.readinessProbe.tcpSocket.port | int | `8080` |  |
@@ -304,6 +305,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | socketio.livenessProbe.periodSeconds | int | `10` |  |
 | socketio.livenessProbe.tcpSocket.port | int | `9000` |  |
 | socketio.nodeSelector | object | `{}` |  |
+| socketio.podAnnotations | object | `{}` |  |
 | socketio.readinessProbe.initialDelaySeconds | int | `5` |  |
 | socketio.readinessProbe.periodSeconds | int | `10` |  |
 | socketio.readinessProbe.tcpSocket.port | int | `9000` |  |
@@ -330,6 +332,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | worker.default.livenessProbe.override | bool | `false` |  |
 | worker.default.livenessProbe.probe | object | `{}` |  |
 | worker.default.nodeSelector | object | `{}` |  |
+| worker.default.podAnnotations | object | `{}` |  |
 | worker.default.readinessProbe.override | bool | `false` |  |
 | worker.default.readinessProbe.probe | object | `{}` |  |
 | worker.default.replicaCount | int | `1` |  |
@@ -352,6 +355,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | worker.gunicorn.livenessProbe.periodSeconds | int | `10` |  |
 | worker.gunicorn.livenessProbe.tcpSocket.port | int | `8000` |  |
 | worker.gunicorn.nodeSelector | object | `{}` |  |
+| worker.gunicorn.podAnnotations | object | `{}` |  |
 | worker.gunicorn.readinessProbe.initialDelaySeconds | int | `5` |  |
 | worker.gunicorn.readinessProbe.periodSeconds | int | `10` |  |
 | worker.gunicorn.readinessProbe.tcpSocket.port | int | `8000` |  |
@@ -373,6 +377,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | worker.long.livenessProbe.override | bool | `false` |  |
 | worker.long.livenessProbe.probe | object | `{}` |  |
 | worker.long.nodeSelector | object | `{}` |  |
+| worker.long.podAnnotations | object | `{}` |  |
 | worker.long.readinessProbe.override | bool | `false` |  |
 | worker.long.readinessProbe.probe | object | `{}` |  |
 | worker.long.replicaCount | int | `1` |  |
@@ -385,6 +390,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | worker.scheduler.livenessProbe.override | bool | `false` |  |
 | worker.scheduler.livenessProbe.probe | object | `{}` |  |
 | worker.scheduler.nodeSelector | object | `{}` |  |
+| worker.scheduler.podAnnotations | object | `{}` |  |
 | worker.scheduler.readinessProbe.override | bool | `false` |  |
 | worker.scheduler.readinessProbe.probe | object | `{}` |  |
 | worker.scheduler.replicaCount | int | `1` |  |
@@ -402,6 +408,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | worker.short.livenessProbe.override | bool | `false` |  |
 | worker.short.livenessProbe.probe | object | `{}` |  |
 | worker.short.nodeSelector | object | `{}` |  |
+| worker.short.podAnnotations | object | `{}` |  |
 | worker.short.readinessProbe.override | bool | `false` |  |
 | worker.short.readinessProbe.probe | object | `{}` |  |
 | worker.short.replicaCount | int | `1` |  |
