@@ -483,6 +483,18 @@ persistence:
 
 Make sure the PVC called `existing-sites` exists in the namespace.
 
+`persistence.logs` also supports `existingClaim`, together with an optional
+`subPath` so logs can share a PVC (e.g. the worker's) without the two
+volumes' contents mixing at the mount root:
+
+```yaml
+persistence:
+  logs:
+    enabled: true
+    existingClaim: existing-sites
+    subPath: logs-data
+```
+
 ### Access Modes
 
 Make following changes to custom-values.yaml:

@@ -287,6 +287,10 @@ persistence:
   worker:
     enabled: true
     # existingClaim: ""
+    # Subpath inside the PVC referenced by existingClaim to mount sites
+    # into. Lets the worker share a PVC with another volume without the
+    # two volumes' contents mixing at the mount root.
+    # subPath: ""
     size: 8Gi
     # storageClass: "nfs"
     accessModes:
@@ -295,6 +299,10 @@ persistence:
     # Container based log search and analytics stack recommended
     enabled: false
     # existingClaim: ""
+    # Subpath inside the PVC referenced by existingClaim to mount logs
+    # into. Lets logs share a PVC (e.g. the worker's) without the two
+    # volumes' contents mixing at the mount root.
+    # subPath: ""
     size: 8Gi
     # storageClass: "nfs"
     accessModes:
