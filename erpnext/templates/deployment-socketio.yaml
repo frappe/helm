@@ -47,6 +47,9 @@ spec:
             mountPath: /home/frappe/frappe-bench/sites
           - name: logs
             mountPath: /home/frappe/frappe-bench/logs
+            {{- if .Values.persistence.logs.subPath }}
+            subPath: {{ .Values.persistence.logs.subPath }}
+            {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http

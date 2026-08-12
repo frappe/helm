@@ -64,6 +64,9 @@ spec:
             mountPath: /home/frappe/frappe-bench/sites
           - name: logs
             mountPath: /home/frappe/frappe-bench/logs
+            {{- if .Values.persistence.logs.subPath }}
+            subPath: {{ .Values.persistence.logs.subPath }}
+            {{- end }}
       {{- if .Values.worker.long.sidecars }}
         {{- toYaml .Values.worker.long.sidecars | nindent 8 }}
       {{- end }}
