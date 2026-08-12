@@ -12,6 +12,10 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}-scheduler
   template:
     metadata:
+      {{- with .Values.worker.scheduler.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
         app.kubernetes.io/name: {{ include "erpnext.name" . }}-scheduler
         app.kubernetes.io/instance: {{ .Release.Name }}-scheduler

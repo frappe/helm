@@ -14,6 +14,10 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}-socketio
   template:
     metadata:
+      {{- with .Values.socketio.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
         app.kubernetes.io/name: {{ include "erpnext.name" . }}-socketio
         app.kubernetes.io/instance: {{ .Release.Name }}-socketio
