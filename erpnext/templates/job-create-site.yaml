@@ -82,6 +82,9 @@ spec:
           volumeMounts:
             - name: sites-dir
               mountPath: /home/frappe/frappe-bench/sites
+              {{- if .Values.persistence.worker.subPath }}
+              subPath: {{ .Values.persistence.worker.subPath }}
+              {{- end }}
       containers:
       - name: create-site
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -193,6 +196,9 @@ spec:
         volumeMounts:
           - name: sites-dir
             mountPath: /home/frappe/frappe-bench/sites
+            {{- if .Values.persistence.worker.subPath }}
+            subPath: {{ .Values.persistence.worker.subPath }}
+            {{- end }}
           - name: logs
             mountPath: /home/frappe/frappe-bench/logs
             {{- if .Values.persistence.logs.subPath }}

@@ -280,6 +280,10 @@ persistence:
   worker:
     enabled: true
     # existingClaim: ""
+    # Subpath inside the PVC referenced by existingClaim to mount sites
+    # into. Lets the worker share a PVC with another volume without the
+    # two volumes' contents mixing at the mount root.
+    # subPath: ""
     size: 8Gi
     # storageClass: "nfs"
     accessModes:
