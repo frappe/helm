@@ -66,8 +66,14 @@ spec:
           volumeMounts:
           - name: sites-dir
             mountPath: /home/frappe/frappe-bench/sites
+            {{- if .Values.persistence.worker.subPath }}
+            subPath: {{ .Values.persistence.worker.subPath }}
+            {{- end }}
           - name: logs
             mountPath: /home/frappe/frappe-bench/logs
+            {{- if .Values.persistence.logs.subPath }}
+            subPath: {{ .Values.persistence.logs.subPath }}
+            {{- end }}
       {{- if .Values.worker.short.sidecars }}
         {{- toYaml .Values.worker.short.sidecars | nindent 8 }}
       {{- end }}

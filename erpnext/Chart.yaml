@@ -4,7 +4,7 @@ description: Kubernetes Helm Chart for the latest stable ERPNext branch
 icon: 
   https://raw.githubusercontent.com/frappe/erpnext/develop/erpnext/public/images/erpnext-logo.png
 type: application
-version: 8.0.75
+version: 8.0.76
 appVersion: v16.32.3
 dependencies:
 - name: mariadb

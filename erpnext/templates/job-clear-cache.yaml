@@ -53,6 +53,9 @@ spec:
           volumeMounts:
             - name: sites-dir
               mountPath: /home/frappe/frappe-bench/sites
+              {{- if .Values.persistence.worker.subPath }}
+              subPath: {{ .Values.persistence.worker.subPath }}
+              {{- end }}
       volumes:
         - name: sites-dir
           {{- if .Values.persistence.worker.enabled }}
