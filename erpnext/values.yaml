@@ -284,6 +284,11 @@ socketio:
   sidecars: []
 
 persistence:
+  # When a subPath is set below, run a root init container in each pod that
+  # creates and chowns the subPath dir(s) so a fresh, kubelet-created
+  # (root-owned) directory is writable before the main containers start.
+  subPathPermissions:
+    enabled: true
   worker:
     enabled: true
     # existingClaim: ""

@@ -269,6 +269,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | persistence.logs.accessModes[0] | string | `"ReadWriteMany"` |  |
 | persistence.logs.enabled | bool | `false` |  |
 | persistence.logs.size | string | `"8Gi"` |  |
+| persistence.subPathPermissions.enabled | bool | `true` |  |
 | persistence.worker.accessModes[0] | string | `"ReadWriteMany"` |  |
 | persistence.worker.enabled | bool | `true` |  |
 | persistence.worker.size | string | `"8Gi"` |  |
@@ -500,6 +501,15 @@ persistence:
 
 Set `subPath` on both volumes when they share a PVC; otherwise the one without
 a `subPath` mounts the PVC root and still sees the other's directory.
+
+> **Warning:** setting `persistence.worker.subPath` on a claim that already holds
+> sites at its root mounts only that subdirectory, so the existing sites and
+> their configuration are no longer visible to the workloads. Move the existing
+> data into the subdirectory before switching.
+
+When a `subPath` is set, an init container (`persistence.subPathPermissions.enabled`,
+default `true`) creates the directory and sets its ownership before the main
+containers start.
 
 ### Access Modes
 
