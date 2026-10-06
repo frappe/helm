@@ -114,9 +114,10 @@ unless a subPath is set. Takes a dict with "root" (the chart context) and
 - name: fix-subpath-permissions
   image: {{ $root.Values.image.repository }}:{{ $root.Values.image.tag }}
   imagePullPolicy: {{ $root.Values.image.pullPolicy }}
-  # chown only when needed and never fail the pod over it: on root-squashed
-  # volumes (e.g. NFS) chown can be rejected even though the dir is writable.
-  command: ['/bin/sh', '-c', 'for d in "$@"; do mkdir -p "$d" && { [ "$(stat -c %u "$d")" = "{{ $uid }}" ] || chown {{ $uid }}:{{ $uid }} "$d" || echo "warning: could not chown $d" >&2; }; done', 'sh']
+  # A failing mkdir fails the init container (for any dir). chown only runs when
+  # needed and is non-fatal: on root-squashed volumes (e.g. NFS) it can be
+  # rejected even though the dir is writable.
+  command: ['/bin/sh', '-c', 'rc=0; for d in "$@"; do if mkdir -p "$d"; then [ "$(stat -c %u "$d")" = "{{ $uid }}" ] || chown {{ $uid }}:{{ $uid }} "$d" || echo "warning: could not chown $d" >&2; else rc=1; fi; done; exit $rc', 'sh']
   {{- /* Dirs are passed as positional args so subPath values are never parsed by the shell. */}}
   args:
     {{- if $p.worker.subPath }}
