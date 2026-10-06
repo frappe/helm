@@ -114,7 +114,9 @@ unless a subPath is set. Takes a dict with "root" (the chart context) and
 - name: fix-subpath-permissions
   image: {{ $root.Values.image.repository }}:{{ $root.Values.image.tag }}
   imagePullPolicy: {{ $root.Values.image.pullPolicy }}
-  command: ['/bin/sh', '-c', 'mkdir -p "$@" && chown {{ $uid }}:{{ $uid }} "$@"', 'sh']
+  # chown only when needed and never fail the pod over it: on root-squashed
+  # volumes (e.g. NFS) chown can be rejected even though the dir is writable.
+  command: ['/bin/sh', '-c', 'for d in "$@"; do mkdir -p "$d" && { [ "$(stat -c %u "$d")" = "{{ $uid }}" ] || chown {{ $uid }}:{{ $uid }} "$d" || echo "warning: could not chown $d" >&2; }; done', 'sh']
   {{- /* Dirs are passed as positional args so subPath values are never parsed by the shell. */}}
   args:
     {{- if $p.worker.subPath }}
