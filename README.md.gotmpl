@@ -146,11 +146,17 @@ volumes' contents mixing at the mount root:
 
 ```yaml
 persistence:
+  worker:
+    existingClaim: existing-sites
+    subPath: sites-data
   logs:
     enabled: true
     existingClaim: existing-sites
     subPath: logs-data
 ```
+
+Set `subPath` on both volumes when they share a PVC; otherwise the one without
+a `subPath` mounts the PVC root and still sees the other's directory.
 
 ### Access Modes
 

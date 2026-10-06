@@ -82,7 +82,7 @@ spec:
           - name: sites-dir
             mountPath: /home/frappe/frappe-bench/sites
             {{- if .Values.persistence.worker.subPath }}
-            subPath: {{ .Values.persistence.worker.subPath }}
+            subPath: {{ .Values.persistence.worker.subPath | quote }}
             {{- end }}
           {{- if .Values.nginx.config }}
           - name: nginx-config
