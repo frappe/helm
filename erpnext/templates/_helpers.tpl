@@ -96,3 +96,49 @@ Gets the redis cache host name
 {{- define "erpnext.redisCacheHost" -}}
 {{ .Values.redisCacheHost }}
 {{- end -}}
+
+{{/*
+Init container that creates and chowns the persistence subPath directories, so
+a fresh subPath (otherwise created root-owned by the kubelet) is writable by
+the non-root frappe user before the main containers start. Renders nothing
+unless a subPath is set. Takes a dict with "root" (the chart context) and
+"logs" (whether the pod mounts the logs volume).
+*/}}
+{{- define "erpnext.subPathInitContainer" -}}
+{{- $root := .root -}}
+{{- $p := $root.Values.persistence -}}
+{{- if $p.subPathPermissions.enabled -}}
+{{- $uid := default 1000 $root.Values.securityContext.runAsUser -}}
+{{- $withLogs := and .logs $p.logs.subPath -}}
+{{- if or $p.worker.subPath $withLogs }}
+- name: fix-subpath-permissions
+  image: {{ $root.Values.image.repository }}:{{ $root.Values.image.tag }}
+  imagePullPolicy: {{ $root.Values.image.pullPolicy }}
+  # A failing mkdir fails the init container (for any dir). chown only runs when
+  # needed and is non-fatal: on root-squashed volumes (e.g. NFS) it can be
+  # rejected even though the dir is writable.
+  command: ['/bin/sh', '-c', 'rc=0; for d in "$@"; do if mkdir -p "$d"; then [ "$(stat -c %u "$d")" = "{{ $uid }}" ] || chown {{ $uid }}:{{ $uid }} "$d" || echo "warning: could not chown $d" >&2; else rc=1; fi; done; exit $rc', 'sh']
+  {{- /* Dirs are passed as positional args so subPath values are never parsed by the shell. */}}
+  args:
+    {{- if $p.worker.subPath }}
+    - {{ printf "/mnt/sites/%s" (toString $p.worker.subPath) | quote }}
+    {{- end }}
+    {{- if $withLogs }}
+    - {{ printf "/mnt/logs/%s" (toString $p.logs.subPath) | quote }}
+    {{- end }}
+  securityContext:
+    # run as root to set ownership
+    runAsNonRoot: false
+    runAsUser: 0
+  volumeMounts:
+    {{- if $p.worker.subPath }}
+    - name: sites-dir
+      mountPath: /mnt/sites
+    {{- end }}
+    {{- if $withLogs }}
+    - name: logs
+      mountPath: /mnt/logs
+    {{- end }}
+{{- end }}
+{{- end }}
+{{- end -}}
