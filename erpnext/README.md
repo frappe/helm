@@ -61,7 +61,7 @@ The following table lists the configurable parameters of the ERPNext chart and t
 
 ### erpnext
 
-![Version: 8.0.55](https://img.shields.io/badge/Version-8.0.55-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v16.20.1](https://img.shields.io/badge/AppVersion-v16.20.1-informational?style=flat-square)
+![Version: 8.0.83](https://img.shields.io/badge/Version-8.0.83-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v16.37.0](https://img.shields.io/badge/AppVersion-v16.37.0-informational?style=flat-square)
 
 Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 
@@ -100,7 +100,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | httproute.rules[0].matches[0].pathType | string | `"PathPrefix"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"frappe/erpnext"` |  |
-| image.tag | string | `"v16.20.1"` |  |
+| image.tag | string | `"v16.37.0"` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.enabled | bool | `false` |  |
@@ -269,6 +269,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | persistence.logs.accessModes[0] | string | `"ReadWriteMany"` |  |
 | persistence.logs.enabled | bool | `false` |  |
 | persistence.logs.size | string | `"8Gi"` |  |
+| persistence.subPathPermissions.enabled | bool | `true` |  |
 | persistence.worker.accessModes[0] | string | `"ReadWriteMany"` |  |
 | persistence.worker.enabled | bool | `true` |  |
 | persistence.worker.size | string | `"8Gi"` |  |
@@ -482,6 +483,33 @@ persistence:
 ```
 
 Make sure the PVC called `existing-sites` exists in the namespace.
+
+`persistence.logs` also supports `existingClaim`, together with an optional
+`subPath` so logs can share a PVC (e.g. the worker's) without the two
+volumes' contents mixing at the mount root:
+
+```yaml
+persistence:
+  worker:
+    existingClaim: existing-sites
+    subPath: sites-data
+  logs:
+    enabled: true
+    existingClaim: existing-sites
+    subPath: logs-data
+```
+
+Set `subPath` on both volumes when they share a PVC; otherwise the one without
+a `subPath` mounts the PVC root and still sees the other's directory.
+
+> **Warning:** setting `persistence.worker.subPath` on a claim that already holds
+> sites at its root mounts only that subdirectory, so the existing sites and
+> their configuration are no longer visible to the workloads. Move the existing
+> data into the subdirectory before switching.
+
+When a `subPath` is set, an init container (`persistence.subPathPermissions.enabled`,
+default `true`) creates the directory and sets its ownership before the main
+containers start.
 
 ### Access Modes
 
