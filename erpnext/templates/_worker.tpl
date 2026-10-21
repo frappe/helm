@@ -31,11 +31,16 @@ The template output is consumed with fromJson.
 {{- end -}}
 {{- end -}}
 {{- end -}}
+{{- $seen := dict -}}
 {{- range $name, $worker := $workers -}}
-{{- $reservedName := include "erpnext.customWorkerName" $name -}}
-{{- if has $reservedName (list "d" "s" "l") -}}
+{{- $workerName := include "erpnext.customWorkerName" $name -}}
+{{- if hasKey $seen $workerName -}}
+{{- fail (printf "worker.custom.%s: custom worker name resolves to %q, which conflicts with worker.custom.%s. Choose unique worker names." $name $workerName (get $seen $workerName)) -}}
+{{- end -}}
+{{- $_ := set $seen $workerName $name -}}
+{{- if has $workerName (list "d" "s" "l") -}}
 {{- $reservedWorkers := dict "d" "worker-d/default" "s" "worker-s/short" "l" "worker-l/long" -}}
-{{- fail (printf "worker.custom.%s: custom worker name resolves to %q, which is reserved for the built-in worker deployment (%s). Choose a different worker name." $name $reservedName (get $reservedWorkers $reservedName)) -}}
+{{- fail (printf "worker.custom.%s: custom worker name resolves to %q, which is reserved for the built-in worker deployment (%s). Choose a different worker name." $name $workerName (get $reservedWorkers $workerName)) -}}
 {{- end -}}
 {{- end -}}
 {{- toJson $workers -}}

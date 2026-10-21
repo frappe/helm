@@ -174,9 +174,12 @@ worker:
 
   # Custom worker deployments. Every entry creates a Deployment named
   # "<release>-erpnext-worker-<name>" and, when autoscaling is enabled, a
-  # matching HorizontalPodAutoscaler. The worker name must be unique.
-  # Names that resolve to "d", "s" or "l" are reserved for the built-in
-  # default, short and long workers.
+  # matching HorizontalPodAutoscaler.
+  #
+  # Worker names are normalized for Kubernetes (lowercased, non-alphanumeric
+  # characters replaced with "-"), so names that normalize to the same value
+  # must not be used together. Names that normalize to "d", "s" or "l" are
+  # reserved for the built-in default, short and long workers.
   #
   # All options are optional. The queue defaults to the worker name and the
   # default command is `bench worker --queue <queue>`.

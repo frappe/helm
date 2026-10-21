@@ -503,9 +503,13 @@ You can configure this to use ReadWriteOnce (RWO) if you are running a single-no
 The chart ships with the `default`, `short` and `long` queue workers. If your
 application uses additional queues, define them under `worker.custom`. Every
 entry creates a Deployment named `<release>-erpnext-worker-<name>` and, when
-autoscaling is enabled, a matching HorizontalPodAutoscaler. Worker names that
-resolve to `d`, `s` or `l` are reserved for the built-in `default`, `short` and
-`long` workers and are rejected.
+autoscaling is enabled, a matching HorizontalPodAutoscaler.
+
+Worker names are normalized for Kubernetes (lowercased, with non-alphanumeric
+characters replaced by `-`), so names that normalize to the same value must not
+be used together. Names that normalize to `d`, `s` or `l` are reserved for the
+built-in `default`, `short` and `long` workers, and names that normalize to the
+same value as another custom worker are rejected.
 
 If you need only one additional worker, you can put the configuration directly
 under `worker.custom` instead of nesting it under a name. The resulting worker
