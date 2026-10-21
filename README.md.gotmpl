@@ -31,8 +31,9 @@ helm upgrade --install frappe-bench --namespace erpnext frappe/erpnext --set per
 4. [Configuration](#configuration)
     1. [Existing PVC](#existing-pvc)
     2. [Existing Storage Class](#existing-storage-class)
-    3. [External Database](#external-database)
-    4. [Using Bitnami Subcharts (Legacy)](#using-bitnami-subcharts-legacy)
+    3. [Custom Workers](#custom-workers)
+    4. [External Database](#external-database)
+    5. [Using Bitnami Subcharts (Legacy)](#using-bitnami-subcharts-legacy)
 5. [Installation](#installation)
 6. [Generate Additional Resources](#generate-additional-resources)
     1. [Create new site](#create-new-site)
@@ -152,6 +153,85 @@ persistence:
 ```
 
 You can configure this to use ReadWriteOnce (RWO) if you are running a single-node cluster or deploying to a specific node using node affinity.
+
+### Custom Workers
+
+The chart ships with the `default`, `short` and `long` queue workers. If your
+application uses additional queues, define them under `worker.custom`. Every
+entry creates a Deployment named `<release>-erpnext-worker-<name>` and, when
+autoscaling is enabled, a matching HorizontalPodAutoscaler. Worker names that
+resolve to `d`, `s` or `l` are reserved for the built-in `default`, `short` and
+`long` workers and are rejected.
+
+If you need only one additional worker, you can put the configuration directly
+under `worker.custom` instead of nesting it under a name. The resulting worker
+is named `custom`.
+
+```yaml
+worker:
+  custom:
+    reports:
+      queue: "reports"
+      replicaCount: 2
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+      autoscaling:
+        enabled: true
+        minReplicas: 1
+        maxReplicas: 5
+        targetCPU: 75
+```
+
+The queue defaults to the worker name. To listen to more than one queue, use
+`queues` instead of `queue`:
+
+```yaml
+worker:
+  custom:
+    reports:
+      queues:
+        - reports
+        - default
+```
+
+By default the worker runs `bench worker --queue <queue>`. Use `args` to replace
+the complete argument list, `extraArgs` to append arguments, or `command` to
+override the container command:
+
+```yaml
+worker:
+  custom:
+    reports:
+      args:
+        - bench
+        - worker
+        - --queue
+        - reports
+        - --burst
+      extraArgs:
+        - --quiet
+```
+
+Each custom worker supports the same options as the built-in workers
+(`replicaCount`, `resources`, `nodeSelector`, `tolerations`, `affinity`,
+`podAnnotations`, `livenessProbe`, `readinessProbe`, `envVars`,
+`initContainers` and `sidecars`) plus:
+
+- `enabled` to temporarily disable a worker (defaults to `true`).
+- `podLabels`, `labels` and `annotations` for extra metadata.
+- `topologySpreadConstraints`, `priorityClassName`, `terminationGracePeriodSeconds`, `dnsPolicy`, `schedulerName` and `hostAliases` for pod scheduling.
+- `envFrom`, `ports`, `startupProbe` and `lifecycle` for the worker container.
+- `extraVolumes` and `extraVolumeMounts` for additional volumes.
+- `image`, `imagePullSecrets`, `serviceAccountName`, `podSecurityContext` and `securityContext` to override the chart defaults.
+- `autoscaling.metrics` and `autoscaling.behavior` for advanced HPA configuration.
+
+Set `replicaCount` to a value greater than zero and make sure the queue name
+matches the queue used by your Frappe app.
 
 ### External Database
 

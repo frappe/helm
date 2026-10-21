@@ -1,0 +1,16 @@
+{{- range $name, $worker := include "erpnext.customWorkers" . | fromJson }}
+{{- if and (kindIs "map" $worker) (ne (toString $worker.enabled) "false") }}
+{{- $workerName := include "erpnext.customWorkerName" $name }}
+{{- $containerName := regexReplaceAll "[^a-z0-9-]" ($worker.containerName | default $workerName | lower) "-" | trimAll "-" | trunc 63 | trimSuffix "-" | default $workerName }}
+{{- $queue := $workerName }}
+{{- if $worker.queues }}
+{{- $queue = join "," $worker.queues }}
+{{- else if kindIs "slice" $worker.queue }}
+{{- $queue = join "," $worker.queue }}
+{{- else if $worker.queue }}
+{{- $queue = toString $worker.queue }}
+{{- end }}
+---
+{{ include "erpnext.workerDeployment" (dict "root" $ "name" $workerName "containerName" $containerName "queue" $queue "config" $worker) }}
+{{- end }}
+{{- end }}

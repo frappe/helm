@@ -1,4 +1,56 @@
 {{/*
+Normalize worker.custom into a JSON object mapping worker names to their
+configuration. Supported forms:
+
+  worker.custom.<name>: {...}   # multiple named workers
+  worker.custom: {...}         # single worker named "custom"
+
+The template output is consumed with fromJson.
+*/}}
+{{- define "erpnext.customWorkers" -}}
+{{- $workers := dict -}}
+{{- $custom := .Values.worker.custom -}}
+{{- if kindIs "map" $custom -}}
+{{- $singleWorkerKeys := list "name" "containerName" "enabled" "queue" "queues" "replicaCount" "autoscaling" "resources" "nodeSelector" "tolerations" "affinity" "topologySpreadConstraints" "podAnnotations" "podLabels" "labels" "annotations" "livenessProbe" "readinessProbe" "startupProbe" "lifecycle" "envVars" "envFrom" "initContainers" "sidecars" "extraVolumes" "extraVolumeMounts" "command" "args" "extraArgs" "image" "imagePullSecrets" "serviceAccountName" "podSecurityContext" "securityContext" "priorityClassName" "terminationGracePeriodSeconds" "ports" "dnsPolicy" "schedulerName" "hostAliases" "strategy" "revisionHistoryLimit" -}}
+{{- $singleWorker := false -}}
+{{- range $key, $value := $custom -}}
+{{- if has $key $singleWorkerKeys -}}
+{{- $singleWorker = true -}}
+{{- end -}}
+{{- end -}}
+{{- if $singleWorker -}}
+{{- $name := $custom.name | default "custom" -}}
+{{- $_ := set $workers $name $custom -}}
+{{- else -}}
+{{- range $name, $worker := $custom -}}
+{{- if kindIs "map" $worker -}}
+{{- $_ := set $workers $name $worker -}}
+{{- else if not $worker -}}
+{{- $_ := set $workers $name dict -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- range $name, $worker := $workers -}}
+{{- $reservedName := include "erpnext.customWorkerName" $name -}}
+{{- if has $reservedName (list "d" "s" "l") -}}
+{{- $reservedWorkers := dict "d" "worker-d/default" "s" "worker-s/short" "l" "worker-l/long" -}}
+{{- fail (printf "worker.custom.%s: custom worker name resolves to %q, which is reserved for the built-in worker deployment (%s). Choose a different worker name." $name $reservedName (get $reservedWorkers $reservedName)) -}}
+{{- end -}}
+{{- end -}}
+{{- toJson $workers -}}
+{{- end -}}
+
+{{/*
+Sanitize the name of a custom worker so it can be used in Kubernetes
+resource names and labels.
+*/}}
+{{- define "erpnext.customWorkerName" -}}
+{{- $name := . | default "custom" | lower -}}
+{{- regexReplaceAll "[^a-z0-9-]" $name "-" | trimAll "-" | trunc 63 | trimSuffix "-" | default "custom" -}}
+{{- end -}}
+
+{{/*
 Render a worker Deployment.
 
 Accepts a dict with:

@@ -17,6 +17,7 @@ Deployments:
 - `worker-d` deployment contains frappe/erpnext default worker.
 - `worker-l` deployment contains frappe/erpnext long worker.
 - `worker-s` deployment contains frappe/erpnext short worker.
+- `worker-<name>` deployments contain additional custom workers configured with `worker.custom`.
 
 HorizontalPodAutoscalers:
 
@@ -26,6 +27,7 @@ HorizontalPodAutoscalers:
 - `worker-d` hpa scales frappe/erpnext default worker deployment.
 - `worker-l` hpa scales frappe/erpnext long worker deployment.
 - `worker-s` hpa scales frappe/erpnext short worker deployment.
+- `worker-<name>` hpa scales the corresponding custom worker deployment when autoscaling is enabled.
 
 Ingresses:
 
