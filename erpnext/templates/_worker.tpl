@@ -42,25 +42,17 @@ spec:
     - type: Resource
       resource:
         name: cpu
-        {{- if semverCompare "<1.23-0" $root.Capabilities.KubeVersion.GitVersion }}
-        targetAverageUtilization: {{ $autoscaling.targetCPU }}
-        {{- else }}
         target:
           type: Utilization
           averageUtilization: {{ $autoscaling.targetCPU }}
-        {{- end }}
     {{- end }}
     {{- if $autoscaling.targetMemory }}
     - type: Resource
       resource:
         name: memory
-        {{- if semverCompare "<1.23-0" $root.Capabilities.KubeVersion.GitVersion }}
-        targetAverageUtilization: {{ $autoscaling.targetMemory }}
-        {{- else }}
         target:
           type: Utilization
           averageUtilization: {{ $autoscaling.targetMemory }}
-        {{- end }}
     {{- end }}
     {{- end }}
   {{- with $autoscaling.behavior }}
