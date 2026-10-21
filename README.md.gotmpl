@@ -140,6 +140,33 @@ persistence:
 
 Make sure the PVC called `existing-sites` exists in the namespace.
 
+`persistence.logs` also supports `existingClaim`, together with an optional
+`subPath` so logs can share a PVC (e.g. the worker's) without the two
+volumes' contents mixing at the mount root:
+
+```yaml
+persistence:
+  worker:
+    existingClaim: existing-sites
+    subPath: sites-data
+  logs:
+    enabled: true
+    existingClaim: existing-sites
+    subPath: logs-data
+```
+
+Set `subPath` on both volumes when they share a PVC; otherwise the one without
+a `subPath` mounts the PVC root and still sees the other's directory.
+
+> **Warning:** setting `persistence.worker.subPath` on a claim that already holds
+> sites at its root mounts only that subdirectory, so the existing sites and
+> their configuration are no longer visible to the workloads. Move the existing
+> data into the subdirectory before switching.
+
+When a `subPath` is set, an init container (`persistence.subPathPermissions.enabled`,
+default `true`) creates the directory and sets its ownership before the main
+containers start.
+
 ### Access Modes
 
 Make following changes to custom-values.yaml:
