@@ -1,0 +1,10 @@
+{{- range $name, $worker := include "erpnext.customWorkers" . | fromJson }}
+{{- if and (kindIs "map" $worker) (ne (toString $worker.enabled) "false") }}
+{{- $autoscaling := $worker.autoscaling | default dict }}
+{{- if $autoscaling.enabled }}
+{{- $workerName := include "erpnext.customWorkerName" $name }}
+---
+{{ include "erpnext.workerHpa" (dict "root" $ "name" $workerName "config" $worker) }}
+{{- end }}
+{{- end }}
+{{- end }}
