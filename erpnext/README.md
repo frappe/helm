@@ -61,7 +61,7 @@ The following table lists the configurable parameters of the ERPNext chart and t
 
 ### erpnext
 
-![Version: 8.0.83](https://img.shields.io/badge/Version-8.0.83-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v16.37.0](https://img.shields.io/badge/AppVersion-v16.37.0-informational?style=flat-square)
+![Version: 8.0.89](https://img.shields.io/badge/Version-8.0.89-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v16.52.1](https://img.shields.io/badge/AppVersion-v16.52.1-informational?style=flat-square)
 
 Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 
@@ -100,7 +100,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | httproute.rules[0].matches[0].pathType | string | `"PathPrefix"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"frappe/erpnext"` |  |
-| image.tag | string | `"v16.37.0"` |  |
+| image.tag | string | `"v16.52.1"` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.enabled | bool | `false` |  |
@@ -270,6 +270,7 @@ Kubernetes Helm Chart for ERPNext and Frappe Framework Apps.
 | persistence.logs.enabled | bool | `false` |  |
 | persistence.logs.size | string | `"8Gi"` |  |
 | persistence.subPathPermissions.enabled | bool | `true` |  |
+| persistence.subPathPermissions.resources | object | `{}` |  |
 | persistence.worker.accessModes[0] | string | `"ReadWriteMany"` |  |
 | persistence.worker.enabled | bool | `true` |  |
 | persistence.worker.size | string | `"8Gi"` |  |
@@ -509,7 +510,21 @@ a `subPath` mounts the PVC root and still sees the other's directory.
 
 When a `subPath` is set, an init container (`persistence.subPathPermissions.enabled`,
 default `true`) creates the directory and sets its ownership before the main
-containers start.
+containers start. Set `persistence.subPathPermissions.resources` when the
+namespace has a ResourceQuota on CPU or memory: the quota then requires every
+container, init containers included, to declare them.
+
+```yaml
+persistence:
+  subPathPermissions:
+    enabled: true
+    resources:
+      requests:
+        cpu: 10m
+        memory: 16Mi
+      limits:
+        memory: 32Mi
+```
 
 ### Access Modes
 

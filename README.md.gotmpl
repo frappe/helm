@@ -165,7 +165,21 @@ a `subPath` mounts the PVC root and still sees the other's directory.
 
 When a `subPath` is set, an init container (`persistence.subPathPermissions.enabled`,
 default `true`) creates the directory and sets its ownership before the main
-containers start.
+containers start. Set `persistence.subPathPermissions.resources` when the
+namespace has a ResourceQuota on CPU or memory: the quota then requires every
+container, init containers included, to declare them.
+
+```yaml
+persistence:
+  subPathPermissions:
+    enabled: true
+    resources:
+      requests:
+        cpu: 10m
+        memory: 16Mi
+      limits:
+        memory: 32Mi
+```
 
 ### Access Modes
 

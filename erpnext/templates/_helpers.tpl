@@ -130,6 +130,10 @@ unless a subPath is set. Takes a dict with "root" (the chart context) and
     # run as root to set ownership
     runAsNonRoot: false
     runAsUser: 0
+  {{- with $p.subPathPermissions.resources }}
+  resources:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   volumeMounts:
     {{- if $p.worker.subPath }}
     - name: sites-dir
