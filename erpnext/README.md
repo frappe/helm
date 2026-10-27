@@ -503,6 +503,11 @@ persistence:
 Set `subPath` on both volumes when they share a PVC; otherwise the one without
 a `subPath` mounts the PVC root and still sees the other's directory.
 
+When `persistence.logs` uses the same claim as `persistence.worker`, the chart
+mounts the logs from the worker's `sites-dir` volume (with `logs.subPath`)
+instead of declaring a second volume for the same claim: a pod that references
+one PVC in two volumes never gets past `ContainerCreating`.
+
 > **Warning:** setting `persistence.worker.subPath` on a claim that already holds
 > sites at its root mounts only that subdirectory, so the existing sites and
 > their configuration are no longer visible to the workloads. Move the existing
