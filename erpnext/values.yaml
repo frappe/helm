@@ -289,6 +289,10 @@ persistence:
   # (root-owned) directory is writable before the main containers start.
   subPathPermissions:
     enabled: true
+    # Resources for the init container. Set them when a ResourceQuota on
+    # requests/limits makes every container (init containers included)
+    # declare them, otherwise the pods are rejected.
+    resources: {}
   worker:
     enabled: true
     # existingClaim: ""
