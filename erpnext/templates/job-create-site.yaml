@@ -157,7 +157,7 @@ spec:
             {{- else if (index .Values "postgresql-sts").enabled }}
             valueFrom:
               secretKeyRef:
-                key: postgresql-password
+                key: postgres-password
                 name: {{ template "erpnext.fullname" . }}
             {{- else if or .Values.mariadb.enabled (get .Values "mariadb-subchart").enabled }}
             valueFrom:
