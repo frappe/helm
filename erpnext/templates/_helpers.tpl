@@ -98,6 +98,25 @@ Gets the redis cache host name
 {{- end -}}
 
 {{/*
+Name of the volume the logs are mounted from. When persistence.logs uses the same
+PVC as persistence.worker (e.g. both existingClaim set to the same claim), the logs
+are mounted from the sites-dir volume, with their own subPath, instead of a second
+"logs" volume: a pod that references the same PVC in two volumes never gets past
+ContainerCreating, because the kubelet mounts the claim once and keeps waiting for
+the second volume.
+*/}}
+{{- define "erpnext.logsVolumeName" -}}
+{{- $p := .Values.persistence -}}
+{{- $sitesClaim := default (include "erpnext.fullname" .) $p.worker.existingClaim -}}
+{{- $logsClaim := default (printf "%s-logs" (include "erpnext.fullname" .)) $p.logs.existingClaim -}}
+{{- if and $p.worker.enabled $p.logs.enabled (eq $sitesClaim $logsClaim) -}}
+sites-dir
+{{- else -}}
+logs
+{{- end -}}
+{{- end -}}
+
+{{/*
 Init container that creates and chowns the persistence subPath directories, so
 a fresh subPath (otherwise created root-owned by the kubelet) is writable by
 the non-root frappe user before the main containers start. Renders nothing
@@ -130,13 +149,17 @@ unless a subPath is set. Takes a dict with "root" (the chart context) and
     # run as root to set ownership
     runAsNonRoot: false
     runAsUser: 0
+  {{- with $p.subPathPermissions.resources }}
+  resources:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   volumeMounts:
     {{- if $p.worker.subPath }}
     - name: sites-dir
       mountPath: /mnt/sites
     {{- end }}
     {{- if $withLogs }}
-    - name: logs
+    - name: {{ include "erpnext.logsVolumeName" $root }}
       mountPath: /mnt/logs
     {{- end }}
 {{- end }}
