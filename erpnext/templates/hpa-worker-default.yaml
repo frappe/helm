@@ -17,24 +17,16 @@ spec:
     - type: Resource
       resource:
         name: cpu
-        {{- if semverCompare "<1.23-0" .Capabilities.KubeVersion.GitVersion }}
-        targetAverageUtilization: {{ .Values.worker.default.autoscaling.targetCPU }}
-        {{- else }}
         target:
           type: Utilization
           averageUtilization: {{ .Values.worker.default.autoscaling.targetCPU }}
-        {{- end }}
     {{- end }}
     {{- if .Values.worker.default.autoscaling.targetMemory }}
     - type: Resource
       resource:
         name: memory
-        {{- if semverCompare "<1.23-0" .Capabilities.KubeVersion.GitVersion }}
-        targetAverageUtilization: {{ .Values.worker.default.autoscaling.targetMemory }}
-        {{- else }}
         target:
           type: Utilization
           averageUtilization: {{ .Values.worker.default.autoscaling.targetMemory }}
-        {{- end }}
     {{- end }}
 {{- end }}
