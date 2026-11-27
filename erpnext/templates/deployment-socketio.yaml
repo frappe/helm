@@ -58,7 +58,7 @@ spec:
             {{- if .Values.persistence.worker.subPath }}
             subPath: {{ .Values.persistence.worker.subPath | quote }}
             {{- end }}
-          - name: logs
+          - name: {{ include "erpnext.logsVolumeName" $ }}
             mountPath: /home/frappe/frappe-bench/logs
             {{- if .Values.persistence.logs.subPath }}
             subPath: {{ .Values.persistence.logs.subPath | quote }}
@@ -90,6 +90,7 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+        {{- if eq (include "erpnext.logsVolumeName" $) "logs" }}
         - name: logs
           {{- if .Values.persistence.logs.enabled }}
           persistentVolumeClaim:
@@ -102,6 +103,7 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+        {{- end }}
       {{- with .Values.socketio.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
