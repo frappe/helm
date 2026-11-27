@@ -16,6 +16,10 @@ spec:
   backoffLimit: {{ .Values.jobs.clearCache.backoffLimit | default 2 }}
   template:
     spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
       restartPolicy: Never
       serviceAccountName: {{ .Values.jobs.clearCache.serviceAccountName | default (include "erpnext.serviceAccountName" .) }}
       {{- if .Values.jobs.clearCache.initContainer.enabled }}
